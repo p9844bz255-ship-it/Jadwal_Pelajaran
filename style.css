@@ -5,8 +5,8 @@
 
 :root {
   --bg-gradient: #ffffff;
-  --glass-main-bg: rgba(248, 250, 252, 0.65); 
-  --glass-main-border: rgba(226, 232, 240, 0.8); 
+  --glass-main-bg: rgba(248, 250, 252, 0.75); 
+  --glass-main-border: rgba(226, 232, 240, 0.9); 
   --card-glass-bg: #ffffff;
   --card-glass-border: #e2e8f0;
   --logo-blue-accent: #1155cc;   
@@ -32,22 +32,26 @@ body {
 }
 
 @keyframes pageEntryPopUp {
-  0% { opacity: 0; transform: translateY(20px) scale(0.99); }
+  0% { opacity: 0; transform: translateY(15px) scale(0.99); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .header-section, .day-column {
-  animation: pageEntryPopUp 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: pageEntryPopUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 /* ==========================================================================
-   HEADER BARU (MENGGABUNGKAN KONTROL DI KANAN)
+   HEADER SECTION MODEREN & TERPUSAT (TIDAK TEMBUS KE KANAN LAPTOP)
    ========================================================================== */
 .header-section {
   background: var(--glass-main-bg);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  padding: 24px 30px; border-radius: 16px; border: 1px solid var(--glass-main-border);
-  margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: 24px 35px; border-radius: 20px; border: 1px solid var(--glass-main-border);
+  margin: 0 auto 25px auto; 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  
+  /* Mengunci lebar maksimal agar presisi di layar laptop/desktop lebar */
+  max-width: 1350px; 
 }
 
 .header-main-wrapper {
@@ -63,72 +67,110 @@ body {
 }
 
 .header-logo { height: 75px; width: auto; }
-.header-section h1 { font-size: 28px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; line-height: 1.2; }
-.header-section p { color: var(--logo-blue-accent); font-size: 15px; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
+.header-section h1 { font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; line-height: 1.2; }
+.header-section p { color: var(--logo-blue-accent); font-size: 14px; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
 
 .mobile-subtext { display: none; }
 .desktop-subtext { display: block; }
 
-/* KONTROL DI KANAN HEADER */
+/* KONTROL MENU DI SISI KANAN HEADER */
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
+/* KOTAK INPUT DESAIN PILL (BULAT ELEGAN) */
 .input-wrapper {
-  position: relative; display: flex; align-items: center; background: #ffffff;
-  border: 1px solid var(--card-glass-border); border-radius: 10px; padding: 0 14px; height: 44px; transition: all 0.25s ease;
+  position: relative; display: flex; align-items: center; 
+  background: #f8fafc; 
+  border: 1px solid #cbd5e1; 
+  border-radius: 50px; 
+  padding: 0 20px; 
+  height: 46px; 
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.input-wrapper:focus-within {
-  border-color: var(--logo-blue-accent); box-shadow: 0 0 0 3px rgba(17, 85, 204, 0.1);
-}
-.search-wrapper { min-width: 260px; }
-.input-wrapper input {
-  flex: 1; border: none; outline: none; font-size: 14px; color: var(--text-main); background: transparent; font-family: 'Poppins';
-}
-.input-icon { width: 18px; height: 18px; fill: var(--text-muted); margin-right: 10px; }
-.clear-btn { cursor: pointer; display: none; background: none; border: none; }
-.clear-btn svg { width: 16px; height: 16px; fill: var(--text-muted); }
 
-.input-wrapper-select { padding: 0 8px !important; min-width: 200px; }
+.input-wrapper:hover {
+  background: #ffffff;
+  border-color: #94a3b8;
+}
+
+.input-wrapper:focus-within {
+  background: #ffffff;
+  border-color: var(--logo-blue-accent); 
+  box-shadow: 0 0 0 4px rgba(17, 85, 204, 0.12);
+  transform: translateY(-1px);
+}
+
+.search-wrapper { min-width: 270px; }
+.input-wrapper input {
+  flex: 1; border: none; outline: none; font-size: 13.5px; color: var(--text-main); background: transparent; font-family: 'Poppins';
+}
+.input-wrapper input::placeholder { color: #94a3b8; }
+
+.input-icon { width: 18px; height: 18px; fill: #64748b; margin-right: 10px; transition: fill 0.2s; }
+.input-wrapper:focus-within .input-icon { fill: var(--logo-blue-accent); }
+
+/* Tombol X Silang */
+.clear-btn { 
+  cursor: pointer; display: none; background: #e2e8f0; border: none; 
+  border-radius: 50%; width: 20px; height: 20px; align-items: center; 
+  justify-content: center; padding: 4px; transition: background 0.2s; 
+}
+.clear-btn:hover { background: #cbd5e1; }
+.clear-btn svg { width: 12px; height: 12px; fill: #475569; }
+
+/* Input Select Picker Filter */
+.input-wrapper-select { padding: 0 16px !important; min-width: 210px; }
 #pekanSelect {
   width: 100%; background: transparent; border: none; color: var(--text-main) !important; 
   outline: none; font-family: inherit; font-size: 13px; cursor: pointer; font-weight: 600; height: 100%;
 }
 #pekanSelect option { background: #ffffff !important; color: #0f172a !important; }
 
+/* Tombol Cetak PDF Pill */
 .btn-pdf {
   background: var(--btn-danger-red); 
   color: #ffffff; 
-  border: 1px solid var(--btn-danger-red);
-  padding: 0 20px; height: 44px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 13.5px;
-  display: flex; align-items: center; gap: 8px; font-family: 'Poppins'; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+  border: none;
+  padding: 0 22px; height: 46px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 13.5px;
+  display: flex; align-items: center; gap: 8px; font-family: 'Poppins'; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
 }
-.btn-pdf:hover { background: #b91c1c; border-color: #b91c1c; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.25); }
+.btn-pdf:hover { 
+  background: #b91c1c; 
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(185, 28, 28, 0.25); 
+}
 .btn-pdf svg { width: 18px; height: 18px; fill: currentColor; }
 
-/* TABS SEKARANG ADA DI BAWAH TAPI MASIH DI DALAM HEADER */
+/* TABS KONTROL */
 .tab-container {
-  display: flex; background: rgba(0, 0, 0, 0.04); padding: 4px;
-  border-radius: 30px; width: fit-content; border: 1px solid rgba(0, 0, 0, 0.02); margin-top: 24px;
+  display: flex; background: rgba(15, 23, 42, 0.05); padding: 4px;
+  border-radius: 30px; width: fit-content; border: 1px solid rgba(0, 0, 0, 0.01); margin-top: 20px;
 }
 .tab-btn {
   background: transparent; border: none; color: var(--text-muted);
-  padding: 10px 26px; font-size: 14px; font-weight: 700; border-radius: 25px;
-  cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.25s ease;
+  padding: 8px 24px; font-size: 13.5px; font-weight: 700; border-radius: 25px;
+  cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
 }
 .tab-btn.active {
   background: #ffffff; color: var(--text-main); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+/* Counter Box */
+.jp-counter-box { font-size: 12px; font-weight: 600; color: var(--logo-blue-accent); }
+
 /* ==========================================================================
-   GRID MONITOR CONTAINER (OPTIMASI MUTLAK 1 HALAMAN)
+   GRID MONITOR CONTAINER (TERPUSAT DAN SEJAJAR DENGAN HEADER)
    ========================================================================== */
 .flex-schedule-container {
   display: flex; flex-direction: row; justify-content: center; align-items: flex-start; 
-  gap: 10px; width: 100%; max-width: 100%; margin: 0 auto; padding: 4px 0 16px 0; overflow-x: hidden; 
+  gap: 10px; width: 100%; margin: 0 auto; padding: 4px 0 16px 0; overflow-x: hidden; 
+  
+  /* Menyamakan lebar maksimal tabel agar sejajar dengan bagian atas */
+  max-width: 1350px; 
 }
 .day-column { 
   flex: 1 1 0%; min-width: 0; border-radius: 16px; padding: 10px; 
@@ -203,7 +245,6 @@ body {
   .desktop-subtext { display: none; }
   .mobile-subtext { display: block; font-size: 11.5px !important; line-height: 1.4; font-weight: 700; }
   
-  /* Kontrol Menu akan memenuhi layar (Full Width) di HP */
   .header-controls { width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
   .input-wrapper, .btn-pdf { width: 100%; height: 42px; justify-content: center; }
   .search-wrapper { min-width: 100%; justify-content: flex-start; }
@@ -211,7 +252,6 @@ body {
   .tab-container { margin-top: 16px; width: 100%; display: flex; justify-content: space-between; }
   .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
   
-  /* Scroll Kanan Kiri HP */
   .flex-schedule-container {
     justify-content: flex-start !important; overflow-x: auto !important; 
     padding: 0 4px 12px 4px; gap: 12px; -webkit-overflow-scrolling: touch;
