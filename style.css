@@ -15,9 +15,8 @@
   --guru-match-blue: #1e3a8a;    
   --text-main: #0f172a;         
   --text-muted: #64748b;        
-  --btn-danger-red: #dc2626; /* Warna merah premium tombol cetak */
+  --btn-danger-red: #dc2626;
   
-  /* Aksen hari aktif */
   --active-day-bg: #f0f7ff;
   --active-day-border: #bfdbfe;
 }
@@ -37,30 +36,83 @@ body {
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.header-section, .controls-container, .day-column {
+.header-section, .day-column {
   animation: pageEntryPopUp 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 /* ==========================================================================
-   UKURAN HEADER & LOGO
+   HEADER BARU (MENGGABUNGKAN KONTROL DI KANAN)
    ========================================================================== */
 .header-section {
   background: var(--glass-main-bg);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  padding: 30px; border-radius: 16px; border: 1px solid var(--glass-main-border);
-  margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+  padding: 24px 30px; border-radius: 16px; border: 1px solid var(--glass-main-border);
+  margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
 }
-.header-top-content { display: flex; align-items: center; gap: 24px; }
-.header-logo { height: 85px; width: auto; }
-.header-section h1 { font-size: 32px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; line-height: 1.2; }
-.header-section p { color: var(--logo-blue-accent); font-size: 16px; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
+
+.header-main-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-top-content { 
+  display: flex; align-items: center; gap: 20px; 
+}
+
+.header-logo { height: 75px; width: auto; }
+.header-section h1 { font-size: 28px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; line-height: 1.2; }
+.header-section p { color: var(--logo-blue-accent); font-size: 15px; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
 
 .mobile-subtext { display: none; }
 .desktop-subtext { display: block; }
 
+/* KONTROL DI KANAN HEADER */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.input-wrapper {
+  position: relative; display: flex; align-items: center; background: #ffffff;
+  border: 1px solid var(--card-glass-border); border-radius: 10px; padding: 0 14px; height: 44px; transition: all 0.25s ease;
+}
+.input-wrapper:focus-within {
+  border-color: var(--logo-blue-accent); box-shadow: 0 0 0 3px rgba(17, 85, 204, 0.1);
+}
+.search-wrapper { min-width: 260px; }
+.input-wrapper input {
+  flex: 1; border: none; outline: none; font-size: 14px; color: var(--text-main); background: transparent; font-family: 'Poppins';
+}
+.input-icon { width: 18px; height: 18px; fill: var(--text-muted); margin-right: 10px; }
+.clear-btn { cursor: pointer; display: none; background: none; border: none; }
+.clear-btn svg { width: 16px; height: 16px; fill: var(--text-muted); }
+
+.input-wrapper-select { padding: 0 8px !important; min-width: 200px; }
+#pekanSelect {
+  width: 100%; background: transparent; border: none; color: var(--text-main) !important; 
+  outline: none; font-family: inherit; font-size: 13px; cursor: pointer; font-weight: 600; height: 100%;
+}
+#pekanSelect option { background: #ffffff !important; color: #0f172a !important; }
+
+.btn-pdf {
+  background: var(--btn-danger-red); 
+  color: #ffffff; 
+  border: 1px solid var(--btn-danger-red);
+  padding: 0 20px; height: 44px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 13.5px;
+  display: flex; align-items: center; gap: 8px; font-family: 'Poppins'; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+.btn-pdf:hover { background: #b91c1c; border-color: #b91c1c; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.25); }
+.btn-pdf svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* TABS SEKARANG ADA DI BAWAH TAPI MASIH DI DALAM HEADER */
 .tab-container {
   display: flex; background: rgba(0, 0, 0, 0.04); padding: 4px;
-  border-radius: 30px; width: fit-content; border: 1px solid rgba(0, 0, 0, 0.02); margin-top: 20px;
+  border-radius: 30px; width: fit-content; border: 1px solid rgba(0, 0, 0, 0.02); margin-top: 24px;
 }
 .tab-btn {
   background: transparent; border: none; color: var(--text-muted);
@@ -71,140 +123,59 @@ body {
   background: #ffffff; color: var(--text-main); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.controls-container {
-  background: var(--glass-main-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;
-  padding: 20px; border-radius: 16px; border: 1px solid var(--glass-main-border); margin-bottom: 25px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
-}
-.input-group { display: flex; flex-direction: column; gap: 6px; flex: 2; min-width: 240px; }
-.input-group.select-picker-group { flex: 1.2; min-width: 200px; }
-
-.input-wrapper {
-  position: relative; display: flex; align-items: center; background: #ffffff;
-  border: 1px solid var(--card-glass-border); border-radius: 10px; padding: 0 14px; height: 48px; transition: all 0.25s ease;
-}
-.input-wrapper:focus-within {
-  border-color: var(--logo-blue-accent); box-shadow: 0 0 0 3px rgba(17, 85, 204, 0.1);
-}
-.input-wrapper input {
-  flex: 1; border: none; outline: none; font-size: 15px; color: var(--text-main); background: transparent; font-family: 'Poppins';
-}
-.input-icon { width: 18px; height: 18px; fill: var(--text-muted); margin-right: 10px; }
-.clear-btn { cursor: pointer; display: none; background: none; border: none; }
-.clear-btn svg { width: 16px; height: 16px; fill: var(--text-muted); }
-
-.input-wrapper-select { padding: 0 8px !important; }
-#pekanSelect {
-  width: 100%; background: transparent; border: none; color: var(--text-main) !important; 
-  outline: none; font-family: inherit; font-size: 14px; cursor: pointer; font-weight: 600; height: 100%;
-}
-#pekanSelect option { background: #ffffff !important; color: #0f172a !important; }
-.dropdown-current-week { background: #eff6ff !important; color: var(--logo-blue-accent) !important; font-weight: 700 !important; }
-
-.jp-counter-box {
-  display: none; align-items: center; justify-content: center; background: var(--logo-blue-light);
-  border: 1px solid var(--logo-blue-border); color: var(--logo-blue-accent); padding: 0 18px; border-radius: 10px; height: 48px; font-size: 14px; font-weight: 700;
-}
-
-.btn-pdf {
-  background: var(--btn-danger-red); 
-  color: #ffffff; 
-  border: 1px solid var(--btn-danger-red);
-  padding: 0 24px; height: 48px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;
-  display: flex; align-items: center; gap: 8px; font-family: 'Poppins'; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
-}
-.btn-pdf:hover { background: #b91c1c; border-color: #b91c1c; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.3); }
-.btn-pdf svg { width: 18px; height: 18px; fill: currentColor; }
-
 /* ==========================================================================
-   GRID MONITOR CONTAINER (OPTIMASI MUTLAK 1 HALAMAN UNTUK 6 KOLOM DI LAPTOP)
+   GRID MONITOR CONTAINER (OPTIMASI MUTLAK 1 HALAMAN)
    ========================================================================== */
 .flex-schedule-container {
-  display: flex; 
-  flex-direction: row; 
-  justify-content: center; 
-  align-items: flex-start; 
-  gap: 10px; 
-  width: 100%; 
-  max-width: 100%; 
-  margin: 0 auto;
-  padding: 4px 0 16px 0; 
-  overflow-x: hidden; /* Mencegah munculnya scroll samping di layar desktop */
+  display: flex; flex-direction: row; justify-content: center; align-items: flex-start; 
+  gap: 10px; width: 100%; max-width: 100%; margin: 0 auto; padding: 4px 0 16px 0; overflow-x: hidden; 
 }
-
 .day-column { 
-  flex: 1 1 0%; /* Membagi sisa ruang layar sama rata secara matematis untuk 6 hari */
-  min-width: 0;  /* Mengizinkan kolom menyusut di bawah batas default konten */
-  border-radius: 16px; 
-  padding: 10px; 
-  background: var(--glass-main-bg); 
-  border: 1px solid var(--glass-main-border); 
+  flex: 1 1 0%; min-width: 0; border-radius: 16px; padding: 10px; 
+  background: var(--glass-main-bg); border: 1px solid var(--glass-main-border); 
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01);
 }
-
 .day-column.today-active {
-  background: var(--active-day-bg) !important;
-  border: 1px solid var(--active-day-border) !important;
-  box-shadow: 0 4px 22px rgba(17, 85, 204, 0.07) !important;
+  background: var(--active-day-bg) !important; border: 1px solid var(--active-day-border) !important; box-shadow: 0 4px 22px rgba(17, 85, 204, 0.07) !important;
 }
 .day-column.today-active .day-title { background: var(--logo-blue-accent) !important; }
-
 .day-title { 
   text-align: center; font-size: 13px; font-weight: 800; padding: 10px 0; margin-bottom: 12px; border-radius: 8px;
   background: var(--text-main) !important; color: #ffffff !important; text-transform: uppercase; letter-spacing: 0.5px;
 }
-
 .card {
   position: relative; background: var(--card-glass-bg) !important; border-radius: 12px !important; 
   padding: 10px 8px; margin-bottom: 10px; display: flex; gap: 6px; min-height: 95px;
   border: 1px solid var(--card-glass-border) !important; color: var(--text-main) !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03); transition: all 0.2s ease-in-out;
-  overflow: hidden; /* Mengunci konten agar tidak meluber keluar kartu */
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03); transition: all 0.2s ease-in-out; overflow: hidden; 
 }
-
 .card-left { 
-  flex: 0 0 48px; /* Diperketat agar ruang untuk teks Mapel & Guru menjadi maksimal */
-  display: flex; 
-  flex-direction: column; 
-  align-items: flex-start; 
-  justify-content: center; 
-  border-right: 1px dashed rgba(0, 0, 0, 0.08); 
-  padding-right: 4px;
+  flex: 0 0 48px; display: flex; flex-direction: column; align-items: flex-start; 
+  justify-content: center; border-right: 1px dashed rgba(0, 0, 0, 0.08); padding-right: 4px;
 }
 .jp { font-size: 18px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; line-height: 1; margin-bottom: 4px;}
-
 .waktu { 
-  font-size: 9.5px !important; 
-  color: var(--text-muted) !important; 
-  font-weight: 600; 
-  text-align: left !important; 
-  line-height: 1.3 !important;
-  white-space: pre-line; 
-  display: block;
-  width: 100%;
+  font-size: 9.5px !important; color: var(--text-muted) !important; font-weight: 600; text-align: left !important; line-height: 1.3 !important; white-space: pre-line; display: block; width: 100%;
 }
-
 .card-right { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 3px; }
 .tematik-card-combined { padding-right: 4px !important; }
 .tematik-flex-row { flex-direction: row !important; justify-content: flex-start; align-items: stretch; width: 100%; }
 .tematik-inner-col { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 50px; gap: 3px; }
 .tematik-inner-col-border { border-left: 1px solid rgba(0, 0, 0, 0.08); }
-
 .kelas-info { font-size: 11px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; text-transform: uppercase; }
 .mapel { font-size: 11.5px !important; font-weight: 700 !important; color: var(--text-main) !important; line-height: 1.3; }
 .guru-nama { font-size: 11px !important; color: var(--text-main); font-weight: 500; line-height: 1.3; }
 .search-highlight { background: transparent !important; color: var(--guru-match-blue) !important; font-weight: 800 !important; padding: 0; }
 
 /* ==========================================================================
-   ADAPTIVE MEDIA QUERY: KHUSUS LAYAR LAPTOP MEDIUM (769px - 1366px)
-   Otomatis mengecilkan font & padding agar ke-6 hari sinkron mutlak tanpa terpotong
+   ADAPTIVE MEDIA QUERY: LAPTOP (769px - 1366px)
    ========================================================================== */
 @media screen and (min-width: 769px) and (max-width: 1366px) {
   body { padding: 16px; }
   .header-section { padding: 20px; }
-  .header-logo { height: 70px; }
-  .header-section h1 { font-size: 26px; }
+  .header-logo { height: 60px; }
+  .header-section h1 { font-size: 22px; }
+  .search-wrapper { min-width: 200px; }
   .flex-schedule-container { gap: 6px; }
   .day-column { padding: 6px; }
   .day-title { font-size: 11.5px; padding: 8px 0; margin-bottom: 8px; }
@@ -215,233 +186,70 @@ body {
   .kelas-info { font-size: 10px !important; }
   .mapel { font-size: 10.5px !important; }
   .guru-nama { font-size: 10px !important; }
-  .tematik-inner-col { padding: 0 2px; }
 }
 
 /* ==========================================================================
-   UKURAN HP (RESPONSIVE SCREEN OPTIMIZATION KHUSUS GURU & WALI MURID)
+   UKURAN HP (RESPONSIVE SCREEN OPTIMIZATION)
    ========================================================================== */
 @media (max-width: 768px) {
   body { padding: 14px; }
   
-  .header-logo { height: 60px; }
-  .header-section { padding: 18px; margin-bottom: 12px; }
-  .header-section h1 { font-size: 20px; }
+  .header-section { padding: 16px; }
+  .header-main-wrapper { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .header-top-content { gap: 12px; }
+  .header-logo { height: 50px; }
+  .header-section h1 { font-size: 18px; }
   
   .desktop-subtext { display: none; }
   .mobile-subtext { display: block; font-size: 11.5px !important; line-height: 1.4; font-weight: 700; }
   
-  .controls-container { padding: 14px; margin-bottom: 16px; gap: 10px; }
-  .input-wrapper { height: 42px; }
-  .input-wrapper input, #pekanSelect { font-size: 13px; }
-  .btn-pdf { height: 42px; width: 100%; justify-content: center; font-size: 13px; }
+  /* Kontrol Menu akan memenuhi layar (Full Width) di HP */
+  .header-controls { width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+  .input-wrapper, .btn-pdf { width: 100%; height: 42px; justify-content: center; }
+  .search-wrapper { min-width: 100%; justify-content: flex-start; }
   
-  /* AKTIFKAN SCROLL HORIZONTAL YANG LEMBUT DI SMARTPHONE */
+  .tab-container { margin-top: 16px; width: 100%; display: flex; justify-content: space-between; }
+  .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
+  
+  /* Scroll Kanan Kiri HP */
   .flex-schedule-container {
-    justify-content: flex-start !important;
-    overflow-x: auto !important; 
-    padding: 0 4px 12px 4px;
-    gap: 12px;
-    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start !important; overflow-x: auto !important; 
+    padding: 0 4px 12px 4px; gap: 12px; -webkit-overflow-scrolling: touch;
   }
-  
   .day-column {
-    flex: 0 0 240px !important; /* Lebar card paling pas dan nyaman dibaca di HP */
-    width: 240px !important;
-    min-width: 240px !important;
-    padding: 10px;
-    border-radius: 12px;
+    flex: 0 0 240px !important; width: 240px !important; min-width: 240px !important;
   }
-  .day-title { font-size: 12px; padding: 8px 0; margin-bottom: 10px; }
-  
-  .card {
-    padding: 10px;
-    min-height: 85px;
-    border-radius: 10px !important;
-    margin-bottom: 8px;
-    gap: 8px;
-    overflow: visible;
-  }
-  
-  .card-left { flex: 0 0 52px; padding-right: 2px; }
-  .jp { font-size: 18px !important; }
-  .waktu { font-size: 9.5px !important; }
-  
-  .kelas-info { font-size: 11px !important; }
-  .mapel { font-size: 11.5px !important; }
-  .guru-nama { font-size: 11px !important; }
-  
-  .tematik-inner-col { min-width: 70px; padding: 0 4px; }
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF (MEMAKSA 1 HALAMAN, CENTER, & KONSISTEN DENGAN WEB)
+   CSS KHUSUS CETAK PDF
    ========================================================================== */
 #printHeader { display: none; }
-
 @media print {
-  @page { 
-    size: A4 landscape; 
-    margin: 6mm; 
-  }
+  @page { size: A4 landscape; margin: 6mm; }
+  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body::before, body::after, .header-section, #initialState, #initialStateTematik, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { display: none !important; }
   
-  body { 
-    background: white !important; 
-    color: black !important; 
-    padding: 0 !important; 
-    margin: 0 !important;
-    overflow: visible !important; 
-    -webkit-print-color-adjust: exact !important; 
-    print-color-adjust: exact !important;
-  }
-  
-  body::before, body::after, .header-section, .controls-container, 
-  #initialState, #initialStateTematik, .flex-schedule-container::-webkit-scrollbar, 
-  .flex-schedule-container::before, .flex-schedule-container::after { 
-    display: none !important; 
-  }
-  
-  #printHeader { 
-    display: table !important; 
-    width: 100%; 
-    margin-bottom: 12px; 
-    border-bottom: 2px solid #0f172a; 
-    padding-bottom: 6px; 
-  }
+  #printHeader { display: table !important; width: 100%; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; }
   .print-logo-cell { display: table-cell; vertical-align: middle; width: 55px; padding-right: 12px; }
   .print-logo { height: 42px; width: auto; display: block; }
   .print-text-cell { display: table-cell; vertical-align: middle; text-align: left; }
   #printHeader h2 { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
   #printHeader h3 { font-size: 11px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
 
-  .flex-schedule-container { 
-    display: flex !important; 
-    flex-direction: row !important;
-    flex-wrap: nowrap !important; 
-    justify-content: center !important; 
-    align-items: flex-start !important;
-    gap: 8px !important; 
-    padding: 0 !important; 
-    margin: 0 auto !important; 
-    width: 100% !important; 
-    max-width: 100% !important;
-    overflow: visible !important;
-    page-break-inside: avoid !important;
-    zoom: 0.76; /* Diturunkan sedikit ke 0.76 agar ke-6 hari muat sempurna saat diprint PDF */
-  }
-  
-  .day-column { 
-    background: #f8fafc !important; 
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    padding: 6px !important; 
-    flex: 1 1 0% !important; 
-    max-width: 240px !important; 
-    box-shadow: none !important; 
-    display: block !important;
-    page-break-inside: avoid !important;
-  }
-  
-  .day-title { 
-    background: #0f172a !important; 
-    color: #ffffff !important; 
-    border-radius: 6px !important;
-    font-size: 11px !important; 
-    font-weight: 700 !important;
-    padding: 6px 0 !important; 
-    margin-bottom: 8px !important; 
-    text-align: center !important;
-    text-transform: uppercase !important;
-  }
-  
-  .card { 
-    background: #ffffff !important; 
-    color: #000000 !important; 
-    border: 1px solid #cbd5e1 !important; 
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
-    display: flex !important;
-    flex-direction: row !important;
-    min-height: 60px !important; 
-    padding: 6px !important; 
-    border-radius: 8px !important; 
-    margin-bottom: 6px !important;
-    page-break-inside: avoid !important;
-  }
-  
-  .card-left { 
-    border-right: 1px dashed #e2e8f0 !important; 
-    padding-right: 6px !important; 
-    margin-right: 6px !important;
-    flex: 0 0 42px !important; 
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-  }
-  
-  .jp { 
-    color: #0f172a !important; 
-    font-size: 14px !important; 
-    font-weight: 800 !important; 
-    line-height: 1 !important;
-  }
-  
-  .waktu { 
-    color: #64748b !important; 
-    font-size: 8px !important; 
-    margin-top: 2px !important;
-    text-align: center !important; 
-  }
-  
-  .card-right {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    text-align: left !important;
-  }
-  
-  .tematik-flex-row {
-    display: flex !important;
-    flex-direction: row !important;
-    width: 100% !important;
-  }
-  
-  .tematik-inner-col {
-    flex: 1 !important;
-    padding: 0 4px !important;
-  }
-  
-  .tematik-inner-col-border { 
-    border-left: 1px solid #e2e8f0 !important; 
-  }
-  
-  .kelas-info { 
-    color: #2563eb !important; 
-    font-size: 9.5px !important; 
-    font-weight: 700 !important;
-    margin-bottom: 2px !important;
-  }
-  
-  .mapel { 
-    color: #1e293b !important; 
-    font-size: 10px !important; 
-    font-weight: 800 !important; 
-    line-height: 1.2 !important;
-  }
-  
-  .guru-nama { 
-    color: #475569 !important; 
-    font-size: 9.5px !important; 
-    font-weight: 600 !important; 
-    margin-top: 2px !important;
-  }
-  
-  mark.search-highlight, .search-highlight {
-    background-color: #dbeafe !important;
-    color: #1e40af !important;
-    font-weight: 700 !important;
-    border-radius: 2px !important;
-    padding: 0 2px !important;
-  }
+  .flex-schedule-container { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: center !important; align-items: flex-start !important; gap: 8px !important; padding: 0 !important; margin: 0 auto !important; width: 100% !important; max-width: 100% !important; overflow: visible !important; page-break-inside: avoid !important; zoom: 0.76; }
+  .day-column { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; padding: 6px !important; flex: 1 1 0% !important; max-width: 240px !important; box-shadow: none !important; display: block !important; page-break-inside: avoid !important; }
+  .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 6px !important; font-size: 11px !important; font-weight: 700 !important; padding: 6px 0 !important; margin-bottom: 8px !important; text-align: center !important; text-transform: uppercase !important; }
+  .card { background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; display: flex !important; flex-direction: row !important; min-height: 60px !important; padding: 6px !important; border-radius: 8px !important; margin-bottom: 6px !important; page-break-inside: avoid !important; }
+  .card-left { border-right: 1px dashed #e2e8f0 !important; padding-right: 6px !important; margin-right: 6px !important; flex: 0 0 42px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
+  .jp { color: #0f172a !important; font-size: 14px !important; font-weight: 800 !important; line-height: 1 !important; }
+  .waktu { color: #64748b !important; font-size: 8px !important; margin-top: 2px !important; text-align: center !important; }
+  .card-right { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; text-align: left !important; }
+  .tematik-flex-row { display: flex !important; flex-direction: row !important; width: 100% !important; }
+  .tematik-inner-col { flex: 1 !important; padding: 0 4px !important; }
+  .tematik-inner-col-border { border-left: 1px solid #e2e8f0 !important; }
+  .kelas-info { color: #2563eb !important; font-size: 9.5px !important; font-weight: 700 !important; margin-bottom: 2px !important; }
+  .mapel { color: #1e293b !important; font-size: 10px !important; font-weight: 800 !important; line-height: 1.2 !important; }
+  .guru-nama { color: #475569 !important; font-size: 9.5px !important; font-weight: 600 !important; margin-top: 2px !important; }
+  mark.search-highlight, .search-highlight { background-color: #dbeafe !important; color: #1e40af !important; font-weight: 700 !important; border-radius: 2px !important; padding: 0 2px !important; }
 }
