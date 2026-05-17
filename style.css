@@ -1,7 +1,7 @@
 /* ==========================================================================
    THEME CONFIGURATION: PURE WHITE WITH POPPINS & ADAPTIVE HP VIEW
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700;800;900&display=swap');
 
 :root {
   --bg-gradient: #ffffff;
@@ -262,12 +262,23 @@ body {
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF
+   CSS KHUSUS CETAK PDF (DIOPTIMALKAN DENGAN MARGIN AMAN & LANDSCAPE MUTLAK)
    ========================================================================== */
 #printHeader { display: none; }
 @media print {
-  @page { size: A4 landscape; margin: 6mm; }
-  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  @page { 
+    size: A4 landscape; 
+    margin: 12mm 15mm 12mm 15mm; /* Mengunci jarak kosong: Atas, Kanan, Bawah, Kiri */
+  }
+  body { 
+    background: white !important; 
+    color: black !important; 
+    padding: 0 !important; 
+    margin: 0 !important; 
+    overflow: visible !important; 
+    -webkit-print-color-adjust: exact !important; 
+    print-color-adjust: exact !important; 
+  }
   body::before, body::after, .header-section, #initialState, #initialStateTematik, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { display: none !important; }
   
   #printHeader { display: table !important; width: 100%; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; }
