@@ -41,7 +41,7 @@ body {
 }
 
 /* ==========================================================================
-   HEADER SECTION MODEREN & TERPUSAT
+   HEADER SECTION MODEREN & TERPUSAT (TIDAK TEMBUS KE KANAN LAPTOP)
    ========================================================================== */
 .header-section {
   background: var(--glass-main-bg);
@@ -49,6 +49,8 @@ body {
   padding: 24px 35px; border-radius: 20px; border: 1px solid var(--glass-main-border);
   margin: 0 auto 25px auto; 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  
+  /* Mengunci lebar maksimal agar presisi di layar laptop/desktop lebar */
   max-width: 1350px; 
 }
 
@@ -79,7 +81,7 @@ body {
   flex-wrap: wrap;
 }
 
-/* KOTAK INPUT DESAIN PILL */
+/* KOTAK INPUT DESAIN PILL (BULAT ELEGAN) */
 .input-wrapper {
   position: relative; display: flex; align-items: center; 
   background: #f8fafc; 
@@ -111,7 +113,7 @@ body {
 .input-icon { width: 18px; height: 18px; fill: #64748b; margin-right: 10px; transition: fill 0.2s; }
 .input-wrapper:focus-within .input-icon { fill: var(--logo-blue-accent); }
 
-/* Tombol Silang */
+/* Tombol X Silang */
 .clear-btn { 
   cursor: pointer; display: none; background: #e2e8f0; border: none; 
   border-radius: 50%; width: 20px; height: 20px; align-items: center; 
@@ -128,7 +130,7 @@ body {
 }
 #pekanSelect option { background: #ffffff !important; color: #0f172a !important; }
 
-/* Tombol Cetak PDF */
+/* Tombol Cetak PDF Pill */
 .btn-pdf {
   background: var(--btn-danger-red); 
   color: #ffffff; 
@@ -161,11 +163,13 @@ body {
 .jp-counter-box { font-size: 12px; font-weight: 600; color: var(--logo-blue-accent); }
 
 /* ==========================================================================
-   GRID MONITOR CONTAINER (DEKSTOP / LAPTOP UTAMA)
+   GRID MONITOR CONTAINER (TERPUSAT DAN SEJAJAR DENGAN HEADER)
    ========================================================================== */
 .flex-schedule-container {
   display: flex; flex-direction: row; justify-content: center; align-items: flex-start; 
   gap: 10px; width: 100%; margin: 0 auto; padding: 4px 0 16px 0; overflow-x: hidden; 
+  
+  /* Menyamakan lebar maksimal tabel agar sejajar dengan bagian atas */
   max-width: 1350px; 
 }
 .day-column { 
@@ -227,123 +231,53 @@ body {
 }
 
 /* ==========================================================================
-   UKURAN HP (SWIPE CAROUSEL SNAP - SANGAT RINGKAS)
+   UKURAN HP (RESPONSIVE SCREEN OPTIMIZATION)
    ========================================================================== */
 @media (max-width: 768px) {
-  body { padding: 12px; }
+  body { padding: 14px; }
   
-  .header-section { padding: 16px; margin-bottom: 16px; }
-  .header-main-wrapper { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .header-section { padding: 16px; }
+  .header-main-wrapper { flex-direction: column; align-items: flex-start; gap: 16px; }
   .header-top-content { gap: 12px; }
-  .header-logo { height: 48px; }
+  .header-logo { height: 50px; }
   .header-section h1 { font-size: 18px; }
   
   .desktop-subtext { display: none; }
-  .mobile-subtext { display: block; font-size: 11px !important; line-height: 1.4; font-weight: 700; }
+  .mobile-subtext { display: block; font-size: 11.5px !important; line-height: 1.4; font-weight: 700; }
   
-  .header-controls { width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+  .header-controls { width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
   .input-wrapper, .btn-pdf { width: 100%; height: 42px; justify-content: center; }
   .search-wrapper { min-width: 100%; justify-content: flex-start; }
   
-  .tab-container { margin-top: 14px; width: 100%; display: flex; justify-content: space-between; }
-  .tab-btn { flex: 1; text-align: center; padding: 8px; font-size: 12.5px; }
+  .tab-container { margin-top: 16px; width: 100%; display: flex; justify-content: space-between; }
+  .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
   
-  /* FITUR SWIPE KIRI KANAN OTOMATIS SNAP */
   .flex-schedule-container {
-    justify-content: flex-start !important; 
-    overflow-x: auto !important; 
-    padding: 4px 16px 16px 16px; 
-    gap: 14px; 
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
+    justify-content: flex-start !important; overflow-x: auto !important; 
+    padding: 0 4px 12px 4px; gap: 12px; -webkit-overflow-scrolling: touch;
   }
-  
   .day-column {
-    flex: 0 0 calc(100vw - 44px) !important; 
-    width: calc(100vw - 44px) !important; 
-    min-width: calc(100vw - 44px) !important;
-    padding: 8px;
-    border-radius: 14px;
-    scroll-snap-align: center;
+    flex: 0 0 240px !important; width: 240px !important; min-width: 240px !important;
   }
-
-  .day-title { font-size: 11.5px; padding: 7px 0; margin-bottom: 10px; }
-  
-  .card { 
-    padding: 6px; 
-    gap: 5px; 
-    min-height: 72px; 
-    margin-bottom: 6px; 
-    border-radius: 10px !important;
-  }
-  
-  .card-left { flex: 0 0 38px; padding-right: 3px; }
-  .jp { font-size: 14px !important; margin-bottom: 2px; }
-  .waktu { font-size: 8px !important; line-height: 1.2 !important; }
-  
-  .card-right { gap: 1px; }
-  .kelas-info { font-size: 9.5px !important; }
-  .mapel { font-size: 10px !important; line-height: 1.25; }
-  .guru-nama { font-size: 9.5px !important; line-height: 1.25; }
-  
-  .tematik-inner-col { padding: 0 2px; min-width: 42px; gap: 1px; }
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF (LANDSCAPE + MARGIN KOSONG 12mm)
+   CSS KHUSUS CETAK PDF
    ========================================================================== */
 #printHeader { display: none; }
 @media print {
-  @page { 
-    size: A4 landscape;  /* Memicu default cetak melebar/landscape otomatis */
-    margin: 12mm;        /* Memberikan jarak kosong atas, bawah, kiri, kanan */
-  }
+  @page { size: A4 landscape; margin: 6mm; }
+  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body::before, body::after, .header-section, #initialState, #initialStateTematik, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { display: none !important; }
   
-  body { 
-    background: white !important; 
-    color: black !important; 
-    padding: 0 !important; 
-    margin: 0 !important; 
-    overflow: visible !important; 
-    -webkit-print-color-adjust: exact !important; 
-    print-color-adjust: exact !important; 
-  }
-  
-  body::before, body::after, .header-section, #initialState, #initialStateTematik, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { 
-    display: none !important; 
-  }
-  
-  #printHeader { 
-    display: table !important; 
-    width: 100%; 
-    margin-bottom: 12px; 
-    border-bottom: 2px solid #0f172a; 
-    padding-bottom: 6px; 
-  }
-  
+  #printHeader { display: table !important; width: 100%; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; }
   .print-logo-cell { display: table-cell; vertical-align: middle; width: 55px; padding-right: 12px; }
   .print-logo { height: 42px; width: auto; display: block; }
   .print-text-cell { display: table-cell; vertical-align: middle; text-align: left; }
   #printHeader h2 { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
   #printHeader h3 { font-size: 11px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
 
-  .flex-schedule-container { 
-    display: flex !important; 
-    flex-direction: row !important; 
-    flex-wrap: nowrap !important; 
-    justify-content: center !important; 
-    align-items: flex-start !important; 
-    gap: 8px !important; 
-    padding: 0 !important; 
-    margin: 0 auto !important; 
-    width: 100% !important; 
-    max-width: 100% !important; 
-    overflow: visible !important; 
-    page-break-inside: avoid !important; 
-    zoom: 0.74; /* Skala dikecilkan sedikit agar klop dengan margin 12mm kertas A4 */
-  }
-  
+  .flex-schedule-container { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: center !important; align-items: flex-start !important; gap: 8px !important; padding: 0 !important; margin: 0 auto !important; width: 100% !important; max-width: 100% !important; overflow: visible !important; page-break-inside: avoid !important; zoom: 0.76; }
   .day-column { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; padding: 6px !important; flex: 1 1 0% !important; max-width: 240px !important; box-shadow: none !important; display: block !important; page-break-inside: avoid !important; }
   .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 6px !important; font-size: 11px !important; font-weight: 700 !important; padding: 6px 0 !important; margin-bottom: 8px !important; text-align: center !important; text-transform: uppercase !important; }
   .card { background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; display: flex !important; flex-direction: row !important; min-height: 60px !important; padding: 6px !important; border-radius: 8px !important; margin-bottom: 6px !important; page-break-inside: avoid !important; }
