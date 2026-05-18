@@ -8,8 +8,9 @@ let TEMATIK_DATA = null;
 let isDataLoaded = false;
 let isTematikLoaded = false;
 
-// Variabel global untuk menyimpan nama lengkap hasil pencarian (Guru/Kelas)
+// Variabel global untuk menyimpan nama lengkap hasil pencarian & deteksi tipe kelas
 let currentExactMatch = "";
+let isKelasSearch = false; 
 
 window.onload = function() {
   const searchInput = document.getElementById('searchInput');
@@ -194,6 +195,12 @@ function handleTematikGridFilter() {
 
   if(clearTematikBtn) clearTematikBtn.style.display = query.length > 0 ? "flex" : "none";
 
+  // Cek apakah input tematik mendeteksi pencarian kelas
+  let isTematikKelasSearch = false;
+  if (query !== "") {
+    isTematikKelasSearch = TEMATIK_DATA.rows.some(r => r.kelas.toLowerCase().includes(query));
+  }
+
   const days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', "JUM'AT"];
   const currentDayString = getTodayString(); 
   container.innerHTML = "";
@@ -341,9 +348,12 @@ function handleTematikGridFilter() {
           let separatorClass = validColCount > 0 ? "tematik-inner-col-border" : "";
           validColCount++;
 
+          // KONDISI REVISI: Sembunyikan elemen kelas info jika melakukan pencarian berbasis kelas
+          const kelasHTML = isTematikKelasSearch ? '' : `<div class="kelas-info">${displayKelas}</div>`;
+
           innerColumnsHtml += `
             <div class="tematik-inner-col ${separatorClass}">
-              <div class="kelas-info">${displayKelas}</div>
+              ${kelasHTML}
               <div class="mapel">${displayMapel}</div>
               <div class="guru-nama">${displayGuru}</div>
             </div>
@@ -415,6 +425,7 @@ function handleSearch() {
     container.style.display = "none";
     if(jpCounter) jpCounter.style.display = "none";
     currentExactMatch = ""; 
+    isKelasSearch = false;
     return;
   }
 
@@ -428,24 +439,37 @@ function handleSearch() {
     return guru.includes(query) || kelas.includes(query) || mapel.includes(query);
   });
 
-  // --- LOGIKA MENGAMBIL NAMA LENGKAP UNTUK HEADER PDF ---
+  // --- LOGIKA CERDAS DETEKSI JENIS PENCARIAN (KELAS VS GURU) ---
   currentExactMatch = query.toUpperCase(); 
+  isKelasSearch = false; // default awal
+
+  // Tahap 1: Prioritaskan cek apakah input COCOK dengan list Kelas
+  let foundClass = false;
   for (let item of filtered) {
-    if (item.guru) {
-        let gurus = item.guru.split('/').map(g => g.trim());
-        let foundGuru = gurus.find(g => g.toLowerCase().includes(query));
-        if (foundGuru) { 
-            currentExactMatch = foundGuru; 
+    if (item.kelas) {
+        let kelases = item.kelas.split(',').map(k => k.trim());
+        let found = kelases.find(k => k.toLowerCase().includes(query));
+        if (found) { 
+            currentExactMatch = found; 
+            isKelasSearch = true; 
+            foundClass = true;
             break; 
         }
     }
-    if (item.kelas) {
-        let kelases = item.kelas.split(',').map(k => k.trim());
-        let foundKelas = kelases.find(k => k.toLowerCase().includes(query));
-        if (foundKelas) { 
-            currentExactMatch = foundKelas; 
-            break; 
-        }
+  }
+
+  // Tahap 2: Jika bukan pencarian kelas, asumsikan ini pencarian guru
+  if (!foundClass) {
+    for (let item of filtered) {
+      if (item.guru) {
+          let gurus = item.guru.split('/').map(g => g.trim());
+          let found = gurus.find(g => g.toLowerCase().includes(query));
+          if (found) { 
+              currentExactMatch = found; 
+              isKelasSearch = false; 
+              break; 
+          }
+      }
     }
   }
 
@@ -628,8 +652,12 @@ function renderGrid(data, query) {
                 cardRightHTML = `<div style="font-size: 14px; font-weight: 800; color: #dc2626; text-align: center; width: 100%;">FLAG CEREMONY</div>`;
               } else {
                 const finalGuru = highlightGuru(item.guru, query);
+                
+                // REVISI KONDISI: Jika terdeteksi pencarian kelas, hilangkan tampilan teks nama kelas di card
+                const kelasHTML = isKelasSearch ? '' : `<div class="kelas-info">${item.kelas}</div>`;
+
                 cardRightHTML = `
-                  <div class="kelas-info">${item.kelas}</div>
+                  ${kelasHTML}
                   <div class="mapel">${item.mapel}</div>
                   <div class="guru-nama">${finalGuru}</div>
                 `;
@@ -638,7 +666,7 @@ function renderGrid(data, query) {
               html += `
                 <div class="card" data-jp="${i}">
                   <div class="card-left">
-                    <span class="jp">${item.jp}</span>
+                    <span class="jp">${i}</span>
                     <span class="waktu">${formattedWaktu}</span>
                   </div>
                   <div class="card-right">${cardRightHTML}</div>
@@ -668,7 +696,7 @@ function renderGrid(data, query) {
 }
 
 // ==========================================================================
-// PEWARNAAN DINAMIS MATA PELAJARAN
+// PEWARNAAN DINAMIS MATA PELAJARAN (PROTEKSI TANPA KELAS INFO)
 // ==========================================================================
 function applySubjectColors() {
     const cards = document.querySelectorAll('.card-right, .tematik-inner-col');
@@ -684,23 +712,29 @@ function applySubjectColors() {
         const mapelEl = card.querySelector('.mapel');
         const kelasEl = card.querySelector('.kelas-info');
         
-        if (!mapelEl || !kelasEl) return;
+        // Proteksi: Jika elemen mapel tidak ditemukan, lewati.
+        if (!mapelEl) return;
         
         const mapelName = mapelEl.textContent.trim().toUpperCase();
         const cleanMapelName = mapelName.replace(/<[^>]*>?/gm, ''); 
-        const kelasName = kelasEl.textContent.trim().toUpperCase();
+        const kelasName = kelasEl ? kelasEl.textContent.trim().toUpperCase() : '';
 
         if (cleanMapelName.includes('AL QURAN') || cleanMapelName.includes('AL-QURAN')) {
             mapelEl.style.setProperty('color', 'var(--text-main)', 'important'); 
             
-            if (!colorMap['KELAS_'+kelasName]) {
-                colorMap['KELAS_'+kelasName] = colorPalette[colorIndex % colorPalette.length];
-                colorIndex++;
+            // Warnai kelas hanya jika komponen teks kelasnya ada
+            if (kelasEl && kelasName !== '') {
+                if (!colorMap['KELAS_'+kelasName]) {
+                    colorMap['KELAS_'+kelasName] = colorPalette[colorIndex % colorPalette.length];
+                    colorIndex++;
+                }
+                kelasEl.style.setProperty('color', colorMap['KELAS_'+kelasName], 'important');
             }
-            kelasEl.style.setProperty('color', colorMap['KELAS_'+kelasName], 'important');
             
         } else {
-            kelasEl.style.setProperty('color', 'var(--logo-blue-accent)', 'important'); 
+            if (kelasEl) {
+                kelasEl.style.setProperty('color', 'var(--logo-blue-accent)', 'important'); 
+            }
             
             if (!colorMap[cleanMapelName]) {
                 if (cleanMapelName.includes('ARABIC')) colorMap[cleanMapelName] = '#1155cc'; 
@@ -715,7 +749,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (REVISI CENTER HEADER, HIGHLIGHT BANNER & STRUKTUR TABEL RAPI)
+// CETAK PDF 
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     if (tipeJadwal !== 'umum') return; 
@@ -774,20 +808,16 @@ function cetakPDF(tipeJadwal) {
         }
         
         printFixStyle.innerHTML = `
-            /* Sembunyikan elemen kustom dari layar monitor normal */
             @media screen {
                 #printDynamicLabel, #customPrintFooterLeft, #customPrintFooterRight { display: none !important; }
             }
 
-            /* Sistem Aturan Cetak Kaku PDF */
             @media print {
-                /* REVISI 2: Kunci kaku ukuran landscape dan bersihkan margin bawaan browser */
                 @page {
                     size: landscape !important;
                     margin: 0 !important; 
                 }
 
-                /* Mengisi ruang pengganti margin agar layout tidak menabrak fisik kertas */
                 body {
                     padding: 15mm 15mm 22mm 15mm !important;
                     background: #ffffff !important;
@@ -795,13 +825,11 @@ function cetakPDF(tipeJadwal) {
                     print-color-adjust: exact !important;
                 }
 
-                /* Sembunyikan navigasi pencarian dan tombol operasional */
                 .tab-container, .tabs, .nav-tabs, button[id^="btnTab"] { display: none !important; }
                 #controlsUmum, .search-container, button.btn-action, #clearBtn { display: none !important; }
                 #resultsTematikGrid, #initialState, #initialStateTematik { display: none !important; }
                 #printTitleText, #printSubTitleText { display: none !important; }
 
-                /* REVISI 1: MEMBUAT LOGO & HEADER WEBSITE MENJADI CENTER TOTAL */
                 header, .main-header, .header-container { 
                     display: flex !important; 
                     flex-direction: column !important;
@@ -814,21 +842,20 @@ function cetakPDF(tipeJadwal) {
                 header img, .main-header img, .logo-print {
                     display: block !important;
                     margin: 0 auto 10px auto !important;
-                    max-height: 60px !important; /* Batas aman logo biar seimbang */
+                    max-height: 60px !important; 
                 }
                 header h1, header h2, .main-header h1, .main-header h2, .title-print {
                     text-align: center !important;
                     width: 100% !important;
                 }
 
-                /* REVISI 2: HIGHLIGHT BANNER BIRU MEMANJANG (EDGE-TO-EDGE) */
                 #printDynamicLabel {
                     display: block !important;
                     text-align: center !important;
-                    font-size: 16px !important; /* Ukuran proporsional, tidak melompat lebih besar dari judul h1 */
+                    font-size: 16px !important; 
                     font-weight: 700 !important;
                     color: #ffffff !important; 
-                    background-color: #1e40af !important; /* Warna biru pekat tombol cetak */
+                    background-color: #1e40af !important; 
                     padding: 10px 0 !important;
                     margin: 15px 0 20px 0 !important;
                     text-transform: uppercase;
@@ -840,11 +867,10 @@ function cetakPDF(tipeJadwal) {
                     print-color-adjust: exact !important;
                 }
 
-                /* REVISI 3: STRUKTUR STRATEGI FLEX AGAR TABEL RAPI & SEJAJAR DI BAGIAN BAWAH */
                 .days-wrapper {
                     display: flex !important;
                     flex-direction: row !important;
-                    align-items: stretch !important; /* Paksa seluruh kolom hari memiliki tinggi bawah yang sama rata */
+                    align-items: stretch !important; 
                     width: 100% !important;
                     gap: 8px !important;
                     page-break-inside: avoid !important;
@@ -854,21 +880,19 @@ function cetakPDF(tipeJadwal) {
                 .day-column {
                     display: flex !important;
                     flex-direction: column !important;
-                    flex: 1 !important; /* Bagi porsi lebar kolom sama rata dari ujung ke ujung */
+                    flex: 1 !important; 
                     min-width: 0 !important;
                     background: #ffffff !important;
                     page-break-inside: avoid !important;
                     break-inside: avoid !important;
                 }
 
-                /* Jaga struktur internal kartu di dalam kolom agar kokoh saat proses PDF render */
                 .card {
                     display: flex !important;
                     page-break-inside: avoid !important;
                     break-inside: avoid !important;
                 }
 
-                /* FOOTNOTE KIRI BAWAH */
                 #customPrintFooterLeft {
                     display: block !important;
                     position: fixed;
@@ -881,7 +905,6 @@ function cetakPDF(tipeJadwal) {
                     z-index: 9999;
                 }
 
-                /* FOOTNOTE KANAN BAWAH */
                 #customPrintFooterRight {
                     display: block !important;
                     position: fixed;
@@ -896,7 +919,6 @@ function cetakPDF(tipeJadwal) {
             }
         `;
 
-        // Jalankan perintah cetak sistem operasi
         window.print();
         
     }, 300);
