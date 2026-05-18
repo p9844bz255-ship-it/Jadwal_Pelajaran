@@ -186,7 +186,10 @@ function handleTematikGridFilter() {
   clearTematikBtn.style.display = query.length > 0 ? "flex" : "none";
 
   const activeOptText = document.getElementById('pekanSelect').options[document.getElementById('pekanSelect').selectedIndex]?.text || "";
-  document.getElementById('printSubTitleText').innerText = `AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY | ${activeOptText.toUpperCase()}`;
+  const printTitleEl = document.getElementById('printSubTitleText');
+  if (printTitleEl) {
+      printTitleEl.innerText = `AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY | ${activeOptText.toUpperCase()}`;
+  }
 
   const days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', "JUM'AT"];
   const currentDayString = getTodayString(); 
@@ -418,32 +421,26 @@ function handleSearch() {
     return guru.includes(query) || kelas.includes(query) || mapel.includes(query);
   });
 
-  // ==========================================================================
-  // LOGIKA UTAMA PERHITUNGAN JP GURU (DENGAN FILTRASI ANTI-DUPLIKASI KOTAK)
-  // ==========================================================================
   let totalJP = 0;
   let isGuruSearch = false;
-  let countedSlots = new Set(); // Mencegah hitung ganda pada hari & jam yang sama
+  let countedSlots = new Set(); 
 
   filtered.forEach(item => {
     const guruLower = (item.guru || "").toString().toLowerCase();
     
-    // Aktif hanya jika mencari berdasarkan nama Guru (Minimal 3 Huruf)
     if (guruLower.includes(query) && query.length >= 3) {
       isGuruSearch = true;
       const slotKey = `${item.hari}|${item.jp}`;
       
-      // Jika jam di hari tersebut belum pernah dihitung, jalankan penambahan
       if (!countedSlots.has(slotKey)) {
         const jpVal = parseInt(item.jp);
         if (!isNaN(jpVal)) {
-          // Aturan khusus Jum'at JP 3, 4, 5 tetap dihitung 0.5 JP
           if (item.hari === "JUM'AT" && (jpVal === 3 || jpVal === 4 || jpVal === 5)) {
             totalJP += 0.5; 
           } else {
             totalJP += 1; 
           }
-          countedSlots.add(slotKey); // Tandai slot hari & jp ini telah terhitung
+          countedSlots.add(slotKey); 
         }
       }
     }
@@ -682,4 +679,41 @@ function applySubjectColors() {
             mapelEl.style.setProperty('color', colorMap[cleanMapelName], 'important');
         }
     });
+}
+
+// ==========================================================================
+// FUNGSI CETAK PDF (Pemisahan Umum/Tematik & Paksa 1 Halaman)
+// ==========================================================================
+function cetakPDF(tipeJadwal) {
+    // tipeJadwal diisi string 'umum' atau 'tematik'
+    const containerId = tipeJadwal === 'umum' ? 'resultsGrid' : 'resultsTematikGrid';
+    const container = document.getElementById(containerId);
+    
+    // Cek apakah ada jadwal yang tampil
+    if (!container || container.style.display === "none" || container.innerHTML === "") {
+        alert("Tidak ada jadwal yang bisa dicetak. Silakan lakukan pencarian terlebih dahulu.");
+        return;
+    }
+
+    // 1. Simulasikan klik tombol "SEMUA" agar di versi HP semua hari dirender
+    const btnSemua = container.querySelector('.mobile-day-tabs .tab-btn');
+    if (btnSemua && btnSemua.innerText === "SEMUA") {
+        btnSemua.click();
+    }
+
+    // 2. Beri "tanda" pada body web bahwa kita sedang mode print
+    document.body.classList.add('print-mode-active');
+    if (tipeJadwal === 'umum') {
+        document.body.classList.add('print-umum');
+    } else {
+        document.body.classList.add('print-tematik');
+    }
+
+    // 3. Beri jeda 0.5 detik agar DOM web menyesuaikan, lalu buka Dialog Print
+    setTimeout(() => {
+        window.print();
+        
+        // 4. Setelah dialog print ditutup, kembalikan tampilan ke normal
+        document.body.classList.remove('print-mode-active', 'print-umum', 'print-tematik');
+    }, 500);
 }

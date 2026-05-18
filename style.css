@@ -109,7 +109,7 @@ body {
    ========================================================================== */
 .flex-schedule-container { 
   display: flex; 
-  flex-direction: column; /* Mengubah ini agar mendukung susunan atas-bawah dengan Tab Mobile */
+  flex-direction: column; 
   width: 100%; 
   margin: 0 auto; 
   padding: 4px 0 16px 0; 
@@ -235,66 +235,66 @@ body {
   .flex-schedule-container { 
     padding: 0 4px 12px 4px; 
   }
-  .mobile-day-tabs {
-    display: flex; /* Memunculkan Tab Khusus HP */
-  }
+  .mobile-day-tabs { display: flex; }
   
-  /* Setting Default (Tampilan 1 Hari: Menurun/Vertikal) */
-  .days-wrapper {
-    flex-direction: column; 
-    gap: 16px;
-  }
-  .day-column { 
-    display: none; /* Sembunyikan kolom default */
-    width: 100% !important; 
-    min-width: 100% !important; 
-  }
-  .day-column.active-mobile-day {
-    display: block; /* Munculkan kolom yang dipilih */
-  }
+  .days-wrapper { flex-direction: column; gap: 16px; }
+  .day-column { display: none; width: 100% !important; min-width: 100% !important; }
+  .day-column.active-mobile-day { display: block; }
 
-  /* Setting Khusus Saat Tab "SEMUA" Diklik (Tampilan Horizontal Scroll) */
   .days-wrapper.show-all-mobile {
     flex-direction: row; 
-    flex-wrap: nowrap; /* Jangan diturunkan ke bawah, paksa kesamping */
+    flex-wrap: nowrap;
     overflow-x: auto; 
-    scroll-snap-type: x mandatory; /* Agar scroll terasa halus (seperti digeser) */
+    scroll-snap-type: x mandatory; 
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 12px;
-    gap: 12px;
-    /* Sembunyikan scrollbar agar estetis */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    padding-bottom: 12px; gap: 12px;
+    -ms-overflow-style: none; scrollbar-width: none;
   }
   .days-wrapper.show-all-mobile::-webkit-scrollbar { display: none; }
-  
   .days-wrapper.show-all-mobile .day-column {
-    display: block; /* Tampilkan semua hari */
-    flex: 0 0 85vw !important; /* Lebar 85% layar agar hari berikutnya "mengintip" sedikit */
-    width: 85vw !important;
-    min-width: 85vw !important;
-    scroll-snap-align: center; /* Posisikan pas di tengah saat digeser */
+    display: block; 
+    flex: 0 0 85vw !important; 
+    width: 85vw !important; min-width: 85vw !important;
+    scroll-snap-align: center; 
   }
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF
+   CSS KHUSUS CETAK PDF (UPDATED UNTUK ISOLASI UMUM/TEMATIK & 1 HALAMAN)
    ========================================================================== */
 #printHeader { display: none; }
 @media print {
+  /* Atur kertas jadi A4 Lanskap dan margin kertas 1cm di semua sisi */
   @page { size: A4 landscape; margin: 10mm 12mm; }
-  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  body::before, body::after, .header-section, #initialState, #initialStateTematik, .mobile-day-tabs, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { display: none !important; }
   
-  #printHeader { display: table !important; width: 100%; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; }
+  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  
+  /* Sembunyikan elemen web bawaan saat masuk mode print dari JavaScript */
+  body.print-mode-active * { visibility: hidden !important; }
+  body::before, body::after, .header-section, #initialState, #initialStateTematik, .mobile-day-tabs, .tab-container, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { display: none !important; }
+  
+  /* --- LOGIKA CETAK JADWAL UMUM SAJA --- */
+  body.print-umum #resultsGrid, body.print-umum #resultsGrid * { visibility: visible !important; }
+  body.print-umum #resultsGrid { position: absolute; left: 0; top: 0; width: 100%; display: flex !important; flex-direction: column !important; }
+  body.print-umum #resultsTematikGrid { display: none !important; }
+
+  /* --- LOGIKA CETAK JADWAL TEMATIK SAJA --- */
+  body.print-tematik #resultsTematikGrid, body.print-tematik #resultsTematikGrid * { visibility: visible !important; }
+  body.print-tematik #resultsTematikGrid { position: absolute; left: 0; top: 0; width: 100%; display: flex !important; flex-direction: column !important; }
+  body.print-tematik #resultsGrid { display: none !important; }
+
+  /* Set Header Print */
+  #printHeader { visibility: visible !important; display: table !important; width: 100%; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; position: relative; }
+  body.print-mode-active #printHeader * { visibility: visible !important; }
   .print-logo-cell { display: table-cell; vertical-align: middle; width: 55px; padding-right: 12px; }
   .print-logo { height: 42px; width: auto; display: block; }
   .print-text-cell { display: table-cell; vertical-align: middle; text-align: left; }
   #printHeader h2 { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
   #printHeader h3 { font-size: 11px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
 
+  /* Paksa Hari Menjajar Horisontal & Mencegah Halaman Terpotong */
   .flex-schedule-container { display: flex !important; flex-direction: column !important; width: 100% !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; page-break-inside: avoid !important; }
-  .days-wrapper { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: flex-start !important; gap: 6px !important; width: 100% !important; }
+  .days-wrapper { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: flex-start !important; gap: 6px !important; width: 100% !important; page-break-inside: avoid !important; break-inside: avoid !important; }
   
   .day-column { display: block !important; background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; padding: 4px !important; flex: 1 1 0% !important; min-width: 0 !important; max-width: none !important; box-shadow: none !important; page-break-inside: avoid !important; }
   .day-column.today-active .day-title::after { display: none !important; } 
@@ -304,9 +304,13 @@ body {
   .jp { color: #0f172a !important; font-size: 12px !important; font-weight: 800 !important; line-height: 1 !important; }
   .waktu { color: #64748b !important; font-size: 7px !important; margin-top: 2px !important; text-align: center !important; }
   .card-right { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; text-align: left !important; }
+  
+  /* Reset Card Tematik Spesifik saat Print */
+  .tematik-card-combined { padding-right: 4px !important; }
   .tematik-flex-row { display: flex !important; flex-direction: row !important; width: 100% !important; }
-  .tematik-inner-col { flex: 1 !important; padding: 0 2px !important; }
+  .tematik-inner-col { flex: 1 !important; padding: 0 2px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
   .tematik-inner-col-border { border-left: 1px solid #e2e8f0 !important; }
+  
   .kelas-info { font-size: 8.5px !important; font-weight: 700 !important; margin-bottom: 1px !important; }
   .mapel { font-size: 9px !important; font-weight: 800 !important; line-height: 1.2 !important; }
   .guru-nama { color: #475569 !important; font-size: 8px !important; font-weight: 600 !important; margin-top: 1px !important; }
