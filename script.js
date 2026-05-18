@@ -693,10 +693,12 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK CETAK PDF
+// CETAK PDF (DIPERBARUI UNTUK FIX BUG TUMPANG TINDIH DI HP)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     const containerId = tipeJadwal === 'umum' ? 'resultsGrid' : 'resultsTematikGrid';
+    const hiddenContainerId = tipeJadwal === 'umum' ? 'resultsTematikGrid' : 'resultsGrid';
+    
     const container = document.getElementById(containerId);
     
     if (!container || container.style.display === "none" || container.innerHTML === "") {
@@ -704,6 +706,7 @@ function cetakPDF(tipeJadwal) {
         return;
     }
 
+    // Klik tab 'SEMUA' otomatis di HP agar semua hari muncul saat diprint
     const tabs = container.querySelectorAll('.mobile-day-tabs .tab-btn');
     tabs.forEach(btn => {
         if (btn.innerText.toUpperCase() === "SEMUA") btn.click();
@@ -714,6 +717,7 @@ function cetakPDF(tipeJadwal) {
         if (tipeJadwal === 'umum') document.body.classList.add('print-umum');
         else document.body.classList.add('print-tematik');
 
+        // Atur Judul PDF Sesuai Tab
         const printTitleEl = document.getElementById('printTitleText');
         if(tipeJadwal === 'umum') {
             const val = document.getElementById('searchInput').value.trim().toUpperCase();
@@ -723,8 +727,35 @@ function cetakPDF(tipeJadwal) {
             printTitleEl.innerText = val ? `Jadwal Pelajaran Tematik - ${val}` : "Jadwal Pelajaran Tematik";
         }
 
+        // --- INJEKSI CSS PENGAMAN KHUSUS MOBILE ---
+        // Menjamin 100% jadwal yang tidak aktif disembunyikan secara paksa saat dicetak
+        let printFixStyle = document.getElementById('printFixStyle');
+        if (!printFixStyle) {
+            printFixStyle = document.createElement('style');
+            printFixStyle.id = 'printFixStyle';
+            document.head.appendChild(printFixStyle);
+        }
+        
+        // CSS yang memaksa tabel lain hilang dari radar printer
+        printFixStyle.innerHTML = `
+            @media print {
+                #${hiddenContainerId}, #${hiddenContainerId} * { 
+                    display: none !important; 
+                    opacity: 0 !important;
+                    height: 0 !important;
+                    visibility: hidden !important;
+                }
+            }
+        `;
+
+        // Panggil dialog print browser
         window.print();
         
+        // Bersihkan class dan style setelah jendela print ditutup
         document.body.classList.remove('print-mode-active', 'print-umum', 'print-tematik');
+        if (printFixStyle) {
+            printFixStyle.remove();
+        }
+
     }, 300);
 }
