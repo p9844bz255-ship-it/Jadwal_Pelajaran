@@ -969,15 +969,15 @@ function cetakPDF(tipeJadwal) {
                 }
                 .kelas-info { 
                     font-size: 8px !important; 
-                    line-height: 1.5 !important; 
+                    line-height: 2.5 !important; 
                 }
                 .mapel { 
                     font-size: 8.5px !important; 
-                    line-height: 1.5 !important; 
+                    line-height: 2.5 !important; 
                 }
                 .guru-nama { 
                     font-size: 7.5px !important; 
-                    line-height: 1.5 !important; 
+                    line-height: 2.5 !important; 
                 }
 
                 /* CUSTOM FOOTNOTES */
