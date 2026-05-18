@@ -49,14 +49,14 @@
         <div id="controlsTematik" class="header-controls" style="display: none;">
           <div class="input-wrapper search-wrapper">
             <svg class="input-icon" viewBox="0 0 24 24"><path d="M10 2a8 8 0 0 1 6.32 12.9l4.39 4.39a1 1 0 0 1-1.42 1.42l-4.39-4.39A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
-            <input type="text" id="searchTematikInput" placeholder="Ketik nama atau kelas..." onkeyup="handleTematikGridFilter();" oninput="updatePrintOwner('tematik')">
-            <button class="clear-btn" id="clearTematikBtn" onclick="clearTematikSearch(); updatePrintOwner('tematik');" title="Hapus pencarian">
+            <input type="text" id="searchTematikInput" placeholder="Ketik nama atau kelas..." onkeyup="if(typeof handleTematikGridFilter === 'function') handleTematikGridFilter();" oninput="updatePrintOwner('tematik')">
+            <button class="clear-btn" id="clearTematikBtn" onclick="if(typeof clearTematikSearch === 'function') clearTematikSearch(); updatePrintOwner('tematik');" title="Hapus pencarian">
               <svg viewBox="0 0 24 24"><path d="M12 10.586l4.95-4.95a1 1 0 1 1 1.414 1.414l-4.95 4.95 4.95 4.95a1 1 0 0 1-1.414 1.414l-4.95-4.95-4.95 4.95a1 1 0 0 1-1.414-1.414l4.95-4.95-4.95-4.95a1 1 0 0 1 1.414-1.414l4.95 4.95z"/></svg>
             </button>
           </div>
           
           <div class="input-wrapper input-wrapper-select select-picker-group">
-            <select id="pekanSelect" onchange="handleTematikGridFilter(); updatePrintOwner('tematik');">
+            <select id="pekanSelect" onchange="if(typeof handleTematikGridFilter === 'function') handleTematikGridFilter(); updatePrintOwner('tematik');">
               <option value="">Menghitung tanggal pekan...</option>
             </select>
           </div>
@@ -67,7 +67,11 @@
           </button>
         </div>
 
-      </div> </div> </div> <div id="printHeader" style="display: none;">
+      </div> 
+    </div> 
+  </div> 
+  
+  <div id="printHeader" style="display: none;">
     <div class="print-logo-cell">
       <img src="https://www.image2url.com/r2/default/images/1778032976429-fb84224a-3e08-4092-b38f-529e608a47d2.png" alt="Logo AL-WILDAN" class="print-logo">
     </div>
@@ -86,11 +90,15 @@
   <script>
     function updatePrintOwner(tabType) {
       const prntTitle = document.getElementById('printTitleText');
+      if (!prntTitle) return; // Mencegah error jika elemen belum ada
+      
       if (tabType === 'umum') {
-        const val = document.getElementById('searchInput').value.trim().toUpperCase();
+        const inputUmum = document.getElementById('searchInput');
+        const val = inputUmum ? inputUmum.value.trim().toUpperCase() : "";
         prntTitle.innerText = val ? `Jadwal Pelajaran Umum - ${val}` : "Jadwal Pelajaran Umum";
       } else {
-        const val = document.getElementById('searchTematikInput').value.trim().toUpperCase();
+        const inputTematik = document.getElementById('searchTematikInput');
+        const val = inputTematik ? inputTematik.value.trim().toUpperCase() : "";
         prntTitle.innerText = val ? `Jadwal Pelajaran Tematik - ${val}` : "Jadwal Pelajaran Tematik";
       }
     }
@@ -107,25 +115,31 @@
       const prntSub = document.getElementById('printSubTitleText');
 
       if (type === 'umum') {
-        btnUmum.classList.add('active');
-        btnTematik.classList.remove('active');
-        ctrlUmum.style.display = "flex";
-        ctrlTematik.style.display = "none";
-        gridTematik.style.display = "none";
-        initTematik.style.display = "none";
-        gridUmum.style.display = "flex"; 
-        prntSub.innerText = "AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY";
+        if (btnUmum) btnUmum.classList.add('active');
+        if (btnTematik) btnTematik.classList.remove('active');
+        if (ctrlUmum) ctrlUmum.style.display = "flex";
+        if (ctrlTematik) ctrlTematik.style.display = "none";
+        if (gridTematik) gridTematik.style.display = "none";
+        if (initTematik) initTematik.style.display = "none";
+        if (gridUmum) gridUmum.style.display = "flex"; 
+        if (prntSub) prntSub.innerText = "AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY";
+        
         updatePrintOwner('umum');
-        handleSearch(); 
+        
+        if (typeof handleSearch === "function") {
+          handleSearch(); 
+        }
       } else {
-        btnUmum.classList.remove('active');
-        btnTematik.classList.add('active');
-        ctrlUmum.style.display = "none";
-        ctrlTematik.style.display = "flex";
-        gridUmum.style.display = "none";
-        initUmum.style.display = "none";
-        gridTematik.style.display = "flex"; 
+        if (btnUmum) btnUmum.classList.remove('active');
+        if (btnTematik) btnTematik.classList.add('active');
+        if (ctrlUmum) ctrlUmum.style.display = "none";
+        if (ctrlTematik) ctrlTematik.style.display = "flex";
+        if (gridUmum) gridUmum.style.display = "none";
+        if (initUmum) initUmum.style.display = "none";
+        if (gridTematik) gridTematik.style.display = "flex"; 
+        
         updatePrintOwner('tematik');
+        
         if (typeof initTematikView === "function") {
           initTematikView();
         }
