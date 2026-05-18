@@ -13,6 +13,17 @@ let currentExactMatch = "";
 let isKelasSearch = false; 
 
 window.onload = function() {
+  // --------------------------------------------------------------------------
+  // LOGIKA DETEKSI PERANGKAT UNTUK CETAK PDF (HP vs DESKTOP)
+  // --------------------------------------------------------------------------
+  const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if (isMobileDevice) {
+    document.body.classList.add('cetak-hp');
+  } else {
+    document.body.classList.add('cetak-desktop');
+  }
+  // --------------------------------------------------------------------------
+
   const searchInput = document.getElementById('searchInput');
   
   searchInput.placeholder = "⏳ Memuat database jadwal...";
@@ -763,7 +774,6 @@ function cetakPDF(tipeJadwal) {
         if (!dynamicLabel) {
             dynamicLabel = document.createElement('div');
             dynamicLabel.id = 'printDynamicLabel';
-            // Sisipkan ke dalam struktur header agar ikut terpusat secara rapi
             const headerMain = document.querySelector('.header-main-wrapper');
             const headerBottom = document.querySelector('.header-bottom-row');
             if(headerMain && headerBottom) {
@@ -808,7 +818,6 @@ function cetakPDF(tipeJadwal) {
                     margin: 0 !important; 
                 }
 
-                /* STRATEGI 100VH: Memaksa body membaca kertas persis sebagai 1 halaman tanpa sisa/tumpah */
                 body {
                     padding: 8mm 12mm 15mm 12mm !important;
                     background: #ffffff !important;
@@ -823,16 +832,13 @@ function cetakPDF(tipeJadwal) {
                     margin: 0 !important;
                 }
 
-                /* Menyembunyikan elemen UI website */
                 .header-bottom-row, .tab-container, #controlsUmum, #controlsTematik { display: none !important; }
                 #initialState, #initialStateTematik { display: none !important; }
-                #printHeader { display: none !important; } /* Sembunyikan header lama yg tidak rata tengah */
+                #printHeader { display: none !important; }
                 
-                /* Menyembunyikan Grid Tabel yg sedang tidak digunakan */
                 body.print-umum #resultsTematikGrid { display: none !important; }
                 body.print-tematik #resultsGrid { display: none !important; }
 
-                /* HEADER UTAMA CENTER TOTAL */
                 .header-section {
                     flex-shrink: 0 !important;
                     background: transparent !important;
@@ -877,7 +883,6 @@ function cetakPDF(tipeJadwal) {
                 }
                 .mobile-subtext { display: none !important; }
 
-                /* BANNER BIRU NAMA GURU/KELAS (LEBAR PENUH) */
                 #printDynamicLabel {
                     display: block !important;
                     flex-shrink: 0 !important;
@@ -897,7 +902,6 @@ function cetakPDF(tipeJadwal) {
                     print-color-adjust: exact !important;
                 }
 
-                /* KONTAINER GRID JADWAL (MENGISI SISA HALAMAN KOSONG) */
                 .flex-schedule-container {
                     display: flex !important;
                     flex-direction: column !important;
@@ -919,7 +923,6 @@ function cetakPDF(tipeJadwal) {
                     min-height: 0 !important;
                 }
 
-                /* KOLOM HARI MEMANJANG KE BAWAH SECARA SIMETRIS */
                 .day-column {
                     display: flex !important;
                     flex-direction: column !important;
@@ -941,7 +944,6 @@ function cetakPDF(tipeJadwal) {
                     margin-bottom: 3px !important;
                 }
 
-                /* KARTU JP MEMBAGI SISA RUANG SAMA RATA SECARA OTOMATIS */
                 .card {
                     display: flex !important;
                     flex-direction: row !important;
@@ -980,7 +982,6 @@ function cetakPDF(tipeJadwal) {
                     line-height: 2.0 !important; 
                 }
 
-                /* CUSTOM FOOTNOTES */
                 #customPrintFooterLeft {
                     display: block !important;
                     position: fixed;
@@ -1004,10 +1005,20 @@ function cetakPDF(tipeJadwal) {
                     font-family: Arial, sans-serif;
                     z-index: 9999;
                 }
+
+                /* PENYESUAIAN TAMBAHAN KHUSUS PENGGUNA HP */
+                body.cetak-hp {
+                    padding: 4mm 6mm 10mm 6mm !important;
+                }
+                body.cetak-hp .card-right .mapel {
+                    font-size: 8px !important;
+                }
+                body.cetak-hp .card-right .guru-nama {
+                    font-size: 7px !important;
+                }
             }
         `;
 
-        // Jalankan perintah cetak PDF bawaan browser
         window.print();
         
     }, 300);
