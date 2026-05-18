@@ -715,7 +715,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (DENGAN REPLACEMENT KAKU FOOTNOTE & LANDSCAPE)
+// CETAK PDF (REVISI CENTER HEADER, HIGHLIGHT BANNER & STRUKTUR TABEL RAPI)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     if (tipeJadwal !== 'umum') return; 
@@ -733,7 +733,7 @@ function cetakPDF(tipeJadwal) {
     });
 
     setTimeout(() => {
-        // 1. Label Nama Dinamis (di bawah logo asli website)
+        // 1. Banner Nama Dinamis Berwarna Biru Tombol (Edge to Edge)
         let dynamicLabel = document.getElementById('printDynamicLabel');
         if (!dynamicLabel) {
             dynamicLabel = document.createElement('div');
@@ -765,7 +765,7 @@ function cetakPDF(tipeJadwal) {
             document.body.appendChild(customFooterRight);
         }
 
-        // 4. Injeksi CSS Khusus untuk Mengatur Kertas Cetak
+        // 4. Injeksi Aturan CSS Cetak Mutakhir
         let printFixStyle = document.getElementById('printFixStyle');
         if (!printFixStyle) {
             printFixStyle = document.createElement('style');
@@ -774,47 +774,101 @@ function cetakPDF(tipeJadwal) {
         }
         
         printFixStyle.innerHTML = `
-            /* Sembunyikan elemen kustom dari layar website biasa */
+            /* Sembunyikan elemen kustom dari layar monitor normal */
             @media screen {
                 #printDynamicLabel, #customPrintFooterLeft, #customPrintFooterRight { display: none !important; }
             }
 
-            /* Aturan saat proses pencetakan PDF / Print berkas */
+            /* Sistem Aturan Cetak Kaku PDF */
             @media print {
-                /* PAKSA KAKU LANDSCAPE & Hilangkan margin bawaan (URL/Tanggal otomatis lenyap) */
+                /* REVISI 2: Kunci kaku ukuran landscape dan bersihkan margin bawaan browser */
                 @page {
                     size: landscape !important;
                     margin: 0 !important; 
                 }
 
-                /* Mengganti fungsi margin kertas agar content tidak terlalu rapat ke ujung fisik kertas */
+                /* Mengisi ruang pengganti margin agar layout tidak menabrak fisik kertas */
                 body {
                     padding: 15mm 15mm 22mm 15mm !important;
                     background: #ffffff !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
                 }
 
-                /* Menyembunyikan elemen interface website yang mengganggu */
+                /* Sembunyikan navigasi pencarian dan tombol operasional */
                 .tab-container, .tabs, .nav-tabs, button[id^="btnTab"] { display: none !important; }
                 #controlsUmum, .search-container, button.btn-action, #clearBtn { display: none !important; }
                 #resultsTematikGrid, #initialState, #initialStateTematik { display: none !important; }
                 #printTitleText, #printSubTitleText { display: none !important; }
 
-                /* Tampilkan Header Website Asli (Logo & Title) */
-                header, .main-header { display: flex !important; }
-
-                /* Label Nama Guru / Kelas Dinamis */
-                #printDynamicLabel {
+                /* REVISI 1: MEMBUAT LOGO & HEADER WEBSITE MENJADI CENTER TOTAL */
+                header, .main-header, .header-container { 
+                    display: flex !important; 
+                    flex-direction: column !important;
+                    align-items: center !important; 
+                    justify-content: center !important;
+                    text-align: center !important;
+                    width: 100% !important;
+                    margin-bottom: 5px !important;
+                }
+                header img, .main-header img, .logo-print {
                     display: block !important;
-                    text-align: center;
-                    font-size: 22px;
-                    font-weight: 800;
-                    color: #1e3a8a !important; 
-                    margin: 15px 0 25px 0;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
+                    margin: 0 auto 10px auto !important;
+                    max-height: 60px !important; /* Batas aman logo biar seimbang */
+                }
+                header h1, header h2, .main-header h1, .main-header h2, .title-print {
+                    text-align: center !important;
+                    width: 100% !important;
                 }
 
-                /* FOOTNOTE KIRI BAWAH (Menggantikan URL Vercel) */
+                /* REVISI 2: HIGHLIGHT BANNER BIRU MEMANJANG (EDGE-TO-EDGE) */
+                #printDynamicLabel {
+                    display: block !important;
+                    text-align: center !important;
+                    font-size: 16px !important; /* Ukuran proporsional, tidak melompat lebih besar dari judul h1 */
+                    font-weight: 700 !important;
+                    color: #ffffff !important; 
+                    background-color: #1e40af !important; /* Warna biru pekat tombol cetak */
+                    padding: 10px 0 !important;
+                    margin: 15px 0 20px 0 !important;
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    border-radius: 4px !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+
+                /* REVISI 3: STRUKTUR STRATEGI FLEX AGAR TABEL RAPI & SEJAJAR DI BAGIAN BAWAH */
+                .days-wrapper {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: stretch !important; /* Paksa seluruh kolom hari memiliki tinggi bawah yang sama rata */
+                    width: 100% !important;
+                    gap: 8px !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                .day-column {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    flex: 1 !important; /* Bagi porsi lebar kolom sama rata dari ujung ke ujung */
+                    min-width: 0 !important;
+                    background: #ffffff !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                /* Jaga struktur internal kartu di dalam kolom agar kokoh saat proses PDF render */
+                .card {
+                    display: flex !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                /* FOOTNOTE KIRI BAWAH */
                 #customPrintFooterLeft {
                     display: block !important;
                     position: fixed;
@@ -827,7 +881,7 @@ function cetakPDF(tipeJadwal) {
                     z-index: 9999;
                 }
 
-                /* FOOTNOTE KANAN BAWAH (Menggantikan Halaman/Tanggal) */
+                /* FOOTNOTE KANAN BAWAH */
                 #customPrintFooterRight {
                     display: block !important;
                     position: fixed;
@@ -842,6 +896,7 @@ function cetakPDF(tipeJadwal) {
             }
         `;
 
+        // Jalankan perintah cetak sistem operasi
         window.print();
         
     }, 300);
