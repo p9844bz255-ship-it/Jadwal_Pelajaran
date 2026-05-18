@@ -255,14 +255,14 @@ function handleTematikGridFilter() {
 
   document.getElementById('initialStateTematik').style.display = "none";
 
-  // === RENDER MOBILE TABS ===
+  // === RENDER MOBILE TABS (DITARUH PALING ATAS CONTAINER) ===
   const activeDays = activeDaysData.map(d => d.day);
   let defaultActiveDay = activeDays.includes(currentDayString) ? currentDayString : activeDays[0];
 
   const mobileTabsContainer = document.createElement('div');
   mobileTabsContainer.className = 'mobile-day-tabs';
   
-  // 1. Tambah Tab "SEMUA"
+  // Tab "SEMUA"
   const btnSemua = document.createElement('button');
   btnSemua.className = `tab-btn`;
   btnSemua.innerText = "SEMUA";
@@ -273,7 +273,7 @@ function handleTematikGridFilter() {
   };
   mobileTabsContainer.appendChild(btnSemua);
 
-  // 2. Tab untuk masing-masing hari
+  // Tab masing-masing hari
   activeDays.forEach((day) => {
       const shortDay = day.replace("'", "").substring(0,3).toUpperCase();
       const btn = document.createElement('button');
@@ -291,8 +291,10 @@ function handleTematikGridFilter() {
       };
       mobileTabsContainer.appendChild(btn);
   });
+  
+  // Tempelkan tab PALING PERTAMA di dalam Grid
   container.appendChild(mobileTabsContainer);
-  // ============================
+  // =======================================================
 
   activeDaysData.forEach(dayData => {
     const { day, dayRows, jpGroupsMatch } = dayData;
@@ -518,13 +520,13 @@ function renderGrid(data, query) {
     }
   });
 
-  // === RENDER MOBILE TABS ===
+  // === RENDER MOBILE TABS (DITARUH PALING ATAS CONTAINER) ===
   let defaultActiveDay = activeDays.includes(currentDayString) ? currentDayString : activeDays[0];
 
   const mobileTabsContainer = document.createElement('div');
   mobileTabsContainer.className = 'mobile-day-tabs';
   
-  // 1. Tambah Tab "SEMUA"
+  // Tab "SEMUA"
   const btnSemua = document.createElement('button');
   btnSemua.className = `tab-btn`;
   btnSemua.innerText = "SEMUA";
@@ -535,7 +537,7 @@ function renderGrid(data, query) {
   };
   mobileTabsContainer.appendChild(btnSemua);
 
-  // 2. Tab untuk masing-masing hari
+  // Tab masing-masing hari
   activeDays.forEach((day) => {
       const shortDay = day.replace("'", "").substring(0,3).toUpperCase();
       const btn = document.createElement('button');
@@ -553,8 +555,10 @@ function renderGrid(data, query) {
       };
       mobileTabsContainer.appendChild(btn);
   });
+  
+  // Tempelkan tab PALING PERTAMA di dalam Grid
   container.appendChild(mobileTabsContainer);
-  // ============================
+  // =======================================================
 
   activeDays.forEach((day, index) => {
     const dayData = data.filter(d => d.hari === day).sort((a, b) => parseInt(a.jp) - parseInt(b.jp));
