@@ -61,7 +61,10 @@
             </select>
           </div>
 
-          
+          <button class="btn-pdf" onclick="cetakPDF('tematik')">
+            <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2zm2 2v16h10V8.414L14.586 4H8zm6 1.5V9h3.5L14 5.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
+            Cetak PDF
+          </button>
         </div>
 
       </div> 
@@ -87,7 +90,7 @@
   <script>
     function updatePrintOwner(tabType) {
       const prntTitle = document.getElementById('printTitleText');
-      if (!prntTitle) return; // Mencegah error jika elemen belum ada
+      if (!prntTitle) return;
       
       if (tabType === 'umum') {
         const inputUmum = document.getElementById('searchInput');
