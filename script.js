@@ -414,7 +414,7 @@ function handleSearch() {
     init.style.display = "block";
     container.style.display = "none";
     if(jpCounter) jpCounter.style.display = "none";
-    currentExactMatch = ""; // Reset nama jika kosong
+    currentExactMatch = ""; 
     return;
   }
 
@@ -429,7 +429,7 @@ function handleSearch() {
   });
 
   // --- LOGIKA MENGAMBIL NAMA LENGKAP UNTUK HEADER PDF ---
-  currentExactMatch = query.toUpperCase(); // Fallback jika tidak menemukan presisi
+  currentExactMatch = query.toUpperCase(); 
   for (let item of filtered) {
     if (item.guru) {
         let gurus = item.guru.split('/').map(g => g.trim());
@@ -448,7 +448,6 @@ function handleSearch() {
         }
     }
   }
-  // -----------------------------------------------------
 
   let totalJP = 0;
   let isGuruSearch = false;
@@ -716,10 +715,9 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (DENGAN INJEKSI HEADER WEBSITE & NAMA DINAMIS)
+// CETAK PDF (DENGAN REPLACEMENT KAKU FOOTNOTE & LANDSCAPE)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
-    // Fungsi cetak ini dioptimalkan khusus untuk Tab Umum sesuai permintaan
     if (tipeJadwal !== 'umum') return; 
 
     const container = document.getElementById('resultsGrid');
@@ -729,20 +727,17 @@ function cetakPDF(tipeJadwal) {
         return;
     }
 
-    // Paksa mode SEMUA hari terbuka (untuk mobile layout)
     const tabs = container.querySelectorAll('.mobile-day-tabs .tab-btn');
     tabs.forEach(btn => {
         if (btn.innerText.toUpperCase() === "SEMUA") btn.click();
     });
 
     setTimeout(() => {
-        // --- 1. MEMBUAT ELEMEN NAMA DINAMIS PENGGANTI PENCARIAN ---
+        // 1. Label Nama Dinamis (di bawah logo asli website)
         let dynamicLabel = document.getElementById('printDynamicLabel');
         if (!dynamicLabel) {
             dynamicLabel = document.createElement('div');
             dynamicLabel.id = 'printDynamicLabel';
-            
-            // Kita sisipkan elemen ini tepat sebelum area kotak pencarian
             const controls = document.getElementById('controlsUmum');
             if(controls && controls.parentNode) {
                 controls.parentNode.insertBefore(dynamicLabel, controls);
@@ -750,10 +745,27 @@ function cetakPDF(tipeJadwal) {
                 document.body.insertBefore(dynamicLabel, document.body.firstChild);
             }
         }
-        // Isi dengan string exact match (nama full guru/kelas yang ditemukan saat search)
         dynamicLabel.innerText = currentExactMatch;
 
-        // --- 2. INJEKSI CSS PENGAMAN & PENGATUR HEADER PDF ---
+        // 2. Footnote Sebelah Kiri Bawah: Nama Sekolah
+        let customFooterLeft = document.getElementById('customPrintFooterLeft');
+        if (!customFooterLeft) {
+            customFooterLeft = document.createElement('div');
+            customFooterLeft.id = 'customPrintFooterLeft';
+            customFooterLeft.innerText = 'AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY';
+            document.body.appendChild(customFooterLeft);
+        }
+
+        // 3. Footnote Sebelah Kanan Bawah: Jenis Dokumen
+        let customFooterRight = document.getElementById('customPrintFooterRight');
+        if (!customFooterRight) {
+            customFooterRight = document.createElement('div');
+            customFooterRight.id = 'customPrintFooterRight';
+            customFooterRight.innerText = 'JADWAL PELAJARAN';
+            document.body.appendChild(customFooterRight);
+        }
+
+        // 4. Injeksi CSS Khusus untuk Mengatur Kertas Cetak
         let printFixStyle = document.getElementById('printFixStyle');
         if (!printFixStyle) {
             printFixStyle = document.createElement('style');
@@ -762,53 +774,70 @@ function cetakPDF(tipeJadwal) {
         }
         
         printFixStyle.innerHTML = `
-            /* Aturan css khusus layar biasa: sembunyikan label dinamis */
+            /* Sembunyikan elemen kustom dari layar website biasa */
             @media screen {
-                #printDynamicLabel { display: none !important; }
+                #printDynamicLabel, #customPrintFooterLeft, #customPrintFooterRight { display: none !important; }
             }
 
-            /* Aturan css saat dicetak */
+            /* Aturan saat proses pencetakan PDF / Print berkas */
             @media print {
-                /* Sembunyikan Navigasi Tab Jadwal Umum/Tematik (ubah/tambahkan class tab Anda jika beda) */
-                .tab-container, .tabs, .nav-tabs, button[id^="btnTab"] { 
-                    display: none !important; 
+                /* PAKSA KAKU LANDSCAPE & Hilangkan margin bawaan (URL/Tanggal otomatis lenyap) */
+                @page {
+                    size: landscape !important;
+                    margin: 0 !important; 
                 }
 
-                /* Sembunyikan Kotak Pencarian dan Tombol Cetak PDF */
-                #controlsUmum, .search-container, button.btn-action, #clearBtn { 
-                    display: none !important; 
+                /* Mengganti fungsi margin kertas agar content tidak terlalu rapat ke ujung fisik kertas */
+                body {
+                    padding: 15mm 15mm 22mm 15mm !important;
+                    background: #ffffff !important;
                 }
 
-                /* Sembunyikan Grid Tabel Tematik secara paksa */
-                #resultsTematikGrid, #initialState, #initialStateTematik { 
-                    display: none !important; 
-                }
+                /* Menyembunyikan elemen interface website yang mengganggu */
+                .tab-container, .tabs, .nav-tabs, button[id^="btnTab"] { display: none !important; }
+                #controlsUmum, .search-container, button.btn-action, #clearBtn { display: none !important; }
+                #resultsTematikGrid, #initialState, #initialStateTematik { display: none !important; }
+                #printTitleText, #printSubTitleText { display: none !important; }
 
-                /* Sembunyikan Print Title default yang sudah usang */
-                #printTitleText, #printSubTitleText {
-                    display: none !important;
-                }
+                /* Tampilkan Header Website Asli (Logo & Title) */
+                header, .main-header { display: flex !important; }
 
-                /* TAMPILKAN HEADER WEBSITE ASLI */
-                header, .main-header {
-                    display: flex !important; /* asumsikan pakai flexbox, biarkan natural */
-                }
-
-                /* TAMPILKAN LABEL NAMA GURU/KELAS DI BAWAH HEADER */
+                /* Label Nama Guru / Kelas Dinamis */
                 #printDynamicLabel {
                     display: block !important;
                     text-align: center;
                     font-size: 22px;
                     font-weight: 800;
-                    color: #1e3a8a !important; /* Warna biru profesional, bisa disesuaikan */
+                    color: #1e3a8a !important; 
                     margin: 15px 0 25px 0;
                     text-transform: uppercase;
                     letter-spacing: 1px;
                 }
 
-                /* Pastikan body dan background bersih saat di print */
-                body {
-                    background: #ffffff !important;
+                /* FOOTNOTE KIRI BAWAH (Menggantikan URL Vercel) */
+                #customPrintFooterLeft {
+                    display: block !important;
+                    position: fixed;
+                    bottom: 8mm;
+                    left: 15mm;
+                    font-size: 11px;
+                    font-weight: bold;
+                    color: #475569 !important;
+                    font-family: Arial, sans-serif;
+                    z-index: 9999;
+                }
+
+                /* FOOTNOTE KANAN BAWAH (Menggantikan Halaman/Tanggal) */
+                #customPrintFooterRight {
+                    display: block !important;
+                    position: fixed;
+                    bottom: 8mm;
+                    right: 15mm;
+                    font-size: 11px;
+                    font-weight: bold;
+                    color: #475569 !important;
+                    font-family: Arial, sans-serif;
+                    z-index: 9999;
                 }
             }
         `;
