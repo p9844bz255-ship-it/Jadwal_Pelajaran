@@ -14,13 +14,10 @@ window.onload = function() {
   searchInput.placeholder = "⏳ Memuat database jadwal...";
   searchInput.disabled = true;
 
-  // 1. Mengambil data Jadwal Umum menggunakan FETCH API
   fetch(`${API_URL}?action=jadwalBiasa`)
     .then(response => response.json())
     .then(data => {
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      if (data.error) throw new Error(data.error);
       RAW_DATA = data;
       isDataLoaded = true;
       searchInput.placeholder = "Ketik nama atau kelas...";
@@ -31,23 +28,17 @@ window.onload = function() {
       searchInput.placeholder = "❌ Sistem gagal terkoneksi.";
     });
 
-  // 2. Mengambil data Jadwal Tematik menggunakan FETCH API
   fetch(`${API_URL}?action=jadwalTematik`)
     .then(response => response.json())
     .then(data => {
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      if (data.error) throw new Error(data.error);
       TEMATIK_DATA = data;
       isTematikLoaded = true;
       buildPekanDropdownOptions();
     })
-    .catch(error => {
-      console.error("Gagal sinkronisasi data tematik:", error);
-    });
+    .catch(error => console.error("Gagal sinkronisasi data tematik:", error));
 };
 
-// Event listener untuk memastikan saat layar diubah ukurannya (resize/rotate HP), tinggi tabel dihitung ulang agar tetap presisi.
 window.addEventListener('resize', () => {
   syncCardHeights('resultsGrid');
   syncCardHeights('resultsTematikGrid');
@@ -101,18 +92,14 @@ function buildPekanDropdownOptions() {
   today.setHours(0,0,0,0);
   
   let targetDate = new Date(today);
-  if(today.getDay() === 6) { 
-    targetDate.setDate(today.getDate() + 2); 
-  } else if(today.getDay() === 0) {
-    targetDate.setDate(today.getDate() + 1); 
-  }
+  if(today.getDay() === 6) targetDate.setDate(today.getDate() + 2); 
+  else if(today.getDay() === 0) targetDate.setDate(today.getDate() + 1); 
 
   let selectedPekanName = "";
 
   TEMATIK_DATA.headers.forEach(h => {
     const opt = document.createElement('option');
     opt.value = h.pekan;
-    
     const range = parseRangeTanggal(h.tanggalRaw);
     const isCurrentWeek = (range && targetDate >= range.start && targetDate <= range.end);
     
@@ -123,15 +110,11 @@ function buildPekanDropdownOptions() {
     } else {
       opt.text = `${h.pekan} (${h.tanggalRaw})`;
     }
-    
     select.appendChild(opt);
   });
 
-  if(selectedPekanName !== "") {
-    select.value = selectedPekanName;
-  } else if(TEMATIK_DATA.headers.length > 0) {
-    select.value = TEMATIK_DATA.headers[0].pekan;
-  }
+  if(selectedPekanName !== "") select.value = selectedPekanName;
+  else if(TEMATIK_DATA.headers.length > 0) select.value = TEMATIK_DATA.headers[0].pekan;
 }
 
 function initTematikView() {
@@ -152,42 +135,38 @@ function clearTematikSearch() {
 function formatTimeLeftColumn(timeStr) {
   if (!timeStr) return "-";
   let parts = timeStr.split('-');
-  if (parts.length === 2) {
-    return `${parts[0].trim()} -\n${parts[1].trim()}`;
-  }
+  if (parts.length === 2) return `${parts[0].trim()} -\n${parts[1].trim()}`;
   return timeStr;
 }
 
-// ==========================================================================
-// FUNGSI UNTUK MENYAMAKAN TINGGI KARTU AGAR BARIS & BAWAH TABEL RATA
-// ==========================================================================
 function syncCardHeights(containerId) {
+  if (window.innerWidth <= 768) {
+      const container = document.getElementById(containerId);
+      if(container) container.querySelectorAll('.card').forEach(c => c.style.height = 'auto');
+      return;
+  }
+
   const container = document.getElementById(containerId);
   if (!container) return;
 
   const allCards = container.querySelectorAll('.card');
   if (allCards.length === 0) return;
 
-  // 1. Reset tinggi ke 'auto' dulu supaya nilai hitungnya segar
   allCards.forEach(c => c.style.height = 'auto');
 
-  // 2. Cari tahu ada berapa baris JP secara keseluruhan
   let maxJpFound = 0;
   allCards.forEach(c => {
       const jpVal = parseInt(c.getAttribute('data-jp') || 0);
       if (jpVal > maxJpFound) maxJpFound = jpVal;
   });
 
-  // 3. Loop tiap JP, cari kartu paling tinggi, lalu set semua kartu di JP itu dengan tinggi yang sama
   for (let i = 1; i <= maxJpFound; i++) {
       const cardsInRow = container.querySelectorAll(`.card[data-jp="${i}"]`);
       if (cardsInRow.length === 0) continue;
 
       let maxHeight = 0;
       cardsInRow.forEach(c => {
-          if (c.offsetHeight > maxHeight) {
-              maxHeight = c.offsetHeight;
-          }
+          if (c.offsetHeight > maxHeight) maxHeight = c.offsetHeight;
       });
 
       cardsInRow.forEach(c => {
@@ -195,7 +174,6 @@ function syncCardHeights(containerId) {
       });
   }
 }
-
 
 function handleTematikGridFilter() {
   if (!isTematikLoaded || !TEMATIK_DATA) return;
@@ -216,7 +194,7 @@ function handleTematikGridFilter() {
   container.style.display = "flex"; 
 
   let activeDaysData = [];
-  let globalMaxJp = 0; // Kunci agar bawahnya rata!
+  let globalMaxJp = 0; 
 
   days.forEach(day => {
     let dayRows = TEMATIK_DATA.rows.filter(r => r.hari === day);
@@ -251,14 +229,12 @@ function handleTematikGridFilter() {
     });
 
     if (hasMatchForDay || query === "") {
-        // Cari max JP di master data untuk hari ini
         let localMax = 0;
         TEMATIK_DATA.rows.filter(r => r.hari === day).forEach(r => {
             let j = parseInt(r.jp);
             if(!isNaN(j) && j > localMax) localMax = j;
         });
         
-        // Simpan nilai JP paling besar untuk diseragamkan ke semua kolom
         if(localMax > globalMaxJp) globalMaxJp = localMax;
 
         activeDaysData.push({
@@ -279,6 +255,45 @@ function handleTematikGridFilter() {
 
   document.getElementById('initialStateTematik').style.display = "none";
 
+  // === RENDER MOBILE TABS ===
+  const activeDays = activeDaysData.map(d => d.day);
+  let defaultActiveDay = activeDays.includes(currentDayString) ? currentDayString : activeDays[0];
+
+  const mobileTabsContainer = document.createElement('div');
+  mobileTabsContainer.className = 'mobile-day-tabs';
+  
+  // 1. Tambah Tab "SEMUA"
+  const btnSemua = document.createElement('button');
+  btnSemua.className = `tab-btn`;
+  btnSemua.innerText = "SEMUA";
+  btnSemua.onclick = () => {
+      mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btnSemua.classList.add('active');
+      container.querySelectorAll('.day-column').forEach(c => c.classList.add('active-mobile-day'));
+  };
+  mobileTabsContainer.appendChild(btnSemua);
+
+  // 2. Tab untuk masing-masing hari
+  activeDays.forEach((day) => {
+      const shortDay = day.replace("'", "").substring(0,3).toUpperCase();
+      const btn = document.createElement('button');
+      btn.className = `tab-btn ${day === defaultActiveDay ? 'active' : ''}`;
+      btn.innerText = shortDay;
+      
+      const dayID = day.replace("'", "").toLowerCase();
+      
+      btn.onclick = () => {
+          mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          container.querySelectorAll('.day-column').forEach(c => c.classList.remove('active-mobile-day'));
+          const targetCol = container.querySelector(`.col-${dayID}`);
+          if(targetCol) targetCol.classList.add('active-mobile-day');
+      };
+      mobileTabsContainer.appendChild(btn);
+  });
+  container.appendChild(mobileTabsContainer);
+  // ============================
+
   activeDaysData.forEach(dayData => {
     const { day, dayRows, jpGroupsMatch } = dayData;
     let htmlCards = "";
@@ -290,7 +305,6 @@ function handleTematikGridFilter() {
       let refRow = dayRows.find(r => parseInt(r.jp) === jpNum);
       if (refRow && refRow.waktu) rawWaktu = refRow.waktu;
 
-      // Jika di hari ini mentok (contoh Jumat mentok JP 5, tapi kolom lain butuh cetak JP 6), cari fallback jam
       if(rawWaktu === "-" && jpNum <= globalMaxJp) {
           const fallbackRef = TEMATIK_DATA.rows.find(r => parseInt(r.jp) === jpNum && r.waktu && r.waktu !== "-");
           if (fallbackRef) rawWaktu = fallbackRef.waktu;
@@ -327,7 +341,6 @@ function handleTematikGridFilter() {
           `;
         });
 
-        // Tambahkan atribut data-jp supaya JS bisa mendeteksinya nanti
         htmlCards += `
           <div class="card tematik-card-combined" data-jp="${jpNum}">
             <div class="card-left">
@@ -356,8 +369,12 @@ function handleTematikGridFilter() {
 
     const dayID = day.replace("'", "").toLowerCase();
     const col = document.createElement('div');
-    const isActiveClass = (day === currentDayString) ? " today-active" : "";
-    col.className = `day-column col-${dayID}${isActiveClass}`;
+    
+    let colClass = `day-column col-${dayID}`;
+    if (day === currentDayString) colClass += ` today-active`; 
+    if (day === defaultActiveDay) colClass += ` active-mobile-day`; 
+    
+    col.className = colClass;
     
     col.innerHTML = `
       <div class="day-title">${day}</div>
@@ -367,8 +384,6 @@ function handleTematikGridFilter() {
   });
 
   applySubjectColors();
-  
-  // Panggil fungsi sinkronisasi tinggi kartu setelah HTML selesai dicetak ke layar
   setTimeout(() => syncCardHeights('resultsTematikGrid'), 50); 
 }
 
@@ -416,11 +431,8 @@ function handleSearch() {
       if (!countedSlots.has(slotKey)) {
         const jpVal = parseInt(item.jp);
         if (!isNaN(jpVal)) {
-          if (item.hari === "JUM'AT" && (jpVal === 3 || jpVal === 4 || jpVal === 5)) {
-            totalJP += 0.5; 
-          } else {
-            totalJP += 1; 
-          }
+          if (item.hari === "JUM'AT" && (jpVal === 3 || jpVal === 4 || jpVal === 5)) totalJP += 0.5; 
+          else totalJP += 1; 
           countedSlots.add(slotKey); 
         }
       }
@@ -493,7 +505,6 @@ function renderGrid(data, query) {
   let activeDays = [];
   let globalMaxJp = 0; 
 
-  // Menentukan mana saja kolom hari yang akan ditampilkan dan mencari Global Max JP
   days.forEach(day => {
     const dayData = data.filter(d => d.hari === day);
     if (dayData.length > 0) {
@@ -507,16 +518,56 @@ function renderGrid(data, query) {
     }
   });
 
-  activeDays.forEach(day => {
+  // === RENDER MOBILE TABS ===
+  let defaultActiveDay = activeDays.includes(currentDayString) ? currentDayString : activeDays[0];
+
+  const mobileTabsContainer = document.createElement('div');
+  mobileTabsContainer.className = 'mobile-day-tabs';
+  
+  // 1. Tambah Tab "SEMUA"
+  const btnSemua = document.createElement('button');
+  btnSemua.className = `tab-btn`;
+  btnSemua.innerText = "SEMUA";
+  btnSemua.onclick = () => {
+      mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btnSemua.classList.add('active');
+      container.querySelectorAll('.day-column').forEach(c => c.classList.add('active-mobile-day'));
+  };
+  mobileTabsContainer.appendChild(btnSemua);
+
+  // 2. Tab untuk masing-masing hari
+  activeDays.forEach((day) => {
+      const shortDay = day.replace("'", "").substring(0,3).toUpperCase();
+      const btn = document.createElement('button');
+      btn.className = `tab-btn ${day === defaultActiveDay ? 'active' : ''}`;
+      btn.innerText = shortDay;
+      
+      const dayID = day.replace("'", "").toLowerCase();
+      
+      btn.onclick = () => {
+          mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          container.querySelectorAll('.day-column').forEach(c => c.classList.remove('active-mobile-day'));
+          const targetCol = container.querySelector(`.col-${dayID}`);
+          if(targetCol) targetCol.classList.add('active-mobile-day');
+      };
+      mobileTabsContainer.appendChild(btn);
+  });
+  container.appendChild(mobileTabsContainer);
+  // ============================
+
+  activeDays.forEach((day, index) => {
     const dayData = data.filter(d => d.hari === day).sort((a, b) => parseInt(a.jp) - parseInt(b.jp));
     const dayID = day.replace("'", "").toLowerCase(); 
     const col = document.createElement('div');
-    const isActiveClass = (day === currentDayString) ? " today-active" : "";
-    col.className = `day-column col-${dayID}${isActiveClass}`;
+    
+    let colClass = `day-column col-${dayID}`;
+    if (day === currentDayString) colClass += ` today-active`; 
+    if (day === defaultActiveDay) colClass += ` active-mobile-day`; 
+    col.className = colClass;
     
     let html = `<div class="day-title">${day}</div>`;
     
-    // Loop dari 1 sampai dengan Global Maximum JP agar semua kolom rata bawahnya
     for (let i = 1; i <= globalMaxJp; i++) {
         const itemsForJp = dayData.filter(d => parseInt(d.jp) === i);
         
@@ -524,7 +575,6 @@ function renderGrid(data, query) {
         const refData = RAW_DATA.find(d => d.hari === day && parseInt(d.jp) === i);
         if (refData && refData.waktu) defaultWaktu = refData.waktu;
         
-        // Fallback jika tidak ada waktu karena harinya aslinya lebih pendek
         if (defaultWaktu === "-" && i <= globalMaxJp) {
            const fallbackRef = RAW_DATA.find(d => parseInt(d.jp) === i && d.waktu && d.waktu !== "-");
            if (fallbackRef) defaultWaktu = fallbackRef.waktu;
@@ -574,8 +624,6 @@ function renderGrid(data, query) {
   });
 
   applySubjectColors();
-  
-  // Panggil fungsi sinkronisasi tinggi kartu setelah HTML selesai dicetak ke layar
   setTimeout(() => syncCardHeights('resultsGrid'), 50);
 }
 
@@ -583,13 +631,7 @@ function applySubjectColors() {
     const cards = document.querySelectorAll('.card-right, .tematik-inner-col');
     
     const colorPalette = [
-        '#059669', // Hijau
-        '#d97706', // Orange
-        '#7c3aed', // Ungu
-        '#db2777', // Pink Gelap
-        '#ea580c', // Merah Bata
-        '#0284c7', // Biru Muda
-        '#4f46e5'  // Indigo
+        '#059669', '#d97706', '#7c3aed', '#db2777', '#ea580c', '#0284c7', '#4f46e5'
     ];
     
     let colorMap = {}; 
@@ -618,9 +660,8 @@ function applySubjectColors() {
             kelasEl.style.setProperty('color', 'var(--logo-blue-accent)', 'important'); 
             
             if (!colorMap[cleanMapelName]) {
-                if (cleanMapelName.includes('ARABIC')) {
-                    colorMap[cleanMapelName] = '#1155cc'; 
-                } else {
+                if (cleanMapelName.includes('ARABIC')) colorMap[cleanMapelName] = '#1155cc'; 
+                else {
                     colorMap[cleanMapelName] = colorPalette[colorIndex % colorPalette.length];
                     colorIndex++;
                 }
