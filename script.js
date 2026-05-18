@@ -186,10 +186,7 @@ function handleTematikGridFilter() {
   clearTematikBtn.style.display = query.length > 0 ? "flex" : "none";
 
   const activeOptText = document.getElementById('pekanSelect').options[document.getElementById('pekanSelect').selectedIndex]?.text || "";
-  const printTitleEl = document.getElementById('printSubTitleText');
-  if (printTitleEl) {
-      printTitleEl.innerText = `AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY | ${activeOptText.toUpperCase()}`;
-  }
+  document.getElementById('printSubTitleText').innerText = `AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY | ${activeOptText.toUpperCase()}`;
 
   const days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', "JUM'AT"];
   const currentDayString = getTodayString(); 
@@ -682,38 +679,42 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// FUNGSI CETAK PDF (Pemisahan Umum/Tematik & Paksa 1 Halaman)
+// FUNGSI CETAK PDF CERDAS (Terpisah Umum/Tematik, Memaksa Muat 1 Halaman)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
-    // tipeJadwal diisi string 'umum' atau 'tematik'
     const containerId = tipeJadwal === 'umum' ? 'resultsGrid' : 'resultsTematikGrid';
     const container = document.getElementById(containerId);
     
-    // Cek apakah ada jadwal yang tampil
     if (!container || container.style.display === "none" || container.innerHTML === "") {
         alert("Tidak ada jadwal yang bisa dicetak. Silakan lakukan pencarian terlebih dahulu.");
         return;
     }
 
-    // 1. Simulasikan klik tombol "SEMUA" agar di versi HP semua hari dirender
-    const btnSemua = container.querySelector('.mobile-day-tabs .tab-btn');
-    if (btnSemua && btnSemua.innerText === "SEMUA") {
-        btnSemua.click();
-    }
+    // 1. Simulasikan klik "SEMUA" di layar HP agar DOM menampilkan jadwal sepekan penuh
+    const tabs = container.querySelectorAll('.mobile-day-tabs .tab-btn');
+    tabs.forEach(btn => {
+        if (btn.innerText.toUpperCase() === "SEMUA") btn.click();
+    });
 
-    // 2. Beri "tanda" pada body web bahwa kita sedang mode print
+    // 2. Beri "tanda class" pada body yang mengatur visibilitas via CSS saat diprint
     document.body.classList.add('print-mode-active');
-    if (tipeJadwal === 'umum') {
-        document.body.classList.add('print-umum');
+    if (tipeJadwal === 'umum') document.body.classList.add('print-umum');
+    else document.body.classList.add('print-tematik');
+
+    // 3. Update Text Header (Untuk ditampilkan di kertas hasil PDF)
+    const printTitleEl = document.getElementById('printTitleText');
+    if(tipeJadwal === 'umum') {
+        const val = document.getElementById('searchInput').value.trim().toUpperCase();
+        printTitleEl.innerText = val ? `Jadwal Pelajaran Umum - ${val}` : "Jadwal Pelajaran Umum";
     } else {
-        document.body.classList.add('print-tematik');
+        const val = document.getElementById('searchTematikInput').value.trim().toUpperCase();
+        printTitleEl.innerText = val ? `Jadwal Pelajaran Tematik - ${val}` : "Jadwal Pelajaran Tematik";
     }
 
-    // 3. Beri jeda 0.5 detik agar DOM web menyesuaikan, lalu buka Dialog Print
+    // 4. Beri jeda sebentar (800ms) agar browser selesai menyesuaikan layout horizontal, lalu eksekusi print
     setTimeout(() => {
         window.print();
-        
-        // 4. Setelah dialog print ditutup, kembalikan tampilan ke normal
+        // 5. Bersihkan "tanda class" setelah dialog print ditutup
         document.body.classList.remove('print-mode-active', 'print-umum', 'print-tematik');
-    }, 500);
+    }, 800);
 }
