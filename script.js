@@ -741,7 +741,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (STRETCH KAKU KE BAWAH HALAMAN A4)
+// CETAK PDF (1 HALAMAN PENUH 100VH DENGAN FLEX STRETCH RAPI)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     if (tipeJadwal !== 'umum') return; 
@@ -763,9 +763,11 @@ function cetakPDF(tipeJadwal) {
         if (!dynamicLabel) {
             dynamicLabel = document.createElement('div');
             dynamicLabel.id = 'printDynamicLabel';
-            const controls = document.getElementById('controlsUmum');
-            if(controls && controls.parentNode) {
-                controls.parentNode.insertBefore(dynamicLabel, controls);
+            // Sisipkan ke dalam struktur header agar ikut terpusat secara rapi
+            const headerMain = document.querySelector('.header-main-wrapper');
+            const headerBottom = document.querySelector('.header-bottom-row');
+            if(headerMain && headerBottom) {
+                headerMain.insertBefore(dynamicLabel, headerBottom);
             } else {
                 document.body.insertBefore(dynamicLabel, document.body.firstChild);
             }
@@ -802,50 +804,90 @@ function cetakPDF(tipeJadwal) {
 
             @media print {
                 @page {
-                    size: landscape !important;
+                    size: A4 landscape !important;
                     margin: 0 !important; 
                 }
 
+                /* STRATEGI 100VH: Memaksa body membaca kertas persis sebagai 1 halaman tanpa sisa/tumpah */
                 body {
-                    padding: 15mm 15mm 22mm 15mm !important;
+                    padding: 8mm 12mm 15mm 12mm !important;
                     background: #ffffff !important;
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
-                }
-
-                .tab-container, .tabs, .nav-tabs, button[id^="btnTab"] { display: none !important; }
-                #controlsUmum, .search-container, button.btn-action, #clearBtn { display: none !important; }
-                #resultsTematikGrid, #initialState, #initialStateTematik { display: none !important; }
-                #printTitleText, #printSubTitleText { display: none !important; }
-
-                header, .main-header, .header-container { 
-                    display: flex !important; 
+                    height: 100vh !important;
+                    width: 100vw !important;
+                    display: flex !important;
                     flex-direction: column !important;
-                    align-items: center !important; 
-                    justify-content: center !important;
-                    text-align: center !important;
-                    width: 100% !important;
-                    margin-bottom: 5px !important;
-                }
-                header img, .main-header img, .logo-print {
-                    display: block !important;
-                    margin: 0 auto 10px auto !important;
-                    max-height: 60px !important; 
-                }
-                header h1, header h2, .main-header h1, .main-header h2, .title-print {
-                    text-align: center !important;
-                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    overflow: hidden !important; 
+                    margin: 0 !important;
                 }
 
+                /* Menyembunyikan elemen UI website */
+                .header-bottom-row, .tab-container, #controlsUmum, #controlsTematik { display: none !important; }
+                #initialState, #initialStateTematik { display: none !important; }
+                #printHeader { display: none !important; } /* Sembunyikan header lama yg tidak rata tengah */
+                
+                /* Menyembunyikan Grid Tabel yg sedang tidak digunakan */
+                body.print-umum #resultsTematikGrid { display: none !important; }
+                body.print-tematik #resultsGrid { display: none !important; }
+
+                /* HEADER UTAMA CENTER TOTAL */
+                .header-section {
+                    flex-shrink: 0 !important;
+                    background: transparent !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    max-width: 100% !important;
+                }
+                .header-main-wrapper {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    width: 100% !important;
+                    gap: 0 !important;
+                }
+                .header-top-content {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    width: 100% !important;
+                    gap: 5px !important;
+                }
+                .header-logo {
+                    height: 45px !important;
+                    margin: 0 auto !important;
+                }
+                .header-top-content div {
+                    text-align: center !important;
+                }
+                .header-top-content h1 {
+                    font-size: 16px !important;
+                    margin: 0 !important;
+                    color: #0f172a !important;
+                }
+                .desktop-subtext {
+                    font-size: 10px !important;
+                    margin: 2px 0 0 0 !important;
+                    display: block !important;
+                    color: #1155cc !important;
+                }
+                .mobile-subtext { display: none !important; }
+
+                /* BANNER BIRU NAMA GURU/KELAS (LEBAR PENUH) */
                 #printDynamicLabel {
                     display: block !important;
+                    flex-shrink: 0 !important;
                     text-align: center !important;
-                    font-size: 16px !important; 
+                    font-size: 14px !important; 
                     font-weight: 700 !important;
                     color: #ffffff !important; 
                     background-color: #1e40af !important; 
-                    padding: 10px 0 !important;
-                    margin: 15px 0 20px 0 !important;
+                    padding: 6px 0 !important;
+                    margin: 8px 0 10px 0 !important;
                     text-transform: uppercase;
                     letter-spacing: 1.5px;
                     width: 100% !important;
@@ -855,51 +897,87 @@ function cetakPDF(tipeJadwal) {
                     print-color-adjust: exact !important;
                 }
 
-                /* STRATEGI BARU: Memaksa tinggi container tabel agar memanjang ke bawah kertas */
+                /* KONTAINER GRID JADWAL (MENGISI SISA HALAMAN KOSONG) */
+                .flex-schedule-container {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    flex: 1 !important; 
+                    min-height: 0 !important; 
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+
                 .days-wrapper {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: stretch !important; 
+                    flex: 1 !important; 
                     width: 100% !important;
-                    height: 118mm !important; /* Panjang kaku yang aman agar menempel dekat footer */
-                    gap: 8px !important;
-                    page-break-inside: avoid !important;
-                    break-inside: avoid !important;
+                    gap: 6px !important;
+                    min-height: 0 !important;
                 }
 
+                /* KOLOM HARI MEMANJANG KE BAWAH SECARA SIMETRIS */
                 .day-column {
                     display: flex !important;
                     flex-direction: column !important;
                     flex: 1 !important; 
-                    height: 100% !important; /* Memaksa kolom mengikuti 118mm */
                     min-width: 0 !important;
                     background: #ffffff !important;
-                    page-break-inside: avoid !important;
-                    break-inside: avoid !important;
+                    border: 1px solid #e2e8f0 !important;
+                    border-radius: 6px !important;
+                    padding: 3px !important;
+                    box-shadow: none !important;
+                }
+                .day-column.today-active { border: 1px solid #e2e8f0 !important; }
+                .day-column.today-active .day-title::after { display: none !important; }
+
+                .day-title {
+                    flex-shrink: 0 !important;
+                    font-size: 9px !important;
+                    padding: 3px 0 !important;
+                    margin-bottom: 3px !important;
                 }
 
+                /* KARTU JP MEMBAGI SISA RUANG SAMA RATA SECARA OTOMATIS */
                 .card {
                     display: flex !important;
-                    flex: 1 !important; /* Menginstruksikan setiap kartu agar memanjang mengisi sisa ruang */
+                    flex-direction: row !important;
+                    flex: 1 !important; 
                     min-height: 0 !important; 
-                    margin-bottom: 4px !important;
-                    page-break-inside: avoid !important;
-                    break-inside: avoid !important;
+                    margin-bottom: 3px !important;
+                    padding: 2px 4px !important;
+                    border: 1px solid #cbd5e1 !important;
+                    border-radius: 4px !important;
+                    box-shadow: none !important;
                 }
+                .card:last-child { margin-bottom: 0 !important; }
 
-                /* Teks di dalam kartu disejajarkan ke tengah agar proporsional saat kartu memanjang */
-                .card-left, .card-right {
-                    display: flex !important;
-                    flex-direction: column !important;
+                .card-left {
+                    flex: 0 0 35px !important;
                     justify-content: center !important;
                 }
+                .jp { font-size: 12px !important; margin-bottom: 2px !important; }
+                .waktu { font-size: 6.5px !important; }
 
+                .card-right {
+                    flex: 1 !important;
+                    justify-content: center !important;
+                    gap: 1px !important;
+                }
+                .kelas-info { font-size: 8px !important; }
+                .mapel { font-size: 8.5px !important; }
+                .guru-nama { font-size: 7.5px !important; }
+
+                /* CUSTOM FOOTNOTES */
                 #customPrintFooterLeft {
                     display: block !important;
                     position: fixed;
-                    bottom: 8mm;
-                    left: 15mm;
-                    font-size: 11px;
+                    bottom: 6mm;
+                    left: 10mm;
+                    font-size: 8px;
                     font-weight: bold;
                     color: #475569 !important;
                     font-family: Arial, sans-serif;
@@ -909,9 +987,9 @@ function cetakPDF(tipeJadwal) {
                 #customPrintFooterRight {
                     display: block !important;
                     position: fixed;
-                    bottom: 8mm;
-                    right: 15mm;
-                    font-size: 11px;
+                    bottom: 6mm;
+                    right: 10mm;
+                    font-size: 8px;
                     font-weight: bold;
                     color: #475569 !important;
                     font-family: Arial, sans-serif;
@@ -920,6 +998,7 @@ function cetakPDF(tipeJadwal) {
             }
         `;
 
+        // Jalankan perintah cetak PDF bawaan browser
         window.print();
         
     }, 300);
