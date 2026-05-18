@@ -255,13 +255,17 @@ function handleTematikGridFilter() {
 
   document.getElementById('initialStateTematik').style.display = "none";
 
-  // === RENDER MOBILE TABS (DITARUH PALING ATAS CONTAINER) ===
   const activeDays = activeDaysData.map(d => d.day);
   let defaultActiveDay = activeDays.includes(currentDayString) ? currentDayString : activeDays[0];
 
+  // 1. Buat Wrapper Tab untuk Mobile
   const mobileTabsContainer = document.createElement('div');
   mobileTabsContainer.className = 'mobile-day-tabs';
   
+  // 2. Buat Wrapper untuk Hari-Hari (Kolom Jadwal)
+  const daysWrapper = document.createElement('div');
+  daysWrapper.className = 'days-wrapper';
+
   // Tab "SEMUA"
   const btnSemua = document.createElement('button');
   btnSemua.className = `tab-btn`;
@@ -269,11 +273,14 @@ function handleTematikGridFilter() {
   btnSemua.onclick = () => {
       mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btnSemua.classList.add('active');
-      container.querySelectorAll('.day-column').forEach(c => c.classList.add('active-mobile-day'));
+      daysWrapper.querySelectorAll('.day-column').forEach(c => c.classList.add('active-mobile-day'));
+      
+      // Tambahkan kelas khusus yang mengaktifkan Horizontal Scroll di HP
+      daysWrapper.classList.add('show-all-mobile');
   };
   mobileTabsContainer.appendChild(btnSemua);
 
-  // Tab masing-masing hari
+  // Tab Masing-Masing Hari
   activeDays.forEach((day) => {
       const shortDay = day.replace("'", "").substring(0,3).toUpperCase();
       const btn = document.createElement('button');
@@ -285,16 +292,19 @@ function handleTematikGridFilter() {
       btn.onclick = () => {
           mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-          container.querySelectorAll('.day-column').forEach(c => c.classList.remove('active-mobile-day'));
-          const targetCol = container.querySelector(`.col-${dayID}`);
+          daysWrapper.querySelectorAll('.day-column').forEach(c => c.classList.remove('active-mobile-day'));
+          const targetCol = daysWrapper.querySelector(`.col-${dayID}`);
           if(targetCol) targetCol.classList.add('active-mobile-day');
+          
+          // Hapus kelas khusus agar kembali ke mode vertikal (atas-bawah) untuk 1 hari
+          daysWrapper.classList.remove('show-all-mobile');
       };
       mobileTabsContainer.appendChild(btn);
   });
   
-  // Tempelkan tab PALING PERTAMA di dalam Grid
+  // Masukkan Tab dan Wrapper Jadwal ke Kontainer Utama
   container.appendChild(mobileTabsContainer);
-  // =======================================================
+  container.appendChild(daysWrapper);
 
   activeDaysData.forEach(dayData => {
     const { day, dayRows, jpGroupsMatch } = dayData;
@@ -382,7 +392,8 @@ function handleTematikGridFilter() {
       <div class="day-title">${day}</div>
       ${htmlCards}
     `;
-    container.appendChild(col);
+    // PENTING: Masukkan kolom ke daysWrapper, BUKAN langsung ke container
+    daysWrapper.appendChild(col);
   });
 
   applySubjectColors();
@@ -520,24 +531,27 @@ function renderGrid(data, query) {
     }
   });
 
-  // === RENDER MOBILE TABS (DITARUH PALING ATAS CONTAINER) ===
   let defaultActiveDay = activeDays.includes(currentDayString) ? currentDayString : activeDays[0];
 
   const mobileTabsContainer = document.createElement('div');
   mobileTabsContainer.className = 'mobile-day-tabs';
   
-  // Tab "SEMUA"
+  const daysWrapper = document.createElement('div');
+  daysWrapper.className = 'days-wrapper';
+
   const btnSemua = document.createElement('button');
   btnSemua.className = `tab-btn`;
   btnSemua.innerText = "SEMUA";
   btnSemua.onclick = () => {
       mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btnSemua.classList.add('active');
-      container.querySelectorAll('.day-column').forEach(c => c.classList.add('active-mobile-day'));
+      daysWrapper.querySelectorAll('.day-column').forEach(c => c.classList.add('active-mobile-day'));
+      
+      // Aktifkan horizontal scroll
+      daysWrapper.classList.add('show-all-mobile');
   };
   mobileTabsContainer.appendChild(btnSemua);
 
-  // Tab masing-masing hari
   activeDays.forEach((day) => {
       const shortDay = day.replace("'", "").substring(0,3).toUpperCase();
       const btn = document.createElement('button');
@@ -549,16 +563,18 @@ function renderGrid(data, query) {
       btn.onclick = () => {
           mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-          container.querySelectorAll('.day-column').forEach(c => c.classList.remove('active-mobile-day'));
-          const targetCol = container.querySelector(`.col-${dayID}`);
+          daysWrapper.querySelectorAll('.day-column').forEach(c => c.classList.remove('active-mobile-day'));
+          const targetCol = daysWrapper.querySelector(`.col-${dayID}`);
           if(targetCol) targetCol.classList.add('active-mobile-day');
+          
+          // Kembalikan ke mode vertikal (hilangkan scroll horizontal)
+          daysWrapper.classList.remove('show-all-mobile');
       };
       mobileTabsContainer.appendChild(btn);
   });
   
-  // Tempelkan tab PALING PERTAMA di dalam Grid
   container.appendChild(mobileTabsContainer);
-  // =======================================================
+  container.appendChild(daysWrapper);
 
   activeDays.forEach((day, index) => {
     const dayData = data.filter(d => d.hari === day).sort((a, b) => parseInt(a.jp) - parseInt(b.jp));
@@ -624,7 +640,9 @@ function renderGrid(data, query) {
         }
     }
     col.innerHTML = html;
-    container.appendChild(col);
+    
+    // PENTING: Masukkan kolom ke daysWrapper
+    daysWrapper.appendChild(col);
   });
 
   applySubjectColors();

@@ -105,9 +105,25 @@ body {
 .jp-counter-box { font-size: 12px; font-weight: 600; color: var(--logo-blue-accent); }
 
 /* ==========================================================================
-   GRID MONITOR CONTAINER
+   GRID MONITOR CONTAINER & WRAPPER
    ========================================================================== */
-.flex-schedule-container { display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 10px; width: 100%; margin: 0 auto; padding: 4px 0 16px 0; overflow-x: hidden; max-width: 1350px; }
+.flex-schedule-container { 
+  display: flex; 
+  flex-direction: column; /* Mengubah ini agar mendukung susunan atas-bawah dengan Tab Mobile */
+  width: 100%; 
+  margin: 0 auto; 
+  padding: 4px 0 16px 0; 
+  max-width: 1350px; 
+}
+.days-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
 .day-column { flex: 1 1 0%; min-width: 0; border-radius: 16px; padding: 10px; background: var(--glass-main-bg); border: 1px solid var(--glass-main-border); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01); }
 
 .day-column.today-active { background: var(--active-day-bg) !important; border: 1px solid var(--active-day-border) !important; box-shadow: 0 4px 22px rgba(17, 85, 204, 0.07) !important; }
@@ -150,7 +166,7 @@ body {
   .header-logo { height: 60px; }
   .header-section h1 { font-size: 22px; }
   .search-wrapper { min-width: 200px; }
-  .flex-schedule-container { gap: 6px; }
+  .days-wrapper { gap: 6px; }
   .day-column { padding: 6px; }
   .day-title { font-size: 11.5px; padding: 8px 0; margin-bottom: 8px; }
   .card { padding: 8px 4px; gap: 4px; min-height: 85px; margin-bottom: 8px; }
@@ -168,7 +184,7 @@ body {
 .mobile-day-tabs {
   display: none; 
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   gap: 8px;
   overflow-x: auto; 
   padding: 4px 0 8px 0;
@@ -199,7 +215,7 @@ body {
 }
 
 /* ==========================================================================
-   UKURAN HP (RESPONSIVE) - TERBARU (VERTIKAL STACK)
+   UKURAN HP (RESPONSIVE) - VERTIKAL UNTUK 1 HARI, HORIZONTAL UNTUK "SEMUA"
    ========================================================================== */
 @media (max-width: 768px) {
   body { padding: 14px; }
@@ -216,25 +232,48 @@ body {
   .tab-container { margin-top: 16px; width: 100%; display: flex; justify-content: space-between; }
   .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
   
-  /* PERUBAHAN UTAMA DI SINI */
   .flex-schedule-container { 
-    flex-direction: column !important; /* Paksa jadwal mengalir ke bawah (vertikal) */
-    justify-content: flex-start !important; 
-    overflow-x: visible !important; /* Hilangkan scroll horizontal pada bungkus utama */
     padding: 0 4px 12px 4px; 
-    gap: 16px; 
   }
   .mobile-day-tabs {
-    display: flex; /* Tampilkan wrapper tab khusus mobile */
+    display: flex; /* Memunculkan Tab Khusus HP */
+  }
+  
+  /* Setting Default (Tampilan 1 Hari: Menurun/Vertikal) */
+  .days-wrapper {
+    flex-direction: column; 
+    gap: 16px;
   }
   .day-column { 
-    display: none; /* Sembunyikan semua kolom hari secara bawaan */
-    flex: 1 1 auto !important; 
+    display: none; /* Sembunyikan kolom default */
     width: 100% !important; 
     min-width: 100% !important; 
   }
   .day-column.active-mobile-day {
-    display: block; /* Munculkan HANYA yang dipilih melalui tab */
+    display: block; /* Munculkan kolom yang dipilih */
+  }
+
+  /* Setting Khusus Saat Tab "SEMUA" Diklik (Tampilan Horizontal Scroll) */
+  .days-wrapper.show-all-mobile {
+    flex-direction: row; 
+    flex-wrap: nowrap; /* Jangan diturunkan ke bawah, paksa kesamping */
+    overflow-x: auto; 
+    scroll-snap-type: x mandatory; /* Agar scroll terasa halus (seperti digeser) */
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 12px;
+    gap: 12px;
+    /* Sembunyikan scrollbar agar estetis */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .days-wrapper.show-all-mobile::-webkit-scrollbar { display: none; }
+  
+  .days-wrapper.show-all-mobile .day-column {
+    display: block; /* Tampilkan semua hari */
+    flex: 0 0 85vw !important; /* Lebar 85% layar agar hari berikutnya "mengintip" sedikit */
+    width: 85vw !important;
+    min-width: 85vw !important;
+    scroll-snap-align: center; /* Posisikan pas di tengah saat digeser */
   }
 }
 
@@ -254,9 +293,11 @@ body {
   #printHeader h2 { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
   #printHeader h3 { font-size: 11px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
 
-  .flex-schedule-container { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: flex-start !important; gap: 6px !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; page-break-inside: avoid !important; }
+  .flex-schedule-container { display: flex !important; flex-direction: column !important; width: 100% !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; page-break-inside: avoid !important; }
+  .days-wrapper { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: flex-start !important; gap: 6px !important; width: 100% !important; }
+  
   .day-column { display: block !important; background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; padding: 4px !important; flex: 1 1 0% !important; min-width: 0 !important; max-width: none !important; box-shadow: none !important; page-break-inside: avoid !important; }
-  .day-column.today-active .day-title::after { display: none !important; } /* Sembunyikan badge TODAY saat cetak PDF */
+  .day-column.today-active .day-title::after { display: none !important; } 
   .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 6px !important; font-size: 10px !important; font-weight: 700 !important; padding: 4px 0 !important; margin-bottom: 6px !important; text-align: center !important; text-transform: uppercase !important; }
   .card { background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; display: flex !important; flex-direction: row !important; min-height: 50px !important; padding: 4px !important; border-radius: 6px !important; margin-bottom: 4px !important; page-break-inside: avoid !important; gap: 4px !important; }
   .card-left { border-right: 1px dashed #e2e8f0 !important; padding-right: 4px !important; margin-right: 2px !important; flex: 0 0 35px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
