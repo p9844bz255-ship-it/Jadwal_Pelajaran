@@ -47,6 +47,12 @@ window.onload = function() {
     });
 };
 
+// Event listener untuk memastikan saat layar diubah ukurannya (resize/rotate HP), tinggi tabel dihitung ulang agar tetap presisi.
+window.addEventListener('resize', () => {
+  syncCardHeights('resultsGrid');
+  syncCardHeights('resultsTematikGrid');
+});
+
 function getTodayString() {
   const dayIndex = new Date().getDay();
   const daysMap = ['SABTU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', "JUM'AT", 'SABTU'];
@@ -152,6 +158,45 @@ function formatTimeLeftColumn(timeStr) {
   return timeStr;
 }
 
+// ==========================================================================
+// FUNGSI UNTUK MENYAMAKAN TINGGI KARTU AGAR BARIS & BAWAH TABEL RATA
+// ==========================================================================
+function syncCardHeights(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const allCards = container.querySelectorAll('.card');
+  if (allCards.length === 0) return;
+
+  // 1. Reset tinggi ke 'auto' dulu supaya nilai hitungnya segar
+  allCards.forEach(c => c.style.height = 'auto');
+
+  // 2. Cari tahu ada berapa baris JP secara keseluruhan
+  let maxJpFound = 0;
+  allCards.forEach(c => {
+      const jpVal = parseInt(c.getAttribute('data-jp') || 0);
+      if (jpVal > maxJpFound) maxJpFound = jpVal;
+  });
+
+  // 3. Loop tiap JP, cari kartu paling tinggi, lalu set semua kartu di JP itu dengan tinggi yang sama
+  for (let i = 1; i <= maxJpFound; i++) {
+      const cardsInRow = container.querySelectorAll(`.card[data-jp="${i}"]`);
+      if (cardsInRow.length === 0) continue;
+
+      let maxHeight = 0;
+      cardsInRow.forEach(c => {
+          if (c.offsetHeight > maxHeight) {
+              maxHeight = c.offsetHeight;
+          }
+      });
+
+      cardsInRow.forEach(c => {
+          c.style.height = maxHeight + 'px';
+      });
+  }
+}
+
+
 function handleTematikGridFilter() {
   if (!isTematikLoaded || !TEMATIK_DATA) return;
 
@@ -170,13 +215,12 @@ function handleTematikGridFilter() {
   container.innerHTML = "";
   container.style.display = "flex"; 
 
+  let activeDaysData = [];
+  let globalMaxJp = 0; // Kunci agar bawahnya rata!
+
   days.forEach(day => {
     let dayRows = TEMATIK_DATA.rows.filter(r => r.hari === day);
     if(dayRows.length === 0) return;
-
-    // Cari JP maksimal pada hari ini dari data utama (agar tau jumlah slot)
-    let maxJp = 0;
-    dayRows.forEach(r => { let j = parseInt(r.jp); if(!isNaN(j) && j > maxJp) maxJp = j; });
 
     let jpGroupsMatch = {};
     let hasMatchForDay = false;
@@ -206,19 +250,52 @@ function handleTematikGridFilter() {
       }
     });
 
-    // Skip rendering kolom hari ini jika tidak ada yang cocok sama sekali
-    if (!hasMatchForDay && query !== "") return;
+    if (hasMatchForDay || query === "") {
+        // Cari max JP di master data untuk hari ini
+        let localMax = 0;
+        TEMATIK_DATA.rows.filter(r => r.hari === day).forEach(r => {
+            let j = parseInt(r.jp);
+            if(!isNaN(j) && j > localMax) localMax = j;
+        });
+        
+        // Simpan nilai JP paling besar untuk diseragamkan ke semua kolom
+        if(localMax > globalMaxJp) globalMaxJp = localMax;
 
+        activeDaysData.push({
+            day: day,
+            dayRows: dayRows,
+            jpGroupsMatch: jpGroupsMatch
+        });
+    }
+  });
+
+  if (activeDaysData.length === 0) {
+    container.style.display = "none";
+    const initTematik = document.getElementById('initialStateTematik');
+    initTematik.innerHTML = `<p style="font-size: 15px; color: var(--text-muted);">Tidak ada jadwal pelajaran tematik yang cocok dengan pencarian.</p>`;
+    initTematik.style.display = "block";
+    return;
+  }
+
+  document.getElementById('initialStateTematik').style.display = "none";
+
+  activeDaysData.forEach(dayData => {
+    const { day, dayRows, jpGroupsMatch } = dayData;
     let htmlCards = "";
 
-    // Loop dari JP 1 sampai JP Maksimal hari itu
-    for (let jpNum = 1; jpNum <= maxJp; jpNum++) {
+    for (let jpNum = 1; jpNum <= globalMaxJp; jpNum++) {
       let classesInJp = jpGroupsMatch[jpNum] || [];
       
-      // Ambil referensi waktu asli untuk JP ini
       let rawWaktu = "-";
       let refRow = dayRows.find(r => parseInt(r.jp) === jpNum);
       if (refRow && refRow.waktu) rawWaktu = refRow.waktu;
+
+      // Jika di hari ini mentok (contoh Jumat mentok JP 5, tapi kolom lain butuh cetak JP 6), cari fallback jam
+      if(rawWaktu === "-" && jpNum <= globalMaxJp) {
+          const fallbackRef = TEMATIK_DATA.rows.find(r => parseInt(r.jp) === jpNum && r.waktu && r.waktu !== "-");
+          if (fallbackRef) rawWaktu = fallbackRef.waktu;
+      }
+
       let formattedWaktu = formatTimeLeftColumn(rawWaktu);
 
       if (classesInJp.length > 0) {
@@ -250,8 +327,9 @@ function handleTematikGridFilter() {
           `;
         });
 
+        // Tambahkan atribut data-jp supaya JS bisa mendeteksinya nanti
         htmlCards += `
-          <div class="card tematik-card-combined">
+          <div class="card tematik-card-combined" data-jp="${jpNum}">
             <div class="card-left">
               <span class="jp">${jpNum}</span>
               <span class="waktu">${formattedWaktu}</span>
@@ -262,9 +340,8 @@ function handleTematikGridFilter() {
           </div>
         `;
       } else {
-        // SLOT KOSONG (JIKA GURU TIDAK MENGAJAR DI JP INI)
         htmlCards += `
-          <div class="card tematik-card-combined" style="opacity: 0.6; background: #f8fafc; border: 1px dashed #cbd5e1; box-shadow: none;">
+          <div class="card tematik-card-combined" data-jp="${jpNum}" style="opacity: 0.6; background: #f8fafc; border: 1px dashed #cbd5e1; box-shadow: none;">
             <div class="card-left">
               <span class="jp">${jpNum}</span>
               <span class="waktu">${formattedWaktu}</span>
@@ -277,31 +354,22 @@ function handleTematikGridFilter() {
       }
     }
 
-    if (htmlCards !== "") {
-      const dayID = day.replace("'", "").toLowerCase();
-      const col = document.createElement('div');
-      
-      const isActiveClass = (day === currentDayString) ? " today-active" : "";
-      col.className = `day-column col-${dayID}${isActiveClass}`;
-      
-      col.innerHTML = `
-        <div class="day-title">${day}</div>
-        ${htmlCards}
-      `;
-      container.appendChild(col);
-    }
+    const dayID = day.replace("'", "").toLowerCase();
+    const col = document.createElement('div');
+    const isActiveClass = (day === currentDayString) ? " today-active" : "";
+    col.className = `day-column col-${dayID}${isActiveClass}`;
+    
+    col.innerHTML = `
+      <div class="day-title">${day}</div>
+      ${htmlCards}
+    `;
+    container.appendChild(col);
   });
 
-  if(container.children.length === 0) {
-    container.style.display = "none";
-    const initTematik = document.getElementById('initialStateTematik');
-    initTematik.innerHTML = `<p style="font-size: 15px; color: var(--text-muted);">Tidak ada jadwal pelajaran tematik yang cocok dengan pencarian.</p>`;
-    initTematik.style.display = "block";
-  } else {
-    document.getElementById('initialStateTematik').style.display = "none";
-  }
-
   applySubjectColors();
+  
+  // Panggil fungsi sinkronisasi tinggi kartu setelah HTML selesai dicetak ke layar
+  setTimeout(() => syncCardHeights('resultsTematikGrid'), 50); 
 }
 
 function clearSearch() {
@@ -422,43 +490,48 @@ function renderGrid(data, query) {
   container.innerHTML = "";
   container.style.display = "flex"; 
 
-  days.forEach(day => {
-    // Ambil data yang cocok dengan pencarian pada hari ini
-    const dayData = data.filter(d => d.hari === day).sort((a, b) => parseInt(a.jp) - parseInt(b.jp));
-    
-    // Jika tidak ada data sama sekali, jangan tampilkan kolom hari tersebut
-    if (dayData.length === 0) return;
+  let activeDays = [];
+  let globalMaxJp = 0; 
 
+  // Menentukan mana saja kolom hari yang akan ditampilkan dan mencari Global Max JP
+  days.forEach(day => {
+    const dayData = data.filter(d => d.hari === day);
+    if (dayData.length > 0) {
+        activeDays.push(day);
+        RAW_DATA.forEach(r => {
+            if (r.hari === day) {
+                let j = parseInt(r.jp);
+                if (!isNaN(j) && j > globalMaxJp) globalMaxJp = j;
+            }
+        });
+    }
+  });
+
+  activeDays.forEach(day => {
+    const dayData = data.filter(d => d.hari === day).sort((a, b) => parseInt(a.jp) - parseInt(b.jp));
     const dayID = day.replace("'", "").toLowerCase(); 
     const col = document.createElement('div');
-    
     const isActiveClass = (day === currentDayString) ? " today-active" : "";
     col.className = `day-column col-${dayID}${isActiveClass}`;
     
     let html = `<div class="day-title">${day}</div>`;
     
-    // Cari JP maksimal pada hari ini dari master RAW_DATA
-    let maxJp = 0;
-    RAW_DATA.forEach(r => {
-        if (r.hari === day) {
-            let j = parseInt(r.jp);
-            if (!isNaN(j) && j > maxJp) maxJp = j;
-        }
-    });
-    
-    // Loop dari 1 sampai JP Maksimal
-    for (let i = 1; i <= maxJp; i++) {
-        // Cek apakah ada jadwal guru/kelas pada JP ini
+    // Loop dari 1 sampai dengan Global Maximum JP agar semua kolom rata bawahnya
+    for (let i = 1; i <= globalMaxJp; i++) {
         const itemsForJp = dayData.filter(d => parseInt(d.jp) === i);
         
-        // Ambil waktu asli (default) untuk JP ini dari RAW_DATA
         let defaultWaktu = "-";
         const refData = RAW_DATA.find(d => d.hari === day && parseInt(d.jp) === i);
         if (refData && refData.waktu) defaultWaktu = refData.waktu;
+        
+        // Fallback jika tidak ada waktu karena harinya aslinya lebih pendek
+        if (defaultWaktu === "-" && i <= globalMaxJp) {
+           const fallbackRef = RAW_DATA.find(d => parseInt(d.jp) === i && d.waktu && d.waktu !== "-");
+           if (fallbackRef) defaultWaktu = fallbackRef.waktu;
+        }
         let formattedWaktu = formatTimeLeftColumn(defaultWaktu);
 
         if (itemsForJp.length > 0) {
-            // Render jika ada jadwal
             itemsForJp.forEach(item => {
               let cardRightHTML = '';
               if (item.mapel === 'FLAG CEREMONY') {
@@ -473,7 +546,7 @@ function renderGrid(data, query) {
               }
               
               html += `
-                <div class="card">
+                <div class="card" data-jp="${i}">
                   <div class="card-left">
                     <span class="jp">${item.jp}</span>
                     <span class="waktu">${formattedWaktu}</span>
@@ -483,9 +556,8 @@ function renderGrid(data, query) {
               `;
             });
         } else {
-            // Render slot KOSONG jika tidak ada jadwal di JP ini
             html += `
-              <div class="card" style="opacity: 0.6; background: #f8fafc; border: 1px dashed #cbd5e1; box-shadow: none;">
+              <div class="card" data-jp="${i}" style="opacity: 0.6; background: #f8fafc; border: 1px dashed #cbd5e1; box-shadow: none;">
                 <div class="card-left">
                   <span class="jp">${i}</span>
                   <span class="waktu">${formattedWaktu}</span>
@@ -502,12 +574,11 @@ function renderGrid(data, query) {
   });
 
   applySubjectColors();
+  
+  // Panggil fungsi sinkronisasi tinggi kartu setelah HTML selesai dicetak ke layar
+  setTimeout(() => syncCardHeights('resultsGrid'), 50);
 }
 
-
-// ==========================================================================
-// FUNGSI UNTUK MEMBERIKAN WARNA PADA MATA PELAJARAN (REVISI !IMPORTANT)
-// ==========================================================================
 function applySubjectColors() {
     const cards = document.querySelectorAll('.card-right, .tematik-inner-col');
     
@@ -528,19 +599,15 @@ function applySubjectColors() {
         const mapelEl = card.querySelector('.mapel');
         const kelasEl = card.querySelector('.kelas-info');
         
-        // Mencegah error jika elemen yang dirender tidak memiliki mapel/kelas (seperti Flag Ceremony / KOSONG)
         if (!mapelEl || !kelasEl) return;
         
         const mapelName = mapelEl.textContent.trim().toUpperCase();
-        // Menghapus tag highlight pencarian dari teks murni
         const cleanMapelName = mapelName.replace(/<[^>]*>?/gm, ''); 
         const kelasName = kelasEl.textContent.trim().toUpperCase();
 
         if (cleanMapelName.includes('AL QURAN') || cleanMapelName.includes('AL-QURAN')) {
-            // Warna mapel tetap default menggunakan setProperty agar menembus CSS
             mapelEl.style.setProperty('color', 'var(--text-main)', 'important'); 
             
-            // Nama kelas yang diberi warna unik
             if (!colorMap['KELAS_'+kelasName]) {
                 colorMap['KELAS_'+kelasName] = colorPalette[colorIndex % colorPalette.length];
                 colorIndex++;
@@ -548,7 +615,6 @@ function applySubjectColors() {
             kelasEl.style.setProperty('color', colorMap['KELAS_'+kelasName], 'important');
             
         } else {
-            // Warna kelas tetap biru
             kelasEl.style.setProperty('color', 'var(--logo-blue-accent)', 'important'); 
             
             if (!colorMap[cleanMapelName]) {
@@ -559,7 +625,6 @@ function applySubjectColors() {
                     colorIndex++;
                 }
             }
-            // Menerapkan warna ke mapel dengan paksaan !important
             mapelEl.style.setProperty('color', colorMap[cleanMapelName], 'important');
         }
     });
