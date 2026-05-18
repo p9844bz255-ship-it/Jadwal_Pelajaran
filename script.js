@@ -967,9 +967,9 @@ function cetakPDF(tipeJadwal) {
                     justify-content: center !important;
                     gap: 1px !important;
                 }
-                .kelas-info { font-size: 8px !important; }
-                .mapel { font-size: 8.5px !important; }
-                .guru-nama { font-size: 7.5px !important; }
+                .kelas-info { font-size: 9px !important; }
+                .mapel { font-size: 9px !important; font-weight: bold !important; } /* Ditambah tebal agar mapel tetap menonjol */
+                .guru-nama { font-size: 9px !important; }
 
                 /* CUSTOM FOOTNOTES */
                 #customPrintFooterLeft {
