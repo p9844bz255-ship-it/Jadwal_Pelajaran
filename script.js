@@ -8,6 +8,9 @@ let TEMATIK_DATA = null;
 let isDataLoaded = false;
 let isTematikLoaded = false;
 
+// Variabel global untuk menyimpan nama lengkap hasil pencarian (Guru/Kelas)
+let currentExactMatch = "";
+
 window.onload = function() {
   const searchInput = document.getElementById('searchInput');
   
@@ -190,9 +193,6 @@ function handleTematikGridFilter() {
   const clearTematikBtn = document.getElementById('clearTematikBtn');
 
   if(clearTematikBtn) clearTematikBtn.style.display = query.length > 0 ? "flex" : "none";
-
-  const activeOptText = document.getElementById('pekanSelect').options[document.getElementById('pekanSelect').selectedIndex]?.text || "";
-  document.getElementById('printSubTitleText').innerText = `AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY | ${activeOptText.toUpperCase()}`;
 
   const days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', "JUM'AT"];
   const currentDayString = getTodayString(); 
@@ -413,7 +413,8 @@ function handleSearch() {
   if (query === "") {
     init.style.display = "block";
     container.style.display = "none";
-    if(jpCounter) jpCounter.style.display = "none"; 
+    if(jpCounter) jpCounter.style.display = "none";
+    currentExactMatch = ""; // Reset nama jika kosong
     return;
   }
 
@@ -426,6 +427,28 @@ function handleSearch() {
     const mapel = (item.mapel || "").toString().toLowerCase();
     return guru.includes(query) || kelas.includes(query) || mapel.includes(query);
   });
+
+  // --- LOGIKA MENGAMBIL NAMA LENGKAP UNTUK HEADER PDF ---
+  currentExactMatch = query.toUpperCase(); // Fallback jika tidak menemukan presisi
+  for (let item of filtered) {
+    if (item.guru) {
+        let gurus = item.guru.split('/').map(g => g.trim());
+        let foundGuru = gurus.find(g => g.toLowerCase().includes(query));
+        if (foundGuru) { 
+            currentExactMatch = foundGuru; 
+            break; 
+        }
+    }
+    if (item.kelas) {
+        let kelases = item.kelas.split(',').map(k => k.trim());
+        let foundKelas = kelases.find(k => k.toLowerCase().includes(query));
+        if (foundKelas) { 
+            currentExactMatch = foundKelas; 
+            break; 
+        }
+    }
+  }
+  // -----------------------------------------------------
 
   let totalJP = 0;
   let isGuruSearch = false;
@@ -693,42 +716,44 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (DIPERBARUI UNTUK FIX BUG TUMPANG TINDIH DI HP)
+// CETAK PDF (DENGAN INJEKSI HEADER WEBSITE & NAMA DINAMIS)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
-    const containerId = tipeJadwal === 'umum' ? 'resultsGrid' : 'resultsTematikGrid';
-    const hiddenContainerId = tipeJadwal === 'umum' ? 'resultsTematikGrid' : 'resultsGrid';
-    
-    const container = document.getElementById(containerId);
+    // Fungsi cetak ini dioptimalkan khusus untuk Tab Umum sesuai permintaan
+    if (tipeJadwal !== 'umum') return; 
+
+    const container = document.getElementById('resultsGrid');
     
     if (!container || container.style.display === "none" || container.innerHTML === "") {
         alert("Tidak ada jadwal yang bisa dicetak. Silakan lakukan pencarian terlebih dahulu.");
         return;
     }
 
-    // Klik tab 'SEMUA' otomatis di HP agar semua hari muncul saat diprint
+    // Paksa mode SEMUA hari terbuka (untuk mobile layout)
     const tabs = container.querySelectorAll('.mobile-day-tabs .tab-btn');
     tabs.forEach(btn => {
         if (btn.innerText.toUpperCase() === "SEMUA") btn.click();
     });
 
     setTimeout(() => {
-        document.body.classList.add('print-mode-active');
-        if (tipeJadwal === 'umum') document.body.classList.add('print-umum');
-        else document.body.classList.add('print-tematik');
-
-        // Atur Judul PDF Sesuai Tab
-        const printTitleEl = document.getElementById('printTitleText');
-        if(tipeJadwal === 'umum') {
-            const val = document.getElementById('searchInput').value.trim().toUpperCase();
-            printTitleEl.innerText = val ? `Jadwal Pelajaran Umum - ${val}` : "Jadwal Pelajaran Umum";
-        } else {
-            const val = document.getElementById('searchTematikInput').value.trim().toUpperCase();
-            printTitleEl.innerText = val ? `Jadwal Pelajaran Tematik - ${val}` : "Jadwal Pelajaran Tematik";
+        // --- 1. MEMBUAT ELEMEN NAMA DINAMIS PENGGANTI PENCARIAN ---
+        let dynamicLabel = document.getElementById('printDynamicLabel');
+        if (!dynamicLabel) {
+            dynamicLabel = document.createElement('div');
+            dynamicLabel.id = 'printDynamicLabel';
+            
+            // Kita sisipkan elemen ini tepat sebelum area kotak pencarian
+            const controls = document.getElementById('controlsUmum');
+            if(controls && controls.parentNode) {
+                controls.parentNode.insertBefore(dynamicLabel, controls);
+            } else {
+                document.body.insertBefore(dynamicLabel, document.body.firstChild);
+            }
         }
+        // Isi dengan string exact match (nama full guru/kelas yang ditemukan saat search)
+        dynamicLabel.innerText = currentExactMatch;
 
-        // --- INJEKSI CSS PENGAMAN KHUSUS MOBILE ---
-        // Menjamin 100% jadwal yang tidak aktif disembunyikan secara paksa saat dicetak
+        // --- 2. INJEKSI CSS PENGAMAN & PENGATUR HEADER PDF ---
         let printFixStyle = document.getElementById('printFixStyle');
         if (!printFixStyle) {
             printFixStyle = document.createElement('style');
@@ -736,26 +761,59 @@ function cetakPDF(tipeJadwal) {
             document.head.appendChild(printFixStyle);
         }
         
-        // CSS yang memaksa tabel lain hilang dari radar printer
         printFixStyle.innerHTML = `
+            /* Aturan css khusus layar biasa: sembunyikan label dinamis */
+            @media screen {
+                #printDynamicLabel { display: none !important; }
+            }
+
+            /* Aturan css saat dicetak */
             @media print {
-                #${hiddenContainerId}, #${hiddenContainerId} * { 
+                /* Sembunyikan Navigasi Tab Jadwal Umum/Tematik (ubah/tambahkan class tab Anda jika beda) */
+                .tab-container, .tabs, .nav-tabs, button[id^="btnTab"] { 
                     display: none !important; 
-                    opacity: 0 !important;
-                    height: 0 !important;
-                    visibility: hidden !important;
+                }
+
+                /* Sembunyikan Kotak Pencarian dan Tombol Cetak PDF */
+                #controlsUmum, .search-container, button.btn-action, #clearBtn { 
+                    display: none !important; 
+                }
+
+                /* Sembunyikan Grid Tabel Tematik secara paksa */
+                #resultsTematikGrid, #initialState, #initialStateTematik { 
+                    display: none !important; 
+                }
+
+                /* Sembunyikan Print Title default yang sudah usang */
+                #printTitleText, #printSubTitleText {
+                    display: none !important;
+                }
+
+                /* TAMPILKAN HEADER WEBSITE ASLI */
+                header, .main-header {
+                    display: flex !important; /* asumsikan pakai flexbox, biarkan natural */
+                }
+
+                /* TAMPILKAN LABEL NAMA GURU/KELAS DI BAWAH HEADER */
+                #printDynamicLabel {
+                    display: block !important;
+                    text-align: center;
+                    font-size: 22px;
+                    font-weight: 800;
+                    color: #1e3a8a !important; /* Warna biru profesional, bisa disesuaikan */
+                    margin: 15px 0 25px 0;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
+
+                /* Pastikan body dan background bersih saat di print */
+                body {
+                    background: #ffffff !important;
                 }
             }
         `;
 
-        // Panggil dialog print browser
         window.print();
         
-        // Bersihkan class dan style setelah jendela print ditutup
-        document.body.classList.remove('print-mode-active', 'print-umum', 'print-tematik');
-        if (printFixStyle) {
-            printFixStyle.remove();
-        }
-
     }, 300);
 }
