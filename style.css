@@ -232,9 +232,7 @@ body {
   .tab-container { margin-top: 16px; width: 100%; display: flex; justify-content: space-between; }
   .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
   
-  .flex-schedule-container { 
-    padding: 0 4px 12px 4px; 
-  }
+  .flex-schedule-container { padding: 0 4px 12px 4px; }
   .mobile-day-tabs { display: flex; }
   
   .days-wrapper { flex-direction: column; gap: 16px; }
@@ -262,53 +260,52 @@ body {
 /* ==========================================================================
    CSS KHUSUS CETAK PDF (MEMAKSA 1 HALAMAN & MEMISAHKAN UMUM / TEMATIK)
    ========================================================================== */
-#printHeader { display: none; }
 @media print {
-  /* Margin 10mm menjamin batas aman pada kertas A4 */
-  @page { size: A4 landscape; margin: 10mm 12mm; }
+  /* Margin 8mm Atas Bawah dan 10mm Kiri Kanan Menjamin Keamanan Tepi Kertas */
+  @page { size: A4 landscape; margin: 8mm 10mm; }
   
-  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   
-  /* Saat tombol cetak diklik, sembunyikan semua secara default */
-  body.print-mode-active * { visibility: hidden !important; }
-  body::before, body::after, .header-section, #initialState, #initialStateTematik, .mobile-day-tabs, .tab-container, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { display: none !important; }
+  /* 1. SEMBUNYIKAN SEMUA ELEMEN BAWAAN TANPA MENYISAKAN RUANG KOSONG */
+  body.print-mode-active > div { display: none !important; }
   
-  /* --- LOGIKA CETAK JADWAL UMUM --- */
-  body.print-umum #resultsGrid, body.print-umum #resultsGrid * { visibility: visible !important; }
-  body.print-umum #resultsGrid { position: absolute; left: 0; top: 0; width: 100%; display: flex !important; flex-direction: column !important; }
-  body.print-umum #resultsTematikGrid { display: none !important; }
+  /* 2. TAMPILKAN HEADER PRINT SAJA */
+  body.print-mode-active #printHeader {
+      display: flex !important;
+      width: 100%; margin-bottom: 8px; border-bottom: 2px solid #0f172a; padding-bottom: 4px; align-items: center;
+  }
 
-  /* --- LOGIKA CETAK JADWAL TEMATIK --- */
-  body.print-tematik #resultsTematikGrid, body.print-tematik #resultsTematikGrid * { visibility: visible !important; }
-  body.print-tematik #resultsTematikGrid { position: absolute; left: 0; top: 0; width: 100%; display: flex !important; flex-direction: column !important; }
-  body.print-tematik #resultsGrid { display: none !important; }
+  /* 3. TAMPILKAN JADWAL SESUAI TAB YANG AKTIF (Menghindari Bercampur) */
+  body.print-umum #resultsGrid { display: flex !important; flex-direction: column !important; width: 100% !important; }
+  body.print-tematik #resultsTematikGrid { display: flex !important; flex-direction: column !important; width: 100% !important; }
 
-  /* Header Print */
-  #printHeader { visibility: visible !important; display: flex !important; width: 100%; margin-bottom: 10px; border-bottom: 2px solid #0f172a; padding-bottom: 4px; align-items: center; }
-  body.print-mode-active #printHeader * { visibility: visible !important; }
-  .print-logo-cell { width: 50px; padding-right: 15px; }
-  .print-logo { height: 38px; width: auto; display: block; }
+  /* Sembunyikan elemen navigasi di dalam Grid agar tidak ikut ter-print */
+  .mobile-day-tabs, #initialState, #initialStateTematik { display: none !important; }
+
+  /* Styling Header Print */
+  .print-logo-cell { width: 45px; padding-right: 12px; }
+  .print-logo { height: 32px; width: auto; display: block; }
   .print-text-cell { flex: 1; text-align: left; }
-  #printHeader h2 { font-size: 15px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
-  #printHeader h3 { font-size: 11px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
+  #printHeader h2 { font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
+  #printHeader h3 { font-size: 10px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
 
-  /* MENGHANCURKAN ATURAN MOBILE (85vw) SAAT PRINT DI HP */
+  /* MENGHANCURKAN ATURAN MOBILE (85vw) SAAT PRINT DARI HP */
   .days-wrapper.show-all-mobile .day-column { width: auto !important; flex: 1 1 0% !important; min-width: 0 !important; display: block !important; }
   .days-wrapper.show-all-mobile { flex-wrap: nowrap !important; overflow-x: visible !important; gap: 4px !important; }
 
-  /* MENGATUR UKURAN FONT & KOTAK AGAR MUAT 1 HALAMAN A4 */
-  .flex-schedule-container { display: flex !important; flex-direction: column !important; width: 100% !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; page-break-inside: avoid !important; }
+  /* MENGATUR UKURAN FONT & KOTAK AGAR MUAT 1 HALAMAN A4 PENUH */
+  .flex-schedule-container { padding: 0 !important; margin: 0 !important; overflow: visible !important; page-break-inside: avoid !important; }
   .days-wrapper { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: flex-start !important; gap: 4px !important; width: 100% !important; }
   
-  .day-column { display: block !important; background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 4px !important; padding: 2px 4px !important; flex: 1 1 0% !important; min-width: 0 !important; max-width: none !important; box-shadow: none !important; page-break-inside: avoid !important; }
+  .day-column { display: block !important; background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 4px !important; padding: 2px 3px !important; flex: 1 1 0% !important; min-width: 0 !important; max-width: none !important; box-shadow: none !important; page-break-inside: avoid !important; }
   .day-column.today-active .day-title::after { display: none !important; } 
-  .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 4px !important; font-size: 9px !important; font-weight: 700 !important; padding: 3px 0 !important; margin-bottom: 4px !important; text-align: center !important; text-transform: uppercase !important; }
+  .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 4px !important; font-size: 8px !important; font-weight: 700 !important; padding: 3px 0 !important; margin-bottom: 3px !important; text-align: center !important; text-transform: uppercase !important; }
   
-  /* Ukuran Kartu Diperkecil */
-  .card { background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; display: flex !important; flex-direction: row !important; min-height: 35px !important; padding: 3px !important; border-radius: 4px !important; margin-bottom: 2px !important; page-break-inside: avoid !important; gap: 2px !important; }
-  .card-left { border-right: 1px dashed #e2e8f0 !important; padding-right: 2px !important; margin-right: 2px !important; flex: 0 0 30px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
-  .jp { color: #0f172a !important; font-size: 11px !important; font-weight: 800 !important; line-height: 1 !important; margin-bottom: 1px !important;}
-  .waktu { color: #64748b !important; font-size: 6px !important; margin-top: 1px !important; text-align: center !important; line-height: 1.1 !important; }
+  /* CRITICAL: Memaksa tinggi kartu jadi "auto" agar hitungan script.js (inline CSS) tidak bikin bengkak! */
+  .card { height: auto !important; background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; display: flex !important; flex-direction: row !important; min-height: 32px !important; padding: 2px !important; border-radius: 4px !important; margin-bottom: 2px !important; page-break-inside: avoid !important; gap: 2px !important; }
+  .card-left { border-right: 1px dashed #e2e8f0 !important; padding-right: 2px !important; margin-right: 2px !important; flex: 0 0 28px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
+  .jp { color: #0f172a !important; font-size: 10px !important; font-weight: 800 !important; line-height: 1 !important; margin-bottom: 1px !important;}
+  .waktu { color: #64748b !important; font-size: 5.5px !important; margin-top: 1px !important; text-align: center !important; line-height: 1.1 !important; }
   .card-right { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; text-align: left !important; gap: 1px !important; }
   
   /* Kartu Tematik (Kolom Bergabung) */
@@ -316,10 +313,10 @@ body {
   .tematik-inner-col { flex: 1 !important; padding: 0 2px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; gap: 1px !important; }
   .tematik-inner-col-border { border-left: 1px solid #e2e8f0 !important; }
   
-  /* Font Teks Di Dalam Kartu Diperkecil */
-  .kelas-info { font-size: 7px !important; font-weight: 700 !important; margin-bottom: 0 !important; line-height: 1.1 !important; }
-  .mapel { font-size: 8px !important; font-weight: 800 !important; line-height: 1.1 !important; margin-bottom: 0 !important; }
-  .guru-nama { color: #475569 !important; font-size: 7px !important; font-weight: 600 !important; margin-top: 0 !important; line-height: 1.1 !important; }
+  /* Font Teks Di Dalam Kartu Diperkecil Maksimal */
+  .kelas-info { font-size: 6.5px !important; font-weight: 700 !important; margin-bottom: 0 !important; line-height: 1.1 !important; }
+  .mapel { font-size: 7.5px !important; font-weight: 800 !important; line-height: 1.1 !important; margin-bottom: 0 !important; }
+  .guru-nama { color: #475569 !important; font-size: 6.5px !important; font-weight: 600 !important; margin-top: 0 !important; line-height: 1.1 !important; }
   
   /* Hapus Warna Background Pencarian saat di-Print */
   mark.search-highlight, .search-highlight { background-color: transparent !important; color: inherit !important; font-weight: bold !important; padding: 0 !important; }

@@ -679,7 +679,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// FUNGSI CETAK PDF CERDAS (Terpisah Umum/Tematik, Memaksa Muat 1 Halaman)
+// FUNGSI CETAK PDF CERDAS (Terpisah Umum/Tematik & Bebas Overlap)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     const containerId = tipeJadwal === 'umum' ? 'resultsGrid' : 'resultsTematikGrid';
@@ -690,31 +690,33 @@ function cetakPDF(tipeJadwal) {
         return;
     }
 
-    // 1. Simulasikan klik "SEMUA" di layar HP agar DOM menampilkan jadwal sepekan penuh
+    // 1. Simulasikan klik "SEMUA" agar elemen dari HP dirender utuh (Horizontal penuh)
     const tabs = container.querySelectorAll('.mobile-day-tabs .tab-btn');
     tabs.forEach(btn => {
         if (btn.innerText.toUpperCase() === "SEMUA") btn.click();
     });
 
-    // 2. Beri "tanda class" pada body yang mengatur visibilitas via CSS saat diprint
-    document.body.classList.add('print-mode-active');
-    if (tipeJadwal === 'umum') document.body.classList.add('print-umum');
-    else document.body.classList.add('print-tematik');
-
-    // 3. Update Text Header (Untuk ditampilkan di kertas hasil PDF)
-    const printTitleEl = document.getElementById('printTitleText');
-    if(tipeJadwal === 'umum') {
-        const val = document.getElementById('searchInput').value.trim().toUpperCase();
-        printTitleEl.innerText = val ? `Jadwal Pelajaran Umum - ${val}` : "Jadwal Pelajaran Umum";
-    } else {
-        const val = document.getElementById('searchTematikInput').value.trim().toUpperCase();
-        printTitleEl.innerText = val ? `Jadwal Pelajaran Tematik - ${val}` : "Jadwal Pelajaran Tematik";
-    }
-
-    // 4. Beri jeda sebentar (800ms) agar browser selesai menyesuaikan layout horizontal, lalu eksekusi print
+    // 2. Beri jeda 300ms agar DOM sempat menggambar tab "SEMUA" sebelum dicetak
     setTimeout(() => {
+        // Tanda yang memicu CSS @media print
+        document.body.classList.add('print-mode-active');
+        if (tipeJadwal === 'umum') document.body.classList.add('print-umum');
+        else document.body.classList.add('print-tematik');
+
+        // Update Judul Print
+        const printTitleEl = document.getElementById('printTitleText');
+        if(tipeJadwal === 'umum') {
+            const val = document.getElementById('searchInput').value.trim().toUpperCase();
+            printTitleEl.innerText = val ? `Jadwal Pelajaran Umum - ${val}` : "Jadwal Pelajaran Umum";
+        } else {
+            const val = document.getElementById('searchTematikInput').value.trim().toUpperCase();
+            printTitleEl.innerText = val ? `Jadwal Pelajaran Tematik - ${val}` : "Jadwal Pelajaran Tematik";
+        }
+
+        // Buka Jendela Print
         window.print();
-        // 5. Bersihkan "tanda class" setelah dialog print ditutup
+        
+        // Bersihkan tanda setelah print selesai atau dibatalkan
         document.body.classList.remove('print-mode-active', 'print-umum', 'print-tematik');
-    }, 800);
+    }, 300);
 }
