@@ -284,9 +284,7 @@ function handleTematikGridFilter() {
     document.getElementById('initialStateTematik').style.display = "none";
   }
 
-  // ========================================================
   // PANGGIL FUNGSI WARNA SETELAH JADWAL TEMATIK MUNCUL
-  // ========================================================
   applySubjectColors();
 }
 
@@ -449,15 +447,13 @@ function renderGrid(data, query) {
     container.appendChild(col);
   });
 
-  // ========================================================
   // PANGGIL FUNGSI WARNA SETELAH JADWAL UMUM MUNCUL
-  // ========================================================
   applySubjectColors();
 }
 
 
 // ==========================================================================
-// FUNGSI UNTUK MEMBERIKAN WARNA PADA MATA PELAJARAN (FITUR BARU)
+// FUNGSI UNTUK MEMBERIKAN WARNA PADA MATA PELAJARAN (REVISI !IMPORTANT)
 // ==========================================================================
 function applySubjectColors() {
     const cards = document.querySelectorAll('.card-right, .tematik-inner-col');
@@ -488,17 +484,19 @@ function applySubjectColors() {
         const kelasName = kelasEl.textContent.trim().toUpperCase();
 
         if (cleanMapelName.includes('AL QURAN') || cleanMapelName.includes('AL-QURAN')) {
-            mapelEl.style.color = 'var(--text-main)'; // Warna mapel tetap default
+            // Warna mapel tetap default menggunakan setProperty agar menembus CSS
+            mapelEl.style.setProperty('color', 'var(--text-main)', 'important'); 
             
-            // Nama kelas yang diberi warna random
+            // Nama kelas yang diberi warna unik
             if (!colorMap['KELAS_'+kelasName]) {
                 colorMap['KELAS_'+kelasName] = colorPalette[colorIndex % colorPalette.length];
                 colorIndex++;
             }
-            kelasEl.style.color = colorMap['KELAS_'+kelasName];
+            kelasEl.style.setProperty('color', colorMap['KELAS_'+kelasName], 'important');
             
         } else {
-            kelasEl.style.color = 'var(--logo-blue-accent)'; // Warna kelas tetap biru
+            // Warna kelas tetap biru
+            kelasEl.style.setProperty('color', 'var(--logo-blue-accent)', 'important'); 
             
             if (!colorMap[cleanMapelName]) {
                 if (cleanMapelName.includes('ARABIC')) {
@@ -508,7 +506,8 @@ function applySubjectColors() {
                     colorIndex++;
                 }
             }
-            mapelEl.style.color = colorMap[cleanMapelName];
+            // Menerapkan warna ke mapel dengan paksaan !important
+            mapelEl.style.setProperty('color', colorMap[cleanMapelName], 'important');
         }
     });
 }
