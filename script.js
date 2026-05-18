@@ -40,43 +40,8 @@ window.onload = function() {
 };
 
 // ==========================================================================
-// FUNGSI NAVIGASI TAB (UMUM & TEMATIK)
+// UTILITAS & EVENT LISTENER
 // ==========================================================================
-function switchTab(tabName) {
-  const tabUmum = document.getElementById('tabUmum');
-  const tabTematik = document.getElementById('tabTematik');
-  const controlsUmum = document.getElementById('controlsUmum');
-  const controlsTematik = document.getElementById('controlsTematik');
-  const resultsGrid = document.getElementById('resultsGrid');
-  const resultsTematikGrid = document.getElementById('resultsTematikGrid');
-  const initialState = document.getElementById('initialState');
-  const initialStateTematik = document.getElementById('initialStateTematik');
-  const jpCounter = document.getElementById('jpCounter');
-
-  if (tabName === 'umum') {
-    tabUmum.classList.add('active');
-    tabTematik.classList.remove('active');
-    controlsUmum.style.display = 'flex';
-    controlsTematik.style.display = 'none';
-    
-    resultsTematikGrid.style.display = 'none';
-    initialStateTematik.style.display = 'none';
-    
-    handleSearch();
-  } else {
-    tabTematik.classList.add('active');
-    tabUmum.classList.remove('active');
-    controlsTematik.style.display = 'flex';
-    controlsUmum.style.display = 'none';
-    
-    resultsGrid.style.display = 'none';
-    initialState.style.display = 'none';
-    jpCounter.style.display = 'none';
-    
-    initTematikView();
-  }
-}
-
 window.addEventListener('resize', () => {
   syncCardHeights('resultsGrid');
   syncCardHeights('resultsTematikGrid');
@@ -213,6 +178,9 @@ function syncCardHeights(containerId) {
   }
 }
 
+// ==========================================================================
+// PROSES DATA & LOGIK FILTER JADWAL TEMATIK
+// ==========================================================================
 function handleTematikGridFilter() {
   if (!isTematikLoaded || !TEMATIK_DATA) return;
 
@@ -221,7 +189,7 @@ function handleTematikGridFilter() {
   const container = document.getElementById('resultsTematikGrid');
   const clearTematikBtn = document.getElementById('clearTematikBtn');
 
-  clearTematikBtn.style.display = query.length > 0 ? "flex" : "none";
+  if(clearTematikBtn) clearTematikBtn.style.display = query.length > 0 ? "flex" : "none";
 
   const activeOptText = document.getElementById('pekanSelect').options[document.getElementById('pekanSelect').selectedIndex]?.text || "";
   document.getElementById('printSubTitleText').innerText = `AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY | ${activeOptText.toUpperCase()}`;
@@ -424,6 +392,9 @@ function handleTematikGridFilter() {
   setTimeout(() => syncCardHeights('resultsTematikGrid'), 50); 
 }
 
+// ==========================================================================
+// PROSES DATA & LOGIK FILTER JADWAL UMUM
+// ==========================================================================
 function clearSearch() {
   document.getElementById('searchInput').value = '';
   handleSearch();
@@ -437,12 +408,12 @@ function handleSearch() {
   const clearBtn = document.getElementById('clearBtn');
   const jpCounter = document.getElementById('jpCounter');
 
-  clearBtn.style.display = query.length > 0 ? "flex" : "none";
+  if(clearBtn) clearBtn.style.display = query.length > 0 ? "flex" : "none";
 
   if (query === "") {
     init.style.display = "block";
     container.style.display = "none";
-    jpCounter.style.display = "none"; 
+    if(jpCounter) jpCounter.style.display = "none"; 
     return;
   }
 
@@ -481,12 +452,14 @@ function handleSearch() {
     }
   });
 
-  if (isGuruSearch && totalJP > 0) {
-    const formattedJP = Number.isInteger(totalJP) ? totalJP : totalJP.toFixed(1);
-    jpCounter.innerText = `Total Mengajar: ${formattedJP} JP / Pekan`;
-    jpCounter.style.display = "flex";
-  } else {
-    jpCounter.style.display = "none"; 
+  if (jpCounter) {
+    if (isGuruSearch && totalJP > 0) {
+      const formattedJP = Number.isInteger(totalJP) ? totalJP : totalJP.toFixed(1);
+      jpCounter.innerText = `Total Mengajar: ${formattedJP} JP / Pekan`;
+      jpCounter.style.display = "flex";
+    } else {
+      jpCounter.style.display = "none"; 
+    }
   }
 
   const hasSeninData = filtered.some(item => item.hari === 'SENIN');
@@ -672,6 +645,9 @@ function renderGrid(data, query) {
   setTimeout(() => syncCardHeights('resultsGrid'), 50);
 }
 
+// ==========================================================================
+// PEWARNAAN DINAMIS MATA PELAJARAN
+// ==========================================================================
 function applySubjectColors() {
     const cards = document.querySelectorAll('.card-right, .tematik-inner-col');
     
@@ -716,6 +692,9 @@ function applySubjectColors() {
     });
 }
 
+// ==========================================================================
+// CETAK CETAK PDF
+// ==========================================================================
 function cetakPDF(tipeJadwal) {
     const containerId = tipeJadwal === 'umum' ? 'resultsGrid' : 'resultsTematikGrid';
     const container = document.getElementById(containerId);
