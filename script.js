@@ -647,6 +647,7 @@ function renderGrid(data, query) {
                 cardRightHTML = `<div style="font-size: 14px; font-weight: 800; color: #dc2626; text-align: center; width: 100%;">FLAG CEREMONY</div>`;
               } else {
                 const finalGuru = highlightGuru(item.guru, query);
+                
                 const kelasHTML = isKelasSearch ? '' : `<div class="kelas-info">${item.kelas}</div>`;
 
                 cardRightHTML = `
@@ -740,7 +741,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (REVISI KOTAK JADWAL MELAR KE BAWAH)
+// CETAK PDF (STRETCH KAKU KE BAWAH HALAMAN A4)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     if (tipeJadwal !== 'umum') return; 
@@ -854,13 +855,13 @@ function cetakPDF(tipeJadwal) {
                     print-color-adjust: exact !important;
                 }
 
-                /* REVISI: Kontainer tabel diberi minimal tinggi 75% dari tinggi kertas agar turun ke bawah */
+                /* STRATEGI BARU: Memaksa tinggi container tabel agar memanjang ke bawah kertas */
                 .days-wrapper {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: stretch !important; 
                     width: 100% !important;
-                    min-height: 75vh !important; /* MENGATASI SPACE KOSONG DI BAWAH KERTAS */
+                    height: 118mm !important; /* Panjang kaku yang aman agar menempel dekat footer */
                     gap: 8px !important;
                     page-break-inside: avoid !important;
                     break-inside: avoid !important;
@@ -870,21 +871,23 @@ function cetakPDF(tipeJadwal) {
                     display: flex !important;
                     flex-direction: column !important;
                     flex: 1 !important; 
+                    height: 100% !important; /* Memaksa kolom mengikuti 118mm */
                     min-width: 0 !important;
                     background: #ffffff !important;
                     page-break-inside: avoid !important;
                     break-inside: avoid !important;
                 }
 
-                /* REVISI: flex: 1 akan membuat kotak saling dorong dan memanjang ke bawah secara seimbang */
                 .card {
                     display: flex !important;
-                    flex: 1 !important; 
+                    flex: 1 !important; /* Menginstruksikan setiap kartu agar memanjang mengisi sisa ruang */
+                    min-height: 0 !important; 
+                    margin-bottom: 4px !important;
                     page-break-inside: avoid !important;
                     break-inside: avoid !important;
                 }
 
-                /* Menjaga teks di dalam kotak agar posisinya otomatis di tengah saat kotaknya melar */
+                /* Teks di dalam kartu disejajarkan ke tengah agar proporsional saat kartu memanjang */
                 .card-left, .card-right {
                     display: flex !important;
                     flex-direction: column !important;
