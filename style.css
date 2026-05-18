@@ -1,7 +1,7 @@
 /* ==========================================================================
    THEME CONFIGURATION: PURE WHITE WITH POPPINS & ADAPTIVE HP VIEW
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   --bg-gradient: #ffffff;
@@ -15,10 +15,6 @@
   --guru-match-blue: #1e3a8a;    
   --text-main: #0f172a;         
   --text-muted: #64748b;        
-  --btn-danger-red: #dc2626;
-  
-  --active-day-bg: #f0f7ff;
-  --active-day-border: #bfdbfe;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,31 +37,23 @@ body {
 }
 
 /* ==========================================================================
-   HEADER SECTION MODEREN & TERPUSAT (TIDAK TEMBUS KE KANAN LAPTOP)
+   HEADER SECTION MODEREN & TERPUSAT
    ========================================================================== */
 .header-section {
   background: var(--glass-main-bg);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   padding: 24px 35px; border-radius: 20px; border: 1px solid var(--glass-main-border);
-  margin: 0 auto 25px auto; 
+  /* POIN 1: Menambahkan margin-top 20px agar tidak mepet batas atas layar */
+  margin: 20px auto 25px auto; 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-  
-  /* Mengunci lebar maksimal agar presisi di layar laptop/desktop lebar */
   max-width: 1350px; 
 }
 
 .header-main-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
 }
 
-.header-top-content { 
-  display: flex; align-items: center; gap: 20px; 
-}
-
+.header-top-content { display: flex; align-items: center; gap: 20px; }
 .header-logo { height: 75px; width: auto; }
 .header-section h1 { font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; line-height: 1.2; }
 .header-section p { color: var(--logo-blue-accent); font-size: 14px; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
@@ -73,148 +61,95 @@ body {
 .mobile-subtext { display: none; }
 .desktop-subtext { display: block; }
 
-/* KONTROL MENU DI SISI KANAN HEADER */
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
+.header-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 
-/* KOTAK INPUT DESAIN PILL (BULAT ELEGAN) */
 .input-wrapper {
   position: relative; display: flex; align-items: center; 
-  background: #f8fafc; 
-  border: 1px solid #cbd5e1; 
-  border-radius: 50px; 
-  padding: 0 20px; 
-  height: 46px; 
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 50px; 
+  padding: 0 20px; height: 46px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.input-wrapper:hover {
-  background: #ffffff;
-  border-color: #94a3b8;
-}
-
-.input-wrapper:focus-within {
-  background: #ffffff;
-  border-color: var(--logo-blue-accent); 
-  box-shadow: 0 0 0 4px rgba(17, 85, 204, 0.12);
-  transform: translateY(-1px);
-}
+.input-wrapper:hover { background: #ffffff; border-color: #94a3b8; }
+.input-wrapper:focus-within { background: #ffffff; border-color: var(--logo-blue-accent); box-shadow: 0 0 0 4px rgba(17, 85, 204, 0.12); transform: translateY(-1px); }
 
 .search-wrapper { min-width: 270px; }
-.input-wrapper input {
-  flex: 1; border: none; outline: none; font-size: 13.5px; color: var(--text-main); background: transparent; font-family: 'Poppins';
-}
+.input-wrapper input { flex: 1; border: none; outline: none; font-size: 13.5px; color: var(--text-main); background: transparent; font-family: 'Poppins'; }
 .input-wrapper input::placeholder { color: #94a3b8; }
 
 .input-icon { width: 18px; height: 18px; fill: #64748b; margin-right: 10px; transition: fill 0.2s; }
 .input-wrapper:focus-within .input-icon { fill: var(--logo-blue-accent); }
 
-/* Tombol X Silang */
-.clear-btn { 
-  cursor: pointer; display: none; background: #e2e8f0; border: none; 
-  border-radius: 50%; width: 20px; height: 20px; align-items: center; 
-  justify-content: center; padding: 4px; transition: background 0.2s; 
-}
+.clear-btn { cursor: pointer; display: none; background: #e2e8f0; border: none; border-radius: 50%; width: 20px; height: 20px; align-items: center; justify-content: center; padding: 4px; transition: background 0.2s; }
 .clear-btn:hover { background: #cbd5e1; }
 .clear-btn svg { width: 12px; height: 12px; fill: #475569; }
 
-/* Input Select Picker Filter */
 .input-wrapper-select { padding: 0 16px !important; min-width: 210px; }
-#pekanSelect {
-  width: 100%; background: transparent; border: none; color: var(--text-main) !important; 
-  outline: none; font-family: inherit; font-size: 13px; cursor: pointer; font-weight: 600; height: 100%;
-}
+#pekanSelect { width: 100%; background: transparent; border: none; color: var(--text-main) !important; outline: none; font-family: inherit; font-size: 13px; cursor: pointer; font-weight: 600; height: 100%; }
 #pekanSelect option { background: #ffffff !important; color: #0f172a !important; }
 
-/* Tombol Cetak PDF Pill */
+/* POIN 2: Tombol Cetak PDF Berwarna Biru */
 .btn-pdf {
-  background: var(--btn-danger-red); 
+  background: var(--logo-blue-accent); 
   color: #ffffff; 
-  border: none;
-  padding: 0 22px; height: 46px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 13.5px;
-  display: flex; align-items: center; gap: 8px; font-family: 'Poppins'; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+  border: none; padding: 0 22px; height: 46px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 13.5px; display: flex; align-items: center; gap: 8px; font-family: 'Poppins'; transition: all 0.25s ease; 
+  box-shadow: 0 4px 12px rgba(17, 85, 204, 0.2);
 }
 .btn-pdf:hover { 
-  background: #b91c1c; 
+  background: #0d42a3; /* Biru yang lebih gelap saat di-hover */
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(185, 28, 28, 0.25); 
+  box-shadow: 0 6px 16px rgba(17, 85, 204, 0.35); 
 }
 .btn-pdf svg { width: 18px; height: 18px; fill: currentColor; }
 
-/* TABS KONTROL */
-.tab-container {
-  display: flex; background: rgba(15, 23, 42, 0.05); padding: 4px;
-  border-radius: 30px; width: fit-content; border: 1px solid rgba(0, 0, 0, 0.01); margin-top: 20px;
-}
-.tab-btn {
-  background: transparent; border: none; color: var(--text-muted);
-  padding: 8px 24px; font-size: 13.5px; font-weight: 700; border-radius: 25px;
-  cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
-}
-.tab-btn.active {
-  background: #ffffff; color: var(--text-main); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
+.tab-container { display: flex; background: rgba(15, 23, 42, 0.05); padding: 4px; border-radius: 30px; width: fit-content; border: 1px solid rgba(0, 0, 0, 0.01); margin-top: 20px; }
+.tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 8px 24px; font-size: 13.5px; font-weight: 700; border-radius: 25px; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.2s ease; }
+.tab-btn.active { background: #ffffff; color: var(--text-main); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
 
-/* Counter Box */
 .jp-counter-box { font-size: 12px; font-weight: 600; color: var(--logo-blue-accent); }
 
 /* ==========================================================================
-   GRID MONITOR CONTAINER (TERPUSAT DAN SEJAJAR DENGAN HEADER)
+   GRID MONITOR CONTAINER
    ========================================================================== */
-.flex-schedule-container {
-  display: flex; flex-direction: row; justify-content: center; align-items: flex-start; 
-  gap: 10px; width: 100%; margin: 0 auto; padding: 4px 0 16px 0; overflow-x: hidden; 
-  
-  /* Menyamakan lebar maksimal tabel agar sejajar dengan bagian atas */
-  max-width: 1350px; 
-}
-.day-column { 
-  flex: 1 1 0%; min-width: 0; border-radius: 16px; padding: 10px; 
-  background: var(--glass-main-bg); border: 1px solid var(--glass-main-border); 
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01);
-}
-.day-column.today-active {
-  background: var(--active-day-bg) !important; border: 1px solid var(--active-day-border) !important; box-shadow: 0 4px 22px rgba(17, 85, 204, 0.07) !important;
-}
+.flex-schedule-container { display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 10px; width: 100%; margin: 0 auto; padding: 4px 0 16px 0; overflow-x: hidden; max-width: 1350px; }
+.day-column { flex: 1 1 0%; min-width: 0; border-radius: 16px; padding: 10px; background: var(--glass-main-bg); border: 1px solid var(--glass-main-border); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01); }
+
+.day-column.today-active { background: var(--active-day-bg) !important; border: 1px solid var(--active-day-border) !important; box-shadow: 0 4px 22px rgba(17, 85, 204, 0.07) !important; }
 .day-column.today-active .day-title { background: var(--logo-blue-accent) !important; }
-.day-title { 
-  text-align: center; font-size: 13px; font-weight: 800; padding: 10px 0; margin-bottom: 12px; border-radius: 8px;
-  background: var(--text-main) !important; color: #ffffff !important; text-transform: uppercase; letter-spacing: 0.5px;
+
+/* POIN 3: Keterangan TODAY / HARI INI pada kolom aktif */
+.day-column.today-active .day-title::after {
+  content: " • HARI INI";
+  background: #ffffff;
+  color: var(--logo-blue-accent);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+  font-weight: 800;
+  vertical-align: middle;
 }
-.card {
-  position: relative; background: var(--card-glass-bg) !important; border-radius: 12px !important; 
-  padding: 10px 8px; margin-bottom: 10px; display: flex; gap: 6px; min-height: 95px;
-  border: 1px solid var(--card-glass-border) !important; color: var(--text-main) !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03); transition: all 0.2s ease-in-out; overflow: hidden; 
-}
-.card-left { 
-  flex: 0 0 48px; display: flex; flex-direction: column; align-items: flex-start; 
-  justify-content: center; border-right: 1px dashed rgba(0, 0, 0, 0.08); padding-right: 4px;
-}
+
+.day-title { text-align: center; font-size: 13px; font-weight: 800; padding: 10px 0; margin-bottom: 12px; border-radius: 8px; background: var(--text-main) !important; color: #ffffff !important; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.card { position: relative; background: var(--card-glass-bg) !important; border-radius: 12px !important; padding: 10px 8px; margin-bottom: 10px; display: flex; gap: 6px; min-height: 95px; border: 1px solid var(--card-glass-border) !important; color: var(--text-main) !important; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03); transition: all 0.2s ease-in-out; overflow: hidden; }
+.card-left { flex: 0 0 48px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; border-right: 1px dashed rgba(0, 0, 0, 0.08); padding-right: 4px; }
 .jp { font-size: 18px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; line-height: 1; margin-bottom: 4px;}
-.waktu { 
-  font-size: 9.5px !important; color: var(--text-muted) !important; font-weight: 600; text-align: left !important; line-height: 1.3 !important; white-space: pre-line; display: block; width: 100%;
-}
+.waktu { font-size: 9.5px !important; color: var(--text-muted) !important; font-weight: 600; text-align: left !important; line-height: 1.3 !important; white-space: pre-line; display: block; width: 100%; }
 .card-right { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 3px; }
 .tematik-card-combined { padding-right: 4px !important; }
 .tematik-flex-row { flex-direction: row !important; justify-content: flex-start; align-items: stretch; width: 100%; }
 .tematik-inner-col { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 50px; gap: 3px; }
 .tematik-inner-col-border { border-left: 1px solid rgba(0, 0, 0, 0.08); }
 .kelas-info { font-size: 11px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; text-transform: uppercase; }
-.mapel { font-size: 11.5px !important; font-weight: 700 !important; color: var(--text-main) !important; line-height: 1.3; }
+.mapel { font-size: 11.5px !important; font-weight: 700 !important; color: var(--text-main) !important; line-height: 1.3; transition: color 0.2s; }
 .guru-nama { font-size: 11px !important; color: var(--text-main); font-weight: 500; line-height: 1.3; }
 .search-highlight { background: transparent !important; color: var(--guru-match-blue) !important; font-weight: 800 !important; padding: 0; }
 
 /* ==========================================================================
-   ADAPTIVE MEDIA QUERY: LAPTOP (769px - 1366px)
+   ADAPTIVE MEDIA QUERY: LAPTOP
    ========================================================================== */
 @media screen and (min-width: 769px) and (max-width: 1366px) {
   body { padding: 16px; }
-  .header-section { padding: 20px; }
+  .header-section { padding: 20px; margin-top: 10px; }
   .header-logo { height: 60px; }
   .header-section h1 { font-size: 22px; }
   .search-wrapper { min-width: 200px; }
@@ -231,53 +166,33 @@ body {
 }
 
 /* ==========================================================================
-   UKURAN HP (RESPONSIVE SCREEN OPTIMIZATION)
+   UKURAN HP (RESPONSIVE)
    ========================================================================== */
 @media (max-width: 768px) {
   body { padding: 14px; }
-  
-  .header-section { padding: 16px; }
+  .header-section { padding: 16px; margin-top: 0; }
   .header-main-wrapper { flex-direction: column; align-items: flex-start; gap: 16px; }
   .header-top-content { gap: 12px; }
   .header-logo { height: 50px; }
   .header-section h1 { font-size: 18px; }
-  
   .desktop-subtext { display: none; }
   .mobile-subtext { display: block; font-size: 11.5px !important; line-height: 1.4; font-weight: 700; }
-  
   .header-controls { width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
   .input-wrapper, .btn-pdf { width: 100%; height: 42px; justify-content: center; }
   .search-wrapper { min-width: 100%; justify-content: flex-start; }
-  
   .tab-container { margin-top: 16px; width: 100%; display: flex; justify-content: space-between; }
   .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
-  
-  .flex-schedule-container {
-    justify-content: flex-start !important; overflow-x: auto !important; 
-    padding: 0 4px 12px 4px; gap: 12px; -webkit-overflow-scrolling: touch;
-  }
-  .day-column {
-    flex: 0 0 240px !important; width: 240px !important; min-width: 240px !important;
-  }
+  .flex-schedule-container { justify-content: flex-start !important; overflow-x: auto !important; padding: 0 4px 12px 4px; gap: 12px; -webkit-overflow-scrolling: touch; }
+  .day-column { flex: 0 0 240px !important; width: 240px !important; min-width: 240px !important; }
 }
+
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF (PERBAIKAN MARGIN & MENCEGAH TERPOTONG KIRI/KANAN)
+   CSS KHUSUS CETAK PDF
    ========================================================================== */
 #printHeader { display: none; }
 @media print {
-  @page { 
-    size: A4 landscape; 
-    margin: 10mm 12mm; /* Atas-Bawah 10mm, Kiri-Kanan 12mm untuk ruang aman printer */
-  }
-  body { 
-    background: white !important; 
-    color: black !important; 
-    padding: 0 !important; 
-    margin: 0 !important; 
-    overflow: hidden !important; /* Mencegah muncul scrollbar aneh saat cetak */
-    -webkit-print-color-adjust: exact !important; 
-    print-color-adjust: exact !important; 
-  }
+  @page { size: A4 landscape; margin: 10mm 12mm; }
+  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body::before, body::after, .header-section, #initialState, #initialStateTematik, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { display: none !important; }
   
   #printHeader { display: table !important; width: 100%; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; }
@@ -287,37 +202,9 @@ body {
   #printHeader h2 { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
   #printHeader h3 { font-size: 11px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
 
-  /* MENGUBAH JUSTIFY-CONTENT AGAR TIDAK TERPOTONG DI KIRI */
-  .flex-schedule-container { 
-    display: flex !important; 
-    flex-direction: row !important; 
-    flex-wrap: nowrap !important; 
-    justify-content: flex-start !important; /* Memaksa jadwal dimulai tepat dari margin kiri */
-    align-items: flex-start !important; 
-    gap: 6px !important; /* Jarak antar kolom agak dirapatkan */
-    padding: 0 !important; 
-    margin: 0 !important; 
-    width: 100% !important; 
-    max-width: 100% !important; 
-    overflow: hidden !important; 
-    page-break-inside: avoid !important; 
-    /* Fitur zoom dihapus agar lebih konsisten, diganti dengan penyesuaian font otomatis di bawah */
-  }
-  
-  .day-column { 
-    background: #f8fafc !important; 
-    border: 1px solid #e2e8f0 !important; 
-    border-radius: 8px !important; 
-    padding: 4px !important; 
-    flex: 1 1 0% !important; 
-    min-width: 0 !important; /* Memastikan kolom BISA mengecil menyesuaikan kertas */
-    max-width: none !important; /* Menghapus batas 240px agar fleksibel */
-    box-shadow: none !important; 
-    display: block !important; 
-    page-break-inside: avoid !important; 
-  }
-  
-  /* UKURAN TEKS & KARTU DISESUAIKAN AGAR 6 HARI MUAT DI A4 */
+  .flex-schedule-container { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: flex-start !important; gap: 6px !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; page-break-inside: avoid !important; }
+  .day-column { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; padding: 4px !important; flex: 1 1 0% !important; min-width: 0 !important; max-width: none !important; box-shadow: none !important; display: block !important; page-break-inside: avoid !important; }
+  .day-column.today-active .day-title::after { display: none !important; } /* Sembunyikan badge TODAY saat cetak PDF */
   .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 6px !important; font-size: 10px !important; font-weight: 700 !important; padding: 4px 0 !important; margin-bottom: 6px !important; text-align: center !important; text-transform: uppercase !important; }
   .card { background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; display: flex !important; flex-direction: row !important; min-height: 50px !important; padding: 4px !important; border-radius: 6px !important; margin-bottom: 4px !important; page-break-inside: avoid !important; gap: 4px !important; }
   .card-left { border-right: 1px dashed #e2e8f0 !important; padding-right: 4px !important; margin-right: 2px !important; flex: 0 0 35px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
@@ -327,8 +214,8 @@ body {
   .tematik-flex-row { display: flex !important; flex-direction: row !important; width: 100% !important; }
   .tematik-inner-col { flex: 1 !important; padding: 0 2px !important; }
   .tematik-inner-col-border { border-left: 1px solid #e2e8f0 !important; }
-  .kelas-info { color: #2563eb !important; font-size: 8.5px !important; font-weight: 700 !important; margin-bottom: 1px !important; }
-  .mapel { color: #1e293b !important; font-size: 9px !important; font-weight: 800 !important; line-height: 1.2 !important; }
+  .kelas-info { font-size: 8.5px !important; font-weight: 700 !important; margin-bottom: 1px !important; }
+  .mapel { font-size: 9px !important; font-weight: 800 !important; line-height: 1.2 !important; }
   .guru-nama { color: #475569 !important; font-size: 8px !important; font-weight: 600 !important; margin-top: 1px !important; }
   mark.search-highlight, .search-highlight { background-color: #dbeafe !important; color: #1e40af !important; font-weight: 700 !important; border-radius: 2px !important; padding: 0 2px !important; }
 }

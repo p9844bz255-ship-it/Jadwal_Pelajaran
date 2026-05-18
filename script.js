@@ -1,6 +1,5 @@
 // ==========================================================================
 // TEMPELKAN URL DEPLOYMENT APPS SCRIPT ANDA DI BAWAH INI
-// Contoh: const API_URL = "https://script.google.com/macros/s/XXXXX/exec";
 // ==========================================================================
 const API_URL = "https://script.google.com/macros/s/AKfycbxvVZ_0HN5y6p4t1Ga654-SSdXGgMH-MWUe5g2BpqVYRWpRX3qBP7y49axCL2OJwXU8TA/exec";
 
@@ -87,9 +86,6 @@ function parseRangeTanggal(strTanggalRaw) {
   }
 }
 
-/**
- * Membuat opsi dropdown pekan aktif dengan penulisan yang proper
- */
 function buildPekanDropdownOptions() {
   if (!TEMATIK_DATA || !TEMATIK_DATA.headers) return;
   const select = document.getElementById('pekanSelect');
@@ -147,9 +143,6 @@ function clearTematikSearch() {
   handleTematikGridFilter();
 }
 
-/**
- * Formatting Jam JP khusus: Mengubah strip "-" menjadi baris baru agar rata kiri lurus
- */
 function formatTimeLeftColumn(timeStr) {
   if (!timeStr) return "-";
   let parts = timeStr.split('-');
@@ -290,6 +283,11 @@ function handleTematikGridFilter() {
   } else {
     document.getElementById('initialStateTematik').style.display = "none";
   }
+
+  // ========================================================
+  // PANGGIL FUNGSI WARNA SETELAH JADWAL TEMATIK MUNCUL
+  // ========================================================
+  applySubjectColors();
 }
 
 function clearSearch() {
@@ -450,4 +448,67 @@ function renderGrid(data, query) {
     col.innerHTML = html;
     container.appendChild(col);
   });
+
+  // ========================================================
+  // PANGGIL FUNGSI WARNA SETELAH JADWAL UMUM MUNCUL
+  // ========================================================
+  applySubjectColors();
+}
+
+
+// ==========================================================================
+// FUNGSI UNTUK MEMBERIKAN WARNA PADA MATA PELAJARAN (FITUR BARU)
+// ==========================================================================
+function applySubjectColors() {
+    const cards = document.querySelectorAll('.card-right, .tematik-inner-col');
+    
+    const colorPalette = [
+        '#059669', // Hijau
+        '#d97706', // Orange
+        '#7c3aed', // Ungu
+        '#db2777', // Pink Gelap
+        '#ea580c', // Merah Bata
+        '#0284c7', // Biru Muda
+        '#4f46e5'  // Indigo
+    ];
+    
+    let colorMap = {}; 
+    let colorIndex = 0;
+
+    cards.forEach(card => {
+        const mapelEl = card.querySelector('.mapel');
+        const kelasEl = card.querySelector('.kelas-info');
+        
+        // Mencegah error jika elemen yang dirender tidak memiliki mapel/kelas (seperti Flag Ceremony)
+        if (!mapelEl || !kelasEl) return;
+        
+        const mapelName = mapelEl.textContent.trim().toUpperCase();
+        // Menghapus tag highlight pencarian dari teks murni
+        const cleanMapelName = mapelName.replace(/<[^>]*>?/gm, ''); 
+        const kelasName = kelasEl.textContent.trim().toUpperCase();
+
+        if (cleanMapelName.includes('AL QURAN') || cleanMapelName.includes('AL-QURAN')) {
+            mapelEl.style.color = 'var(--text-main)'; // Warna mapel tetap default
+            
+            // Nama kelas yang diberi warna random
+            if (!colorMap['KELAS_'+kelasName]) {
+                colorMap['KELAS_'+kelasName] = colorPalette[colorIndex % colorPalette.length];
+                colorIndex++;
+            }
+            kelasEl.style.color = colorMap['KELAS_'+kelasName];
+            
+        } else {
+            kelasEl.style.color = 'var(--logo-blue-accent)'; // Warna kelas tetap biru
+            
+            if (!colorMap[cleanMapelName]) {
+                if (cleanMapelName.includes('ARABIC')) {
+                    colorMap[cleanMapelName] = '#1155cc'; 
+                } else {
+                    colorMap[cleanMapelName] = colorPalette[colorIndex % colorPalette.length];
+                    colorIndex++;
+                }
+            }
+            mapelEl.style.color = colorMap[cleanMapelName];
+        }
+    });
 }
