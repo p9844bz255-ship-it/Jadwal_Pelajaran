@@ -1,34 +1,43 @@
 /* ==========================================================================
-   THEME CONFIGURATION: PURE WHITE WITH POPPINS & ADAPTIVE HP VIEW
+   THEME CONFIGURATION: GLASSMORPHISM WITH POPPINS & ADAPTIVE HP VIEW
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --bg-gradient: #ffffff;
-  --glass-main-bg: rgba(248, 250, 252, 0.75); 
-  --glass-main-border: rgba(226, 232, 240, 0.9); 
-  --card-glass-bg: #ffffff;
-  --card-glass-border: #e2e8f0;
-  --logo-blue-accent: #1155cc;   
-  --logo-blue-light: #eff6ff;    
-  --logo-blue-border: #bfdbfe;   
-  --guru-match-blue: #1e3a8a;    
-  --text-main: #0f172a;          
-  --text-muted: #64748b;        
+  /* PENYESUAIAN: Menggunakan fallback gradient estetik sebelum gambar bg termuat */
+  --bg-gradient: linear-gradient(135deg, #e0eafd 0%, #f4f7fe 50%, #ffffff 100%);
   
-  /* FIX: Variabel aktif hari yang sebelumnya belum terdefinisi */
-  --active-day-bg: #eff6ff;
-  --active-day-border: #bfdbfe;
+  /* PENYESUAIAN: Transparansi khusus untuk kontainer utama & kolom hari */
+  --glass-main-bg: rgba(255, 255, 255, 0.45); 
+  --glass-main-border: rgba(255, 255, 255, 0.55); 
+  
+  /* PENYESUAIAN: Lapisan kaca kedua untuk kartu jadwal agar lebih kontras & terbaca */
+  --card-glass-bg: rgba(255, 255, 255, 0.7);
+  --card-glass-border: rgba(255, 255, 255, 0.6);
+  
+  --logo-blue-accent: #1155cc;   
+  --logo-blue-light: #eff6ff;   
+  --logo-blue-border: #bfdbfe;   
+  --guru-match-blue: #1e3a8a;   
+  --text-main: #0f172a;          
+  --text-muted: #475569;        
+  
+  /* FIX & UPDATE: Warna aktif hari disesuaikan dengan tema kaca biru */
+  --active-day-bg: rgba(239, 246, 255, 0.65);
+  --active-day-border: rgba(17, 85, 204, 0.3);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body { 
   font-family: 'Poppins', sans-serif !important; 
-  background: var(--bg-gradient) !important; 
+  /* PENYESUAIAN: Memasang gambar aura/gradient sebagai background utama aplikasi */
+  background: url('background.jpeg') no-repeat center center fixed !important; /* SILAKAN UBAH 'background.jpeg' SESUAI NAMA FILE GAMBAR ANDA */
+  background-size: cover !important;
   color: var(--text-main) !important; 
   overflow-x: hidden;
   padding: 24px;
+  min-height: 100vh;
 }
 
 @keyframes pageEntryPopUp {
@@ -45,10 +54,11 @@ body {
    ========================================================================== */
 .header-section {
   background: var(--glass-main-bg);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   padding: 24px 35px; border-radius: 20px; border: 1px solid var(--glass-main-border);
   margin: 20px auto 25px auto; 
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  /* PENYESUAIAN: Bayangan diperhalus agar kesan kaca melayang lebih natural */
+  box-shadow: 0 10px 40px rgba(31, 38, 135, 0.06);
   max-width: 1350px; 
 }
 
@@ -77,12 +87,14 @@ body {
   margin-top: 5px;
 }
 
+/* PENYESUAIAN: Input pencarian menggunakan semi-kaca halus */
 .input-wrapper {
   position: relative; display: flex; align-items: center; 
-  background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 50px; 
+  background: rgba(248, 250, 252, 0.6); border: 1px solid rgba(203, 213, 225, 0.7); border-radius: 50px; 
   padding: 0 20px; height: 46px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
 }
-.input-wrapper:hover { background: #ffffff; border-color: #94a3b8; }
+.input-wrapper:hover { background: rgba(255, 255, 255, 0.9); border-color: #94a3b8; }
 .input-wrapper:focus-within { background: #ffffff; border-color: var(--logo-blue-accent); box-shadow: 0 0 0 4px rgba(17, 85, 204, 0.12); transform: translateY(-1px); }
 
 .search-wrapper { min-width: 270px; }
@@ -95,7 +107,6 @@ body {
 .clear-btn { cursor: pointer; display: none; background: #e2e8f0; border: none; border-radius: 50%; width: 20px; height: 20px; align-items: center; justify-content: center; padding: 4px; transition: background 0.2s; }
 .clear-btn:hover { background: #cbd5e1; }
 .clear-btn svg { width: 12px; height: 12px; fill: #475569; }
-/* FIX: Menyediakan utility class aktif untuk di-toggle via JavaScript */
 .clear-btn.visible { display: flex !important; }
 
 .input-wrapper-select { padding: 0 16px !important; min-width: 210px; }
@@ -115,7 +126,8 @@ body {
 }
 .btn-pdf svg { width: 18px; height: 18px; fill: currentColor; }
 
-.tab-container { display: flex; background: rgba(15, 23, 42, 0.05); padding: 4px; border-radius: 30px; width: fit-content; border: 1px solid rgba(0, 0, 0, 0.01); }
+/* PENYESUAIAN: Wadah Tab disesuaikan tipis transparan */
+.tab-container { display: flex; background: rgba(15, 23, 42, 0.06); padding: 4px; border-radius: 30px; width: fit-content; border: 1px solid rgba(255, 255, 255, 0.4); backdrop-filter: blur(4px); }
 .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 8px 24px; font-size: 13.5px; font-weight: 700; border-radius: 25px; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.2s ease; }
 .tab-btn.active { background: #ffffff; color: var(--text-main); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
 
@@ -141,9 +153,24 @@ body {
   width: 100%;
 }
 
-.day-column { flex: 1 1 0%; min-width: 0; border-radius: 16px; padding: 10px; background: var(--glass-main-bg); border: 1px solid var(--glass-main-border); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01); }
+/* PENYESUAIAN: Kolom Hari menggunakan Frosted Glass murni */
+.day-column { 
+  flex: 1 1 0%; 
+  min-width: 0; 
+  border-radius: 16px; 
+  padding: 10px; 
+  background: var(--glass-main-bg); 
+  border: 1px solid var(--glass-main-border); 
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.04); 
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
 
-.day-column.today-active { background: var(--active-day-bg) !important; border: 1px solid var(--active-day-border) !important; box-shadow: 0 4px 22px rgba(17, 85, 204, 0.07) !important; }
+/* PENYESUAIAN: Hari ini aktif dibuat kaca dengan rona biru lembut */
+.day-column.today-active { 
+  background: var(--active-day-bg) !important; 
+  border: 1px solid var(--active-day-border) !important; 
+  box-shadow: 0 10px 30px rgba(17, 85, 204, 0.08) !important; 
+}
 .day-column.today-active .day-title { background: var(--logo-blue-accent) !important; }
 
 .day-column.today-active .day-title::after {
@@ -160,14 +187,40 @@ body {
 
 .day-title { text-align: center; font-size: 13px; font-weight: 800; padding: 10px 0; margin-bottom: 12px; border-radius: 8px; background: var(--text-main) !important; color: #ffffff !important; text-transform: uppercase; letter-spacing: 0.5px; }
 
-.card { position: relative; background: var(--card-glass-bg) !important; border-radius: 12px !important; padding: 10px 8px; margin-bottom: 10px; display: flex; gap: 6px; min-height: 95px; border: 1px solid var(--card-glass-border) !important; color: var(--text-main) !important; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03); transition: all 0.2s ease-in-out; overflow: hidden; }
+/* PENYESUAIAN: Kartu Jadwal menjadi kaca putih susu melayang (berlapis di atas kaca kolom) */
+.card { 
+  position: relative; 
+  background: var(--card-glass-bg) !important; 
+  border-radius: 12px !important; 
+  padding: 10px 8px; 
+  margin-bottom: 10px; 
+  display: flex; 
+  gap: 6px; 
+  min-height: 95px; 
+  border: 1px solid var(--card-glass-border) !important; 
+  color: var(--text-main) !important; 
+  box-shadow: 0 4px 14px rgba(31, 38, 135, 0.03); 
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+  overflow: hidden; 
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+
+/* PENYESUAIAN: Efek interaktif hover mikro pada kartu desktop agar lebih premium */
+@media screen and (min-width: 769px) {
+  .card:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(31, 38, 135, 0.07);
+    border-color: rgba(17, 85, 204, 0.25) !important;
+  }
+}
+
 .card-left { flex: 0 0 48px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; border-right: 1px dashed rgba(0, 0, 0, 0.08); padding-right: 4px; }
 .jp { font-size: 18px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; line-height: 1; margin-bottom: 4px;}
 .waktu { font-size: 9.5px !important; color: var(--text-muted) !important; font-weight: 600; text-align: left !important; line-height: 1.3 !important; white-space: pre-line; display: block; width: 100%; }
 .card-right { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 3px; }
 .tematik-card-combined { padding-right: 4px !important; }
 
-/* FIX: Ditambahkan display flex agar susunan kolom tematik sejajar */
 .tematik-flex-row { display: flex !important; flex-direction: row !important; justify-content: flex-start; align-items: stretch; width: 100%; }
 .tematik-inner-col { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 50px; gap: 3px; }
 .tematik-inner-col-border { border-left: 1px solid rgba(0, 0, 0, 0.08); }
@@ -281,7 +334,7 @@ body {
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF (MEMAKSA 1 HALAMAN & MEMISAHKAN UMUM / TEMATIK)
+   CSS KHUSUS CETAK PDF (PROTEKSI: EFEK KACA DIHAPUS SAAT PRINT AGAR TINTA HEMAT)
    ========================================================================== */
 @media print {
   @page { size: A4 landscape; margin: 8mm 10mm; }
@@ -312,11 +365,12 @@ body {
   .flex-schedule-container { padding: 0 !important; margin: 0 !important; overflow: visible !important; page-break-inside: avoid !important; }
   .days-wrapper { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: flex-start !important; gap: 4px !important; width: 100% !important; }
   
-  .day-column { display: block !important; background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 4px !important; padding: 2px 3px !important; flex: 1 1 0% !important; min-width: 0 !important; max-width: none !important; box-shadow: none !important; page-break-inside: avoid !important; }
+  /* Proteksi: Dipaksa menjadi solid putih polos demi kejernihan hasil print kertas */
+  .day-column { display: block !important; background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 4px !important; padding: 2px 3px !important; flex: 1 1 0% !important; min-width: 0 !important; max-width: none !important; box-shadow: none !important; page-break-inside: avoid !important; backdrop-filter: none !important; }
   .day-column.today-active .day-title::after { display: none !important; } 
   .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 4px !important; font-size: 8px !important; font-weight: 700 !important; padding: 3px 0 !important; margin-bottom: 3px !important; text-align: center !important; text-transform: uppercase !important; }
   
-  .card { height: auto !important; background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; display: flex !important; flex-direction: row !important; min-height: 32px !important; padding: 2px !important; border-radius: 4px !important; margin-bottom: 2px !important; page-break-inside: avoid !important; gap: 2px !important; }
+  .card { height: auto !important; background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; display: flex !important; flex-direction: row !important; min-height: 32px !important; padding: 2px !important; border-radius: 4px !important; margin-bottom: 2px !important; page-break-inside: avoid !important; gap: 2px !important; backdrop-filter: none !important; transform: none !important; }
   .card-left { border-right: 1px dashed #e2e8f0 !important; padding-right: 2px !important; margin-right: 2px !important; flex: 0 0 28px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
   .jp { color: #0f172a !important; font-size: 10px !important; font-weight: 800 !important; line-height: 1 !important; margin-bottom: 1px !important;}
   .waktu { color: #64748b !important; font-size: 5.5px !important; margin-top: 1px !important; text-align: center !important; line-height: 1.1 !important; }
