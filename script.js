@@ -258,15 +258,12 @@ function handleTematikGridFilter() {
   const activeDays = activeDaysData.map(d => d.day);
   let defaultActiveDay = activeDays.includes(currentDayString) ? currentDayString : activeDays[0];
 
-  // 1. Buat Wrapper Tab untuk Mobile
   const mobileTabsContainer = document.createElement('div');
   mobileTabsContainer.className = 'mobile-day-tabs';
   
-  // 2. Buat Wrapper untuk Hari-Hari (Kolom Jadwal)
   const daysWrapper = document.createElement('div');
   daysWrapper.className = 'days-wrapper';
 
-  // Tab "SEMUA"
   const btnSemua = document.createElement('button');
   btnSemua.className = `tab-btn`;
   btnSemua.innerText = "SEMUA";
@@ -274,13 +271,10 @@ function handleTematikGridFilter() {
       mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btnSemua.classList.add('active');
       daysWrapper.querySelectorAll('.day-column').forEach(c => c.classList.add('active-mobile-day'));
-      
-      // Tambahkan kelas khusus yang mengaktifkan Horizontal Scroll di HP
       daysWrapper.classList.add('show-all-mobile');
   };
   mobileTabsContainer.appendChild(btnSemua);
 
-  // Tab Masing-Masing Hari
   activeDays.forEach((day) => {
       const shortDay = day.replace("'", "").substring(0,3).toUpperCase();
       const btn = document.createElement('button');
@@ -295,14 +289,11 @@ function handleTematikGridFilter() {
           daysWrapper.querySelectorAll('.day-column').forEach(c => c.classList.remove('active-mobile-day'));
           const targetCol = daysWrapper.querySelector(`.col-${dayID}`);
           if(targetCol) targetCol.classList.add('active-mobile-day');
-          
-          // Hapus kelas khusus agar kembali ke mode vertikal (atas-bawah) untuk 1 hari
           daysWrapper.classList.remove('show-all-mobile');
       };
       mobileTabsContainer.appendChild(btn);
   });
   
-  // Masukkan Tab dan Wrapper Jadwal ke Kontainer Utama
   container.appendChild(mobileTabsContainer);
   container.appendChild(daysWrapper);
 
@@ -387,12 +378,7 @@ function handleTematikGridFilter() {
     if (day === defaultActiveDay) colClass += ` active-mobile-day`; 
     
     col.className = colClass;
-    
-    col.innerHTML = `
-      <div class="day-title">${day}</div>
-      ${htmlCards}
-    `;
-    // PENTING: Masukkan kolom ke daysWrapper, BUKAN langsung ke container
+    col.innerHTML = `<div class="day-title">${day}</div>${htmlCards}`;
     daysWrapper.appendChild(col);
   });
 
@@ -432,21 +418,32 @@ function handleSearch() {
     return guru.includes(query) || kelas.includes(query) || mapel.includes(query);
   });
 
+  // ==========================================================================
+  // LOGIKA UTAMA PERHITUNGAN JP GURU (DENGAN FILTRASI ANTI-DUPLIKASI KOTAK)
+  // ==========================================================================
   let totalJP = 0;
   let isGuruSearch = false;
-  let countedSlots = new Set(); 
+  let countedSlots = new Set(); // Mencegah hitung ganda pada hari & jam yang sama
 
   filtered.forEach(item => {
     const guruLower = (item.guru || "").toString().toLowerCase();
+    
+    // Aktif hanya jika mencari berdasarkan nama Guru (Minimal 3 Huruf)
     if (guruLower.includes(query) && query.length >= 3) {
       isGuruSearch = true;
       const slotKey = `${item.hari}|${item.jp}`;
+      
+      // Jika jam di hari tersebut belum pernah dihitung, jalankan penambahan
       if (!countedSlots.has(slotKey)) {
         const jpVal = parseInt(item.jp);
         if (!isNaN(jpVal)) {
-          if (item.hari === "JUM'AT" && (jpVal === 3 || jpVal === 4 || jpVal === 5)) totalJP += 0.5; 
-          else totalJP += 1; 
-          countedSlots.add(slotKey); 
+          // Aturan khusus Jum'at JP 3, 4, 5 tetap dihitung 0.5 JP
+          if (item.hari === "JUM'AT" && (jpVal === 3 || jpVal === 4 || jpVal === 5)) {
+            totalJP += 0.5; 
+          } else {
+            totalJP += 1; 
+          }
+          countedSlots.add(slotKey); // Tandai slot hari & jp ini telah terhitung
         }
       }
     }
@@ -546,8 +543,6 @@ function renderGrid(data, query) {
       mobileTabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btnSemua.classList.add('active');
       daysWrapper.querySelectorAll('.day-column').forEach(c => c.classList.add('active-mobile-day'));
-      
-      // Aktifkan horizontal scroll
       daysWrapper.classList.add('show-all-mobile');
   };
   mobileTabsContainer.appendChild(btnSemua);
@@ -566,8 +561,6 @@ function renderGrid(data, query) {
           daysWrapper.querySelectorAll('.day-column').forEach(c => c.classList.remove('active-mobile-day'));
           const targetCol = daysWrapper.querySelector(`.col-${dayID}`);
           if(targetCol) targetCol.classList.add('active-mobile-day');
-          
-          // Kembalikan ke mode vertikal (hilangkan scroll horizontal)
           daysWrapper.classList.remove('show-all-mobile');
       };
       mobileTabsContainer.appendChild(btn);
@@ -640,8 +633,6 @@ function renderGrid(data, query) {
         }
     }
     col.innerHTML = html;
-    
-    // PENTING: Masukkan kolom ke daysWrapper
     daysWrapper.appendChild(col);
   });
 
