@@ -22,53 +22,52 @@
         </div>
       </div>
 
-      <div id="controlsUmum" class="header-controls">
-        <div class="input-wrapper search-wrapper">
-          <svg class="input-icon" viewBox="0 0 24 24"><path d="M10 2a8 8 0 0 1 6.32 12.9l4.39 4.39a1 1 0 0 1-1.42 1.42l-4.39-4.39A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
-          <input type="text" id="searchInput" placeholder="Ketik nama atau kelas..." onkeyup="handleSearch();" oninput="updatePrintOwner('umum')">
-          <button class="clear-btn" id="clearBtn" onclick="clearSearch(); updatePrintOwner('umum');" title="Hapus pencarian">
-            <svg viewBox="0 0 24 24"><path d="M12 10.586l4.95-4.95a1 1 0 1 1 1.414 1.414l-4.95 4.95 4.95 4.95a1 1 0 0 1-1.414 1.414l-4.95-4.95-4.95 4.95a1 1 0 0 1-1.414-1.414l4.95-4.95-4.95-4.95a1 1 0 0 1 1.414-1.414l4.95 4.95z"/></svg>
+      <div class="header-bottom-row">
+        
+        <div class="tab-container">
+          <button id="btnTabUmum" class="tab-btn active" onclick="switchTab('umum')">Jadwal Umum</button>
+          <button id="btnTabTematik" class="tab-btn" onclick="switchTab('tematik')">Jadwal Tematik</button>
+        </div>
+
+        <div id="controlsUmum" class="header-controls">
+          <div class="input-wrapper search-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><path d="M10 2a8 8 0 0 1 6.32 12.9l4.39 4.39a1 1 0 0 1-1.42 1.42l-4.39-4.39A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
+            <input type="text" id="searchInput" placeholder="Ketik nama atau kelas..." onkeyup="handleSearch();" oninput="updatePrintOwner('umum')">
+            <button class="clear-btn" id="clearBtn" onclick="clearSearch(); updatePrintOwner('umum');" title="Hapus pencarian">
+              <svg viewBox="0 0 24 24"><path d="M12 10.586l4.95-4.95a1 1 0 1 1 1.414 1.414l-4.95 4.95 4.95 4.95a1 1 0 0 1-1.414 1.414l-4.95-4.95-4.95 4.95a1 1 0 0 1-1.414-1.414l4.95-4.95-4.95-4.95a1 1 0 0 1 1.414-1.414l4.95 4.95z"/></svg>
+            </button>
+          </div>
+          
+          <div id="jpCounter" class="jp-counter-box"></div> 
+          
+          <button class="btn-pdf" onclick="cetakPDF('umum')">
+            <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2zm2 2v16h10V8.414L14.586 4H8zm6 1.5V9h3.5L14 5.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
+            Cetak PDF
           </button>
         </div>
-        
-        <div id="jpCounter" class="jp-counter-box"></div> 
-        
-        <button class="btn-pdf" onclick="cetakPDF('umum')">
-          <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2zm2 2v16h10V8.414L14.586 4H8zm6 1.5V9h3.5L14 5.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
-          Cetak PDF
-        </button>
-      </div>
 
-      <div id="controlsTematik" class="header-controls" style="display: none;">
-        <div class="input-wrapper search-wrapper">
-          <svg class="input-icon" viewBox="0 0 24 24"><path d="M10 2a8 8 0 0 1 6.32 12.9l4.39 4.39a1 1 0 0 1-1.42 1.42l-4.39-4.39A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
-          <input type="text" id="searchTematikInput" placeholder="Ketik nama atau kelas..." onkeyup="handleTematikGridFilter();" oninput="updatePrintOwner('tematik')">
-          <button class="clear-btn" id="clearTematikBtn" onclick="clearTematikSearch(); updatePrintOwner('tematik');" title="Hapus pencarian">
-            <svg viewBox="0 0 24 24"><path d="M12 10.586l4.95-4.95a1 1 0 1 1 1.414 1.414l-4.95 4.95 4.95 4.95a1 1 0 0 1-1.414 1.414l-4.95-4.95-4.95 4.95a1 1 0 0 1-1.414-1.414l4.95-4.95-4.95-4.95a1 1 0 0 1 1.414-1.414l4.95 4.95z"/></svg>
+        <div id="controlsTematik" class="header-controls" style="display: none;">
+          <div class="input-wrapper search-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><path d="M10 2a8 8 0 0 1 6.32 12.9l4.39 4.39a1 1 0 0 1-1.42 1.42l-4.39-4.39A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
+            <input type="text" id="searchTematikInput" placeholder="Ketik nama atau kelas..." onkeyup="handleTematikGridFilter();" oninput="updatePrintOwner('tematik')">
+            <button class="clear-btn" id="clearTematikBtn" onclick="clearTematikSearch(); updatePrintOwner('tematik');" title="Hapus pencarian">
+              <svg viewBox="0 0 24 24"><path d="M12 10.586l4.95-4.95a1 1 0 1 1 1.414 1.414l-4.95 4.95 4.95 4.95a1 1 0 0 1-1.414 1.414l-4.95-4.95-4.95 4.95a1 1 0 0 1-1.414-1.414l4.95-4.95-4.95-4.95a1 1 0 0 1 1.414-1.414l4.95 4.95z"/></svg>
+            </button>
+          </div>
+          
+          <div class="input-wrapper input-wrapper-select select-picker-group">
+            <select id="pekanSelect" onchange="handleTematikGridFilter(); updatePrintOwner('tematik');">
+              <option value="">Menghitung tanggal pekan...</option>
+            </select>
+          </div>
+
+          <button class="btn-pdf" onclick="cetakPDF('tematik')">
+            <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2zm2 2v16h10V8.414L14.586 4H8zm6 1.5V9h3.5L14 5.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
+            Cetak PDF
           </button>
         </div>
-        
-        <div class="input-wrapper input-wrapper-select select-picker-group">
-          <select id="pekanSelect" onchange="handleTematikGridFilter(); updatePrintOwner('tematik');">
-            <option value="">Menghitung tanggal pekan...</option>
-          </select>
-        </div>
 
-        <button class="btn-pdf" onclick="cetakPDF('tematik')">
-          <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2zm2 2v16h10V8.414L14.586 4H8zm6 1.5V9h3.5L14 5.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
-          Cetak PDF
-        </button>
-      </div>
-
-    </div>
-
-    <div class="tab-container">
-      <button id="btnTabUmum" class="tab-btn active" onclick="switchTab('umum')">Jadwal Umum</button>
-      <button id="btnTabTematik" class="tab-btn" onclick="switchTab('tematik')">Jadwal Tematik</button>
-    </div>
-  </div>
-
-  <div id="printHeader">
+      </div> </div> </div> <div id="printHeader" style="display: none;">
     <div class="print-logo-cell">
       <img src="https://www.image2url.com/r2/default/images/1778032976429-fb84224a-3e08-4092-b38f-529e608a47d2.png" alt="Logo AL-WILDAN" class="print-logo">
     </div>

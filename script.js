@@ -39,6 +39,44 @@ window.onload = function() {
     .catch(error => console.error("Gagal sinkronisasi data tematik:", error));
 };
 
+// ==========================================================================
+// FUNGSI NAVIGASI TAB (UMUM & TEMATIK)
+// ==========================================================================
+function switchTab(tabName) {
+  const tabUmum = document.getElementById('tabUmum');
+  const tabTematik = document.getElementById('tabTematik');
+  const controlsUmum = document.getElementById('controlsUmum');
+  const controlsTematik = document.getElementById('controlsTematik');
+  const resultsGrid = document.getElementById('resultsGrid');
+  const resultsTematikGrid = document.getElementById('resultsTematikGrid');
+  const initialState = document.getElementById('initialState');
+  const initialStateTematik = document.getElementById('initialStateTematik');
+  const jpCounter = document.getElementById('jpCounter');
+
+  if (tabName === 'umum') {
+    tabUmum.classList.add('active');
+    tabTematik.classList.remove('active');
+    controlsUmum.style.display = 'flex';
+    controlsTematik.style.display = 'none';
+    
+    resultsTematikGrid.style.display = 'none';
+    initialStateTematik.style.display = 'none';
+    
+    handleSearch();
+  } else {
+    tabTematik.classList.add('active');
+    tabUmum.classList.remove('active');
+    controlsTematik.style.display = 'flex';
+    controlsUmum.style.display = 'none';
+    
+    resultsGrid.style.display = 'none';
+    initialState.style.display = 'none';
+    jpCounter.style.display = 'none';
+    
+    initTematikView();
+  }
+}
+
 window.addEventListener('resize', () => {
   syncCardHeights('resultsGrid');
   syncCardHeights('resultsTematikGrid');
@@ -678,9 +716,6 @@ function applySubjectColors() {
     });
 }
 
-// ==========================================================================
-// FUNGSI CETAK PDF CERDAS (Terpisah Umum/Tematik & Bebas Overlap)
-// ==========================================================================
 function cetakPDF(tipeJadwal) {
     const containerId = tipeJadwal === 'umum' ? 'resultsGrid' : 'resultsTematikGrid';
     const container = document.getElementById(containerId);
@@ -690,20 +725,16 @@ function cetakPDF(tipeJadwal) {
         return;
     }
 
-    // 1. Simulasikan klik "SEMUA" agar elemen dari HP dirender utuh (Horizontal penuh)
     const tabs = container.querySelectorAll('.mobile-day-tabs .tab-btn');
     tabs.forEach(btn => {
         if (btn.innerText.toUpperCase() === "SEMUA") btn.click();
     });
 
-    // 2. Beri jeda 300ms agar DOM sempat menggambar tab "SEMUA" sebelum dicetak
     setTimeout(() => {
-        // Tanda yang memicu CSS @media print
         document.body.classList.add('print-mode-active');
         if (tipeJadwal === 'umum') document.body.classList.add('print-umum');
         else document.body.classList.add('print-tematik');
 
-        // Update Judul Print
         const printTitleEl = document.getElementById('printTitleText');
         if(tipeJadwal === 'umum') {
             const val = document.getElementById('searchInput').value.trim().toUpperCase();
@@ -713,10 +744,8 @@ function cetakPDF(tipeJadwal) {
             printTitleEl.innerText = val ? `Jadwal Pelajaran Tematik - ${val}` : "Jadwal Pelajaran Tematik";
         }
 
-        // Buka Jendela Print
         window.print();
         
-        // Bersihkan tanda setelah print selesai atau dibatalkan
         document.body.classList.remove('print-mode-active', 'print-umum', 'print-tematik');
     }, 300);
 }
