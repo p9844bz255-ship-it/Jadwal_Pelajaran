@@ -172,80 +172,84 @@ function handleTematikGridFilter() {
 
   days.forEach(day => {
     let dayRows = TEMATIK_DATA.rows.filter(r => r.hari === day);
-    let jpGroups = {};
+    if(dayRows.length === 0) return;
+
+    // Cari JP maksimal pada hari ini dari data utama (agar tau jumlah slot)
+    let maxJp = 0;
+    dayRows.forEach(r => { let j = parseInt(r.jp); if(!isNaN(j) && j > maxJp) maxJp = j; });
+
+    let jpGroupsMatch = {};
+    let hasMatchForDay = false;
     
     dayRows.forEach(row => {
       const cell = row.jadwalPekan[selectedPekan];
       if (!cell || !cell.mapel || cell.fullText === "-") return;
 
-      if (!jpGroups[row.jp]) {
-        jpGroups[row.jp] = [];
+      let isMatch = false;
+      if (query !== "") {
+          isMatch = cell.guru.toLowerCase().includes(query) || 
+                    cell.mapel.toLowerCase().includes(query) || 
+                    row.kelas.toLowerCase().includes(query);
+      } else {
+          isMatch = true;
       }
-      
-      jpGroups[row.jp].push({
-        kelas: row.kelas.replace(/kelas\s+/i, '').trim(),
-        mapel: cell.mapel,
-        guru: cell.guru,
-        waktu: row.waktu 
-      });
+
+      if (isMatch) {
+          hasMatchForDay = true;
+          if (!jpGroupsMatch[row.jp]) jpGroupsMatch[row.jp] = [];
+          jpGroupsMatch[row.jp].push({
+              kelas: row.kelas.replace(/kelas\s+/i, '').trim(),
+              mapel: cell.mapel,
+              guru: cell.guru,
+              waktu: row.waktu 
+          });
+      }
     });
 
-    let activeJps = Object.keys(jpGroups).sort((a, b) => parseInt(a) - parseInt(b));
+    // Skip rendering kolom hari ini jika tidak ada yang cocok sama sekali
+    if (!hasMatchForDay && query !== "") return;
+
     let htmlCards = "";
 
-    activeJps.forEach(jpNum => {
-      let classesInJp = jpGroups[jpNum];
+    // Loop dari JP 1 sampai JP Maksimal hari itu
+    for (let jpNum = 1; jpNum <= maxJp; jpNum++) {
+      let classesInJp = jpGroupsMatch[jpNum] || [];
       
-      if (query !== "") {
-        let isAnyMatch = classesInJp.some(item => 
-          item.guru.toLowerCase().includes(query) || 
-          item.mapel.toLowerCase().includes(query) || 
-          item.kelas.toLowerCase().includes(query)
-        );
-        if (!isAnyMatch) return; 
-      }
-
-      let rawWaktu = classesInJp[0] && classesInJp[0].waktu ? classesInJp[0].waktu : "JP";
+      // Ambil referensi waktu asli untuk JP ini
+      let rawWaktu = "-";
+      let refRow = dayRows.find(r => parseInt(r.jp) === jpNum);
+      if (refRow && refRow.waktu) rawWaktu = refRow.waktu;
       let formattedWaktu = formatTimeLeftColumn(rawWaktu);
 
-      let innerColumnsHtml = "";
-      let validColCount = 0;
+      if (classesInJp.length > 0) {
+        let innerColumnsHtml = "";
+        let validColCount = 0;
 
-      classesInJp.forEach((item) => {
-        if (query !== "") {
-          let isThisColMatch = item.guru.toLowerCase().includes(query) || 
-                               item.mapel.toLowerCase().includes(query) || 
-                               item.kelas.toLowerCase().includes(query);
-          if (!isThisColMatch) return; 
-        }
+        classesInJp.forEach((item) => {
+          let displayMapel = item.mapel;
+          let displayGuru = item.guru;
+          let displayKelas = item.kelas;
+          
+          if (query !== "") {
+            const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`(${escapedQuery})`, 'gi');
+            displayMapel = displayMapel.replace(regex, `<mark class="search-highlight">$1</mark>`);
+            displayGuru = highlightGuru(item.guru, query); 
+            displayKelas = displayKelas.replace(regex, `<mark class="search-highlight">$1</mark>`);
+          }
 
-        let displayMapel = item.mapel;
-        let displayGuru = item.guru;
-        let displayKelas = item.kelas;
-        
-        if (query !== "") {
-          const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-          const regex = new RegExp(`(${escapedQuery})`, 'gi');
-          displayMapel = displayMapel.replace(regex, `<mark class="search-highlight">$1</mark>`);
-          displayGuru = highlightGuru(item.guru, query); 
-          displayKelas = displayKelas.replace(regex, `<mark class="search-highlight">$1</mark>`);
-        } else {
-          displayGuru = item.guru;
-        }
+          let separatorClass = validColCount > 0 ? "tematik-inner-col-border" : "";
+          validColCount++;
 
-        let separatorClass = validColCount > 0 ? "tematik-inner-col-border" : "";
-        validColCount++;
+          innerColumnsHtml += `
+            <div class="tematik-inner-col ${separatorClass}">
+              <div class="kelas-info">${displayKelas}</div>
+              <div class="mapel">${displayMapel}</div>
+              <div class="guru-nama">${displayGuru}</div>
+            </div>
+          `;
+        });
 
-        innerColumnsHtml += `
-          <div class="tematik-inner-col ${separatorClass}">
-            <div class="kelas-info">${displayKelas}</div>
-            <div class="mapel">${displayMapel}</div>
-            <div class="guru-nama">${displayGuru}</div>
-          </div>
-        `;
-      });
-
-      if (innerColumnsHtml !== "") {
         htmlCards += `
           <div class="card tematik-card-combined">
             <div class="card-left">
@@ -257,8 +261,21 @@ function handleTematikGridFilter() {
             </div>
           </div>
         `;
+      } else {
+        // SLOT KOSONG (JIKA GURU TIDAK MENGAJAR DI JP INI)
+        htmlCards += `
+          <div class="card tematik-card-combined" style="opacity: 0.6; background: #f8fafc; border: 1px dashed #cbd5e1; box-shadow: none;">
+            <div class="card-left">
+              <span class="jp">${jpNum}</span>
+              <span class="waktu">${formattedWaktu}</span>
+            </div>
+            <div class="card-right tematik-flex-row" style="justify-content: center; align-items: center; min-height: 60px;">
+              <span style="color: #94a3b8; font-weight: 600; font-size: 14px; letter-spacing: 1px;">KOSONG</span>
+            </div>
+          </div>
+        `;
       }
-    });
+    }
 
     if (htmlCards !== "") {
       const dayID = day.replace("'", "").toLowerCase();
@@ -284,9 +301,6 @@ function handleTematikGridFilter() {
     document.getElementById('initialStateTematik').style.display = "none";
   }
 
-  // ========================================================
-  // PANGGIL FUNGSI WARNA SETELAH JADWAL TEMATIK MUNCUL
-  // ========================================================
   applySubjectColors();
 }
 
@@ -409,7 +423,10 @@ function renderGrid(data, query) {
   container.style.display = "flex"; 
 
   days.forEach(day => {
+    // Ambil data yang cocok dengan pencarian pada hari ini
     const dayData = data.filter(d => d.hari === day).sort((a, b) => parseInt(a.jp) - parseInt(b.jp));
+    
+    // Jika tidak ada data sama sekali, jangan tampilkan kolom hari tersebut
     if (dayData.length === 0) return;
 
     const dayID = day.replace("'", "").toLowerCase(); 
@@ -420,38 +437,70 @@ function renderGrid(data, query) {
     
     let html = `<div class="day-title">${day}</div>`;
     
-    dayData.forEach(item => {
-      let cardRightHTML = '';
-      if (item.mapel === 'FLAG CEREMONY') {
-        cardRightHTML = `<div style="font-size: 14px; font-weight: 800; color: #dc2626; text-align: center; width: 100%;">FLAG CEREMONY</div>`;
-      } else {
-        const finalGuru = highlightGuru(item.guru, query);
-        cardRightHTML = `
-          <div class="kelas-info">${item.kelas}</div>
-          <div class="mapel">${item.mapel}</div>
-          <div class="guru-nama">${finalGuru}</div>
-        `;
-      }
-      
-      let formattedWaktu = formatTimeLeftColumn(item.waktu);
-      
-      html += `
-        <div class="card">
-          <div class="card-left">
-            <span class="jp">${item.jp}</span>
-            <span class="waktu">${formattedWaktu}</span>
-          </div>
-          <div class="card-right">${cardRightHTML}</div>
-        </div>
-      `;
+    // Cari JP maksimal pada hari ini dari master RAW_DATA
+    let maxJp = 0;
+    RAW_DATA.forEach(r => {
+        if (r.hari === day) {
+            let j = parseInt(r.jp);
+            if (!isNaN(j) && j > maxJp) maxJp = j;
+        }
     });
+    
+    // Loop dari 1 sampai JP Maksimal
+    for (let i = 1; i <= maxJp; i++) {
+        // Cek apakah ada jadwal guru/kelas pada JP ini
+        const itemsForJp = dayData.filter(d => parseInt(d.jp) === i);
+        
+        // Ambil waktu asli (default) untuk JP ini dari RAW_DATA
+        let defaultWaktu = "-";
+        const refData = RAW_DATA.find(d => d.hari === day && parseInt(d.jp) === i);
+        if (refData && refData.waktu) defaultWaktu = refData.waktu;
+        let formattedWaktu = formatTimeLeftColumn(defaultWaktu);
+
+        if (itemsForJp.length > 0) {
+            // Render jika ada jadwal
+            itemsForJp.forEach(item => {
+              let cardRightHTML = '';
+              if (item.mapel === 'FLAG CEREMONY') {
+                cardRightHTML = `<div style="font-size: 14px; font-weight: 800; color: #dc2626; text-align: center; width: 100%;">FLAG CEREMONY</div>`;
+              } else {
+                const finalGuru = highlightGuru(item.guru, query);
+                cardRightHTML = `
+                  <div class="kelas-info">${item.kelas}</div>
+                  <div class="mapel">${item.mapel}</div>
+                  <div class="guru-nama">${finalGuru}</div>
+                `;
+              }
+              
+              html += `
+                <div class="card">
+                  <div class="card-left">
+                    <span class="jp">${item.jp}</span>
+                    <span class="waktu">${formattedWaktu}</span>
+                  </div>
+                  <div class="card-right">${cardRightHTML}</div>
+                </div>
+              `;
+            });
+        } else {
+            // Render slot KOSONG jika tidak ada jadwal di JP ini
+            html += `
+              <div class="card" style="opacity: 0.6; background: #f8fafc; border: 1px dashed #cbd5e1; box-shadow: none;">
+                <div class="card-left">
+                  <span class="jp">${i}</span>
+                  <span class="waktu">${formattedWaktu}</span>
+                </div>
+                <div class="card-right" style="display:flex; justify-content:center; align-items:center;">
+                    <span style="color: #94a3b8; font-weight: 600; font-size: 14px; letter-spacing: 1px;">KOSONG</span>
+                </div>
+              </div>
+            `;
+        }
+    }
     col.innerHTML = html;
     container.appendChild(col);
   });
 
-  // ========================================================
-  // PANGGIL FUNGSI WARNA SETELAH JADWAL UMUM MUNCUL
-  // ========================================================
   applySubjectColors();
 }
 
@@ -479,7 +528,7 @@ function applySubjectColors() {
         const mapelEl = card.querySelector('.mapel');
         const kelasEl = card.querySelector('.kelas-info');
         
-        // Mencegah error jika elemen yang dirender tidak memiliki mapel/kelas (seperti Flag Ceremony)
+        // Mencegah error jika elemen yang dirender tidak memiliki mapel/kelas (seperti Flag Ceremony / KOSONG)
         if (!mapelEl || !kelasEl) return;
         
         const mapelName = mapelEl.textContent.trim().toUpperCase();
