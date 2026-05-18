@@ -1,513 +1,221 @@
-// ==========================================================================
-// TEMPELKAN URL DEPLOYMENT APPS SCRIPT ANDA DI BAWAH INI
-// ==========================================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbxvVZ_0HN5y6p4t1Ga654-SSdXGgMH-MWUe5g2BpqVYRWpRX3qBP7y49axCL2OJwXU8TA/exec";
+/* ==========================================================================
+   THEME CONFIGURATION: PURE WHITE WITH POPPINS & ADAPTIVE HP VIEW
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
-let RAW_DATA = [];
-let TEMATIK_DATA = null;
-let isDataLoaded = false;
-let isTematikLoaded = false;
+:root {
+  --bg-gradient: #ffffff;
+  --glass-main-bg: rgba(248, 250, 252, 0.75); 
+  --glass-main-border: rgba(226, 232, 240, 0.9); 
+  --card-glass-bg: #ffffff;
+  --card-glass-border: #e2e8f0;
+  --logo-blue-accent: #1155cc;   
+  --logo-blue-light: #eff6ff;    
+  --logo-blue-border: #bfdbfe;   
+  --guru-match-blue: #1e3a8a;    
+  --text-main: #0f172a;         
+  --text-muted: #64748b;        
+}
 
-window.onload = function() {
-  const searchInput = document.getElementById('searchInput');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { 
+  font-family: 'Poppins', sans-serif !important; 
+  background: var(--bg-gradient) !important; 
+  color: var(--text-main) !important; 
+  overflow-x: hidden;
+  padding: 24px;
+}
+
+@keyframes pageEntryPopUp {
+  0% { opacity: 0; transform: translateY(15px) scale(0.99); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.header-section, .day-column {
+  animation: pageEntryPopUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ==========================================================================
+   HEADER SECTION MODEREN & TERPUSAT
+   ========================================================================== */
+.header-section {
+  background: var(--glass-main-bg);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: 24px 35px; border-radius: 20px; border: 1px solid var(--glass-main-border);
+  /* POIN 1: Menambahkan margin-top 20px agar tidak mepet batas atas layar */
+  margin: 20px auto 25px auto; 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  max-width: 1350px; 
+}
+
+.header-main-wrapper {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+}
+
+.header-top-content { display: flex; align-items: center; gap: 20px; }
+.header-logo { height: 75px; width: auto; }
+.header-section h1 { font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; line-height: 1.2; }
+.header-section p { color: var(--logo-blue-accent); font-size: 14px; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
+
+.mobile-subtext { display: none; }
+.desktop-subtext { display: block; }
+
+.header-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+.input-wrapper {
+  position: relative; display: flex; align-items: center; 
+  background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 50px; 
+  padding: 0 20px; height: 46px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.input-wrapper:hover { background: #ffffff; border-color: #94a3b8; }
+.input-wrapper:focus-within { background: #ffffff; border-color: var(--logo-blue-accent); box-shadow: 0 0 0 4px rgba(17, 85, 204, 0.12); transform: translateY(-1px); }
+
+.search-wrapper { min-width: 270px; }
+.input-wrapper input { flex: 1; border: none; outline: none; font-size: 13.5px; color: var(--text-main); background: transparent; font-family: 'Poppins'; }
+.input-wrapper input::placeholder { color: #94a3b8; }
+
+.input-icon { width: 18px; height: 18px; fill: #64748b; margin-right: 10px; transition: fill 0.2s; }
+.input-wrapper:focus-within .input-icon { fill: var(--logo-blue-accent); }
+
+.clear-btn { cursor: pointer; display: none; background: #e2e8f0; border: none; border-radius: 50%; width: 20px; height: 20px; align-items: center; justify-content: center; padding: 4px; transition: background 0.2s; }
+.clear-btn:hover { background: #cbd5e1; }
+.clear-btn svg { width: 12px; height: 12px; fill: #475569; }
+
+.input-wrapper-select { padding: 0 16px !important; min-width: 210px; }
+#pekanSelect { width: 100%; background: transparent; border: none; color: var(--text-main) !important; outline: none; font-family: inherit; font-size: 13px; cursor: pointer; font-weight: 600; height: 100%; }
+#pekanSelect option { background: #ffffff !important; color: #0f172a !important; }
+
+/* POIN 2: Tombol Cetak PDF Berwarna Biru */
+.btn-pdf {
+  background: var(--logo-blue-accent); 
+  color: #ffffff; 
+  border: none; padding: 0 22px; height: 46px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 13.5px; display: flex; align-items: center; gap: 8px; font-family: 'Poppins'; transition: all 0.25s ease; 
+  box-shadow: 0 4px 12px rgba(17, 85, 204, 0.2);
+}
+.btn-pdf:hover { 
+  background: #0d42a3; /* Biru yang lebih gelap saat di-hover */
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(17, 85, 204, 0.35); 
+}
+.btn-pdf svg { width: 18px; height: 18px; fill: currentColor; }
+
+.tab-container { display: flex; background: rgba(15, 23, 42, 0.05); padding: 4px; border-radius: 30px; width: fit-content; border: 1px solid rgba(0, 0, 0, 0.01); margin-top: 20px; }
+.tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 8px 24px; font-size: 13.5px; font-weight: 700; border-radius: 25px; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.2s ease; }
+.tab-btn.active { background: #ffffff; color: var(--text-main); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+
+.jp-counter-box { font-size: 12px; font-weight: 600; color: var(--logo-blue-accent); }
+
+/* ==========================================================================
+   GRID MONITOR CONTAINER
+   ========================================================================== */
+.flex-schedule-container { display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 10px; width: 100%; margin: 0 auto; padding: 4px 0 16px 0; overflow-x: hidden; max-width: 1350px; }
+.day-column { flex: 1 1 0%; min-width: 0; border-radius: 16px; padding: 10px; background: var(--glass-main-bg); border: 1px solid var(--glass-main-border); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01); }
+
+.day-column.today-active { background: var(--active-day-bg) !important; border: 1px solid var(--active-day-border) !important; box-shadow: 0 4px 22px rgba(17, 85, 204, 0.07) !important; }
+.day-column.today-active .day-title { background: var(--logo-blue-accent) !important; }
+
+/* POIN 3: Keterangan TODAY / HARI INI pada kolom aktif */
+.day-column.today-active .day-title::after {
+  content: " • HARI INI";
+  background: #ffffff;
+  color: var(--logo-blue-accent);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+  font-weight: 800;
+  vertical-align: middle;
+}
+
+.day-title { text-align: center; font-size: 13px; font-weight: 800; padding: 10px 0; margin-bottom: 12px; border-radius: 8px; background: var(--text-main) !important; color: #ffffff !important; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.card { position: relative; background: var(--card-glass-bg) !important; border-radius: 12px !important; padding: 10px 8px; margin-bottom: 10px; display: flex; gap: 6px; min-height: 95px; border: 1px solid var(--card-glass-border) !important; color: var(--text-main) !important; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03); transition: all 0.2s ease-in-out; overflow: hidden; }
+.card-left { flex: 0 0 48px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; border-right: 1px dashed rgba(0, 0, 0, 0.08); padding-right: 4px; }
+.jp { font-size: 18px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; line-height: 1; margin-bottom: 4px;}
+.waktu { font-size: 9.5px !important; color: var(--text-muted) !important; font-weight: 600; text-align: left !important; line-height: 1.3 !important; white-space: pre-line; display: block; width: 100%; }
+.card-right { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 3px; }
+.tematik-card-combined { padding-right: 4px !important; }
+.tematik-flex-row { flex-direction: row !important; justify-content: flex-start; align-items: stretch; width: 100%; }
+.tematik-inner-col { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 50px; gap: 3px; }
+.tematik-inner-col-border { border-left: 1px solid rgba(0, 0, 0, 0.08); }
+.kelas-info { font-size: 11px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; text-transform: uppercase; }
+.mapel { font-size: 11.5px !important; font-weight: 700 !important; color: var(--text-main) !important; line-height: 1.3; transition: color 0.2s; }
+.guru-nama { font-size: 11px !important; color: var(--text-main); font-weight: 500; line-height: 1.3; }
+.search-highlight { background: transparent !important; color: var(--guru-match-blue) !important; font-weight: 800 !important; padding: 0; }
+
+/* ==========================================================================
+   ADAPTIVE MEDIA QUERY: LAPTOP
+   ========================================================================== */
+@media screen and (min-width: 769px) and (max-width: 1366px) {
+  body { padding: 16px; }
+  .header-section { padding: 20px; margin-top: 10px; }
+  .header-logo { height: 60px; }
+  .header-section h1 { font-size: 22px; }
+  .search-wrapper { min-width: 200px; }
+  .flex-schedule-container { gap: 6px; }
+  .day-column { padding: 6px; }
+  .day-title { font-size: 11.5px; padding: 8px 0; margin-bottom: 8px; }
+  .card { padding: 8px 4px; gap: 4px; min-height: 85px; margin-bottom: 8px; }
+  .card-left { flex: 0 0 42px; }
+  .jp { font-size: 16px !important; }
+  .waktu { font-size: 8.5px !important; }
+  .kelas-info { font-size: 10px !important; }
+  .mapel { font-size: 10.5px !important; }
+  .guru-nama { font-size: 10px !important; }
+}
+
+/* ==========================================================================
+   UKURAN HP (RESPONSIVE)
+   ========================================================================== */
+@media (max-width: 768px) {
+  body { padding: 14px; }
+  .header-section { padding: 16px; margin-top: 0; }
+  .header-main-wrapper { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .header-top-content { gap: 12px; }
+  .header-logo { height: 50px; }
+  .header-section h1 { font-size: 18px; }
+  .desktop-subtext { display: none; }
+  .mobile-subtext { display: block; font-size: 11.5px !important; line-height: 1.4; font-weight: 700; }
+  .header-controls { width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+  .input-wrapper, .btn-pdf { width: 100%; height: 42px; justify-content: center; }
+  .search-wrapper { min-width: 100%; justify-content: flex-start; }
+  .tab-container { margin-top: 16px; width: 100%; display: flex; justify-content: space-between; }
+  .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
+  .flex-schedule-container { justify-content: flex-start !important; overflow-x: auto !important; padding: 0 4px 12px 4px; gap: 12px; -webkit-overflow-scrolling: touch; }
+  .day-column { flex: 0 0 240px !important; width: 240px !important; min-width: 240px !important; }
+}
+
+/* ==========================================================================
+   CSS KHUSUS CETAK PDF
+   ========================================================================== */
+#printHeader { display: none; }
+@media print {
+  @page { size: A4 landscape; margin: 10mm 12mm; }
+  body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body::before, body::after, .header-section, #initialState, #initialStateTematik, .flex-schedule-container::-webkit-scrollbar, .flex-schedule-container::before, .flex-schedule-container::after { display: none !important; }
   
-  searchInput.placeholder = "⏳ Memuat database jadwal...";
-  searchInput.disabled = true;
+  #printHeader { display: table !important; width: 100%; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; }
+  .print-logo-cell { display: table-cell; vertical-align: middle; width: 55px; padding-right: 12px; }
+  .print-logo { height: 42px; width: auto; display: block; }
+  .print-text-cell { display: table-cell; vertical-align: middle; text-align: left; }
+  #printHeader h2 { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
+  #printHeader h3 { font-size: 11px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
 
-  // 1. Mengambil data Jadwal Umum menggunakan FETCH API
-  fetch(`${API_URL}?action=jadwalBiasa`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      RAW_DATA = data;
-      isDataLoaded = true;
-      searchInput.placeholder = "Ketik nama atau kelas...";
-      searchInput.disabled = false;
-    })
-    .catch(error => {
-      console.error("Gagal sinkronisasi data umum:", error);
-      searchInput.placeholder = "❌ Sistem gagal terkoneksi.";
-    });
-
-  // 2. Mengambil data Jadwal Tematik menggunakan FETCH API
-  fetch(`${API_URL}?action=jadwalTematik`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      TEMATIK_DATA = data;
-      isTematikLoaded = true;
-      buildPekanDropdownOptions();
-    })
-    .catch(error => {
-      console.error("Gagal sinkronisasi data tematik:", error);
-    });
-};
-
-function getTodayString() {
-  const dayIndex = new Date().getDay();
-  const daysMap = ['SABTU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', "JUM'AT", 'SABTU'];
-  return daysMap[dayIndex];
-}
-
-function parseRangeTanggal(strTanggalRaw) {
-  if (!strTanggalRaw) return null;
-  try {
-    const cleanStr = strTanggalRaw.toUpperCase().replace(/[^A-Z0-9\s-]/g, '');
-    const tokens = cleanStr.split('-');
-    if(tokens.length < 2) return null;
-
-    const endPart = tokens[1].trim(); 
-    const endTokens = endPart.split(/\s+/); 
-    
-    let tahun = parseInt(endTokens[endTokens.length - 1]);
-    let namaBulan = endTokens[endTokens.length - 2];
-    let tglAkhir = parseInt(endTokens[0]);
-    let tglAwal = parseInt(tokens[0].trim());
-    
-    const daftarBulan = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
-    let idxBulan = daftarBulan.indexOf(namaBulan);
-    if(idxBulan === -1) {
-      idxBulan = daftarBulan.findIndex(b => b.includes(namaBulan) || namaBulan.includes(b));
-      if(idxBulan === -1) idxBulan = new Date().getMonth(); 
-    }
-    
-    if(isNaN(tahun)) tahun = new Date().getFullYear();
-
-    const dateAwal = new Date(tahun, idxBulan, tglAwal);
-    const dateAkhir = new Date(tahun, idxBulan, tglAkhir);
-    
-    return { start: dateAwal, end: dateAkhir };
-  } catch(e) {
-    return null;
-  }
-}
-
-function buildPekanDropdownOptions() {
-  if (!TEMATIK_DATA || !TEMATIK_DATA.headers) return;
-  const select = document.getElementById('pekanSelect');
-  select.innerHTML = "";
-  
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  
-  let targetDate = new Date(today);
-  if(today.getDay() === 6) { 
-    targetDate.setDate(today.getDate() + 2); 
-  } else if(today.getDay() === 0) {
-    targetDate.setDate(today.getDate() + 1); 
-  }
-
-  let selectedPekanName = "";
-
-  TEMATIK_DATA.headers.forEach(h => {
-    const opt = document.createElement('option');
-    opt.value = h.pekan;
-    
-    const range = parseRangeTanggal(h.tanggalRaw);
-    const isCurrentWeek = (range && targetDate >= range.start && targetDate <= range.end);
-    
-    if(isCurrentWeek) {
-      selectedPekanName = h.pekan;
-      opt.text = `📌 ${h.pekan} (${h.tanggalRaw}) - Pekan Ini`;
-      opt.className = "dropdown-current-week";
-    } else {
-      opt.text = `${h.pekan} (${h.tanggalRaw})`;
-    }
-    
-    select.appendChild(opt);
-  });
-
-  if(selectedPekanName !== "") {
-    select.value = selectedPekanName;
-  } else if(TEMATIK_DATA.headers.length > 0) {
-    select.value = TEMATIK_DATA.headers[0].pekan;
-  }
-}
-
-function initTematikView() {
-  if(!isTematikLoaded) {
-    document.getElementById('initialStateTematik').style.display = "block";
-    setTimeout(initTematikView, 400);
-    return;
-  }
-  document.getElementById('initialStateTematik').style.display = "none";
-  handleTematikGridFilter();
-}
-
-function clearTematikSearch() {
-  document.getElementById('searchTematikInput').value = '';
-  handleTematikGridFilter();
-}
-
-function formatTimeLeftColumn(timeStr) {
-  if (!timeStr) return "-";
-  let parts = timeStr.split('-');
-  if (parts.length === 2) {
-    return `${parts[0].trim()} -\n${parts[1].trim()}`;
-  }
-  return timeStr;
-}
-
-function handleTematikGridFilter() {
-  if (!isTematikLoaded || !TEMATIK_DATA) return;
-
-  const query = document.getElementById('searchTematikInput').value.toLowerCase().trim();
-  const selectedPekan = document.getElementById('pekanSelect').value;
-  const container = document.getElementById('resultsTematikGrid');
-  const clearTematikBtn = document.getElementById('clearTematikBtn');
-
-  clearTematikBtn.style.display = query.length > 0 ? "flex" : "none";
-
-  const activeOptText = document.getElementById('pekanSelect').options[document.getElementById('pekanSelect').selectedIndex]?.text || "";
-  document.getElementById('printSubTitleText').innerText = `AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY | ${activeOptText.toUpperCase()}`;
-
-  const days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', "JUM'AT"];
-  const currentDayString = getTodayString(); 
-  container.innerHTML = "";
-  container.style.display = "flex"; 
-
-  days.forEach(day => {
-    let dayRows = TEMATIK_DATA.rows.filter(r => r.hari === day);
-    let jpGroups = {};
-    
-    dayRows.forEach(row => {
-      const cell = row.jadwalPekan[selectedPekan];
-      if (!cell || !cell.mapel || cell.fullText === "-") return;
-
-      if (!jpGroups[row.jp]) {
-        jpGroups[row.jp] = [];
-      }
-      
-      jpGroups[row.jp].push({
-        kelas: row.kelas.replace(/kelas\s+/i, '').trim(),
-        mapel: cell.mapel,
-        guru: cell.guru,
-        waktu: row.waktu 
-      });
-    });
-
-    let activeJps = Object.keys(jpGroups).sort((a, b) => parseInt(a) - parseInt(b));
-    let htmlCards = "";
-
-    activeJps.forEach(jpNum => {
-      let classesInJp = jpGroups[jpNum];
-      
-      if (query !== "") {
-        let isAnyMatch = classesInJp.some(item => 
-          item.guru.toLowerCase().includes(query) || 
-          item.mapel.toLowerCase().includes(query) || 
-          item.kelas.toLowerCase().includes(query)
-        );
-        if (!isAnyMatch) return; 
-      }
-
-      let rawWaktu = classesInJp[0] && classesInJp[0].waktu ? classesInJp[0].waktu : "JP";
-      let formattedWaktu = formatTimeLeftColumn(rawWaktu);
-
-      let innerColumnsHtml = "";
-      let validColCount = 0;
-
-      classesInJp.forEach((item) => {
-        if (query !== "") {
-          let isThisColMatch = item.guru.toLowerCase().includes(query) || 
-                               item.mapel.toLowerCase().includes(query) || 
-                               item.kelas.toLowerCase().includes(query);
-          if (!isThisColMatch) return; 
-        }
-
-        let displayMapel = item.mapel;
-        let displayGuru = item.guru;
-        let displayKelas = item.kelas;
-        
-        if (query !== "") {
-          const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-          const regex = new RegExp(`(${escapedQuery})`, 'gi');
-          displayMapel = displayMapel.replace(regex, `<mark class="search-highlight">$1</mark>`);
-          displayGuru = highlightGuru(item.guru, query); 
-          displayKelas = displayKelas.replace(regex, `<mark class="search-highlight">$1</mark>`);
-        } else {
-          displayGuru = item.guru;
-        }
-
-        let separatorClass = validColCount > 0 ? "tematik-inner-col-border" : "";
-        validColCount++;
-
-        innerColumnsHtml += `
-          <div class="tematik-inner-col ${separatorClass}">
-            <div class="kelas-info">${displayKelas}</div>
-            <div class="mapel">${displayMapel}</div>
-            <div class="guru-nama">${displayGuru}</div>
-          </div>
-        `;
-      });
-
-      if (innerColumnsHtml !== "") {
-        htmlCards += `
-          <div class="card tematik-card-combined">
-            <div class="card-left">
-              <span class="jp">${jpNum}</span>
-              <span class="waktu">${formattedWaktu}</span>
-            </div>
-            <div class="card-right tematik-flex-row">
-              ${innerColumnsHtml}
-            </div>
-          </div>
-        `;
-      }
-    });
-
-    if (htmlCards !== "") {
-      const dayID = day.replace("'", "").toLowerCase();
-      const col = document.createElement('div');
-      
-      const isActiveClass = (day === currentDayString) ? " today-active" : "";
-      col.className = `day-column col-${dayID}${isActiveClass}`;
-      
-      col.innerHTML = `
-        <div class="day-title">${day}</div>
-        ${htmlCards}
-      `;
-      container.appendChild(col);
-    }
-  });
-
-  if(container.children.length === 0) {
-    container.style.display = "none";
-    const initTematik = document.getElementById('initialStateTematik');
-    initTematik.innerHTML = `<p style="font-size: 15px; color: var(--text-muted);">Tidak ada jadwal pelajaran tematik yang cocok dengan pencarian.</p>`;
-    initTematik.style.display = "block";
-  } else {
-    document.getElementById('initialStateTematik').style.display = "none";
-  }
-
-  // PANGGIL FUNGSI WARNA SETELAH JADWAL TEMATIK MUNCUL
-  applySubjectColors();
-}
-
-function clearSearch() {
-  document.getElementById('searchInput').value = '';
-  handleSearch();
-}
-
-function handleSearch() {
-  if (!isDataLoaded) return; 
-  const query = document.getElementById('searchInput').value.toLowerCase().trim();
-  const init = document.getElementById('initialState');
-  const container = document.getElementById('resultsGrid');
-  const clearBtn = document.getElementById('clearBtn');
-  const jpCounter = document.getElementById('jpCounter');
-
-  clearBtn.style.display = query.length > 0 ? "flex" : "none";
-
-  if (query === "") {
-    init.style.display = "block";
-    container.style.display = "none";
-    jpCounter.style.display = "none"; 
-    return;
-  }
-
-  init.style.display = "none";
-  container.style.display = "flex"; 
-
-  let filtered = RAW_DATA.filter(item => {
-    const guru = (item.guru || "").toString().toLowerCase();
-    const kelas = (item.kelas || "").toString().toLowerCase();
-    const mapel = (item.mapel || "").toString().toLowerCase();
-    return guru.includes(query) || kelas.includes(query) || mapel.includes(query);
-  });
-
-  let totalJP = 0;
-  let isGuruSearch = false;
-  let countedSlots = new Set(); 
-
-  filtered.forEach(item => {
-    const guruLower = (item.guru || "").toString().toLowerCase();
-    if (guruLower.includes(query) && query.length >= 3) {
-      isGuruSearch = true;
-      const slotKey = `${item.hari}|${item.jp}`;
-      if (!countedSlots.has(slotKey)) {
-        const jpVal = parseInt(item.jp);
-        if (!isNaN(jpVal)) {
-          if (item.hari === "JUM'AT" && (jpVal === 3 || jpVal === 4 || jpVal === 5)) {
-            totalJP += 0.5; 
-          } else {
-            totalJP += 1; 
-          }
-          countedSlots.add(slotKey); 
-        }
-      }
-    }
-  });
-
-  if (isGuruSearch && totalJP > 0) {
-    const formattedJP = Number.isInteger(totalJP) ? totalJP : totalJP.toFixed(1);
-    jpCounter.innerText = `Total Mengajar: ${formattedJP} JP / Pekan`;
-    jpCounter.style.display = "flex";
-  } else {
-    jpCounter.style.display = "none"; 
-  }
-
-  const hasSeninData = filtered.some(item => item.hari === 'SENIN');
-  if (hasSeninData) {
-    const refSenin = RAW_DATA.find(d => d.hari === 'SENIN' && parseInt(d.jp) === 1);
-    const waktuSenin1 = refSenin ? refSenin.waktu : '-';
-    filtered.push({ hari: 'SENIN', jp: 1, waktu: waktuSenin1, kelas: '', mapel: 'FLAG CEREMONY', guru: '' });
-  }
-
-  const groupedData = regroupFilteredData(filtered);
-  renderGrid(groupedData, query);
-}
-
-function regroupFilteredData(data) {
-  const groupedMap = new Map();
-  data.forEach(item => {
-    const key = item.mapel === 'FLAG CEREMONY' ? 'FLAG_CEREMONY' : `${item.hari}|${item.jp}`;
-    if (groupedMap.has(key)) {
-      const existingEntry = groupedMap.get(key);
-      const newKelasArr = (item.kelas || "").split(',').map(k => k.trim()).filter(k => k);
-      newKelasArr.forEach(k => { if (!existingEntry.kelas_list.includes(k)) existingEntry.kelas_list.push(k); });
-      const existingGurus = existingEntry.guru.split('/').map(g => g.trim()).filter(g => g && g !== "-");
-      const newGurus = (item.guru || "").split('/').map(g => g.trim()).filter(g => g && g !== "-");
-      newGurus.forEach(g => { if (!existingGurus.includes(g)) existingGurus.push(g); });
-      existingEntry.guru = existingGurus.length > 0 ? existingGurus.join(' / ') : "-";
-    } else {
-      const initialKelas = (item.kelas || "").split(',').map(k => k.trim()).filter(k => k);
-      groupedMap.set(key, { ...item, kelas_list: initialKelas });
-    }
-  });
-  return Array.from(groupedMap.values()).map(group => {
-    group.kelas = group.kelas_list.sort((a, b) => a.localeCompare(b, undefined, {numeric: true})).join(', ');
-    delete group.kelas_list;
-    return group;
-  });
-}
-
-function highlightGuru(guruString, query) {
-  if (!guruString) return "-";
-  if (!query) return guruString; 
-  const parts = guruString.split('/');
-  return parts.map(part => {
-    if(part.toLowerCase().includes(query)) {
-      return `<span class="search-highlight">${part.trim()}</span>`;
-    } else {
-      return `<span style="color: var(--text-main); font-weight: 500;">${part.trim()}</span>`;
-    }
-  }).join(' / ');
-}
-
-function renderGrid(data, query) {
-  const container = document.getElementById('resultsGrid');
-  const days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', "JUM'AT", 'SABTU']; 
-  const currentDayString = getTodayString(); 
-  container.innerHTML = "";
-  container.style.display = "flex"; 
-
-  days.forEach(day => {
-    const dayData = data.filter(d => d.hari === day).sort((a, b) => parseInt(a.jp) - parseInt(b.jp));
-    if (dayData.length === 0) return;
-
-    const dayID = day.replace("'", "").toLowerCase(); 
-    const col = document.createElement('div');
-    
-    const isActiveClass = (day === currentDayString) ? " today-active" : "";
-    col.className = `day-column col-${dayID}${isActiveClass}`;
-    
-    let html = `<div class="day-title">${day}</div>`;
-    
-    dayData.forEach(item => {
-      let cardRightHTML = '';
-      if (item.mapel === 'FLAG CEREMONY') {
-        cardRightHTML = `<div style="font-size: 14px; font-weight: 800; color: #dc2626; text-align: center; width: 100%;">FLAG CEREMONY</div>`;
-      } else {
-        const finalGuru = highlightGuru(item.guru, query);
-        cardRightHTML = `
-          <div class="kelas-info">${item.kelas}</div>
-          <div class="mapel">${item.mapel}</div>
-          <div class="guru-nama">${finalGuru}</div>
-        `;
-      }
-      
-      let formattedWaktu = formatTimeLeftColumn(item.waktu);
-      
-      html += `
-        <div class="card">
-          <div class="card-left">
-            <span class="jp">${item.jp}</span>
-            <span class="waktu">${formattedWaktu}</span>
-          </div>
-          <div class="card-right">${cardRightHTML}</div>
-        </div>
-      `;
-    });
-    col.innerHTML = html;
-    container.appendChild(col);
-  });
-
-  // PANGGIL FUNGSI WARNA SETELAH JADWAL UMUM MUNCUL
-  applySubjectColors();
-}
-
-
-// ==========================================================================
-// FUNGSI UNTUK MEMBERIKAN WARNA PADA MATA PELAJARAN (REVISI !IMPORTANT)
-// ==========================================================================
-function applySubjectColors() {
-    const cards = document.querySelectorAll('.card-right, .tematik-inner-col');
-    
-    const colorPalette = [
-        '#059669', // Hijau
-        '#d97706', // Orange
-        '#7c3aed', // Ungu
-        '#db2777', // Pink Gelap
-        '#ea580c', // Merah Bata
-        '#0284c7', // Biru Muda
-        '#4f46e5'  // Indigo
-    ];
-    
-    let colorMap = {}; 
-    let colorIndex = 0;
-
-    cards.forEach(card => {
-        const mapelEl = card.querySelector('.mapel');
-        const kelasEl = card.querySelector('.kelas-info');
-        
-        // Mencegah error jika elemen yang dirender tidak memiliki mapel/kelas (seperti Flag Ceremony)
-        if (!mapelEl || !kelasEl) return;
-        
-        const mapelName = mapelEl.textContent.trim().toUpperCase();
-        // Menghapus tag highlight pencarian dari teks murni
-        const cleanMapelName = mapelName.replace(/<[^>]*>?/gm, ''); 
-        const kelasName = kelasEl.textContent.trim().toUpperCase();
-
-        if (cleanMapelName.includes('AL QURAN') || cleanMapelName.includes('AL-QURAN')) {
-            // Warna mapel tetap default menggunakan setProperty agar menembus CSS
-            mapelEl.style.setProperty('color', 'var(--text-main)', 'important'); 
-            
-            // Nama kelas yang diberi warna unik
-            if (!colorMap['KELAS_'+kelasName]) {
-                colorMap['KELAS_'+kelasName] = colorPalette[colorIndex % colorPalette.length];
-                colorIndex++;
-            }
-            kelasEl.style.setProperty('color', colorMap['KELAS_'+kelasName], 'important');
-            
-        } else {
-            // Warna kelas tetap biru
-            kelasEl.style.setProperty('color', 'var(--logo-blue-accent)', 'important'); 
-            
-            if (!colorMap[cleanMapelName]) {
-                if (cleanMapelName.includes('ARABIC')) {
-                    colorMap[cleanMapelName] = '#1155cc'; 
-                } else {
-                    colorMap[cleanMapelName] = colorPalette[colorIndex % colorPalette.length];
-                    colorIndex++;
-                }
-            }
-            // Menerapkan warna ke mapel dengan paksaan !important
-            mapelEl.style.setProperty('color', colorMap[cleanMapelName], 'important');
-        }
-    });
+  .flex-schedule-container { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: flex-start !important; gap: 6px !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; page-break-inside: avoid !important; }
+  .day-column { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; padding: 4px !important; flex: 1 1 0% !important; min-width: 0 !important; max-width: none !important; box-shadow: none !important; display: block !important; page-break-inside: avoid !important; }
+  .day-column.today-active .day-title::after { display: none !important; } /* Sembunyikan badge TODAY saat cetak PDF */
+  .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 6px !important; font-size: 10px !important; font-weight: 700 !important; padding: 4px 0 !important; margin-bottom: 6px !important; text-align: center !important; text-transform: uppercase !important; }
+  .card { background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; display: flex !important; flex-direction: row !important; min-height: 50px !important; padding: 4px !important; border-radius: 6px !important; margin-bottom: 4px !important; page-break-inside: avoid !important; gap: 4px !important; }
+  .card-left { border-right: 1px dashed #e2e8f0 !important; padding-right: 4px !important; margin-right: 2px !important; flex: 0 0 35px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
+  .jp { color: #0f172a !important; font-size: 12px !important; font-weight: 800 !important; line-height: 1 !important; }
+  .waktu { color: #64748b !important; font-size: 7px !important; margin-top: 2px !important; text-align: center !important; }
+  .card-right { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; text-align: left !important; }
+  .tematik-flex-row { display: flex !important; flex-direction: row !important; width: 100% !important; }
+  .tematik-inner-col { flex: 1 !important; padding: 0 2px !important; }
+  .tematik-inner-col-border { border-left: 1px solid #e2e8f0 !important; }
+  .kelas-info { font-size: 8.5px !important; font-weight: 700 !important; margin-bottom: 1px !important; }
+  .mapel { font-size: 9px !important; font-weight: 800 !important; line-height: 1.2 !important; }
+  .guru-nama { color: #475569 !important; font-size: 8px !important; font-weight: 600 !important; margin-top: 1px !important; }
+  mark.search-highlight, .search-highlight { background-color: #dbeafe !important; color: #1e40af !important; font-weight: 700 !important; border-radius: 2px !important; padding: 0 2px !important; }
 }

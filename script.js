@@ -284,7 +284,9 @@ function handleTematikGridFilter() {
     document.getElementById('initialStateTematik').style.display = "none";
   }
 
+  // ========================================================
   // PANGGIL FUNGSI WARNA SETELAH JADWAL TEMATIK MUNCUL
+  // ========================================================
   applySubjectColors();
 }
 
@@ -447,7 +449,9 @@ function renderGrid(data, query) {
     container.appendChild(col);
   });
 
+  // ========================================================
   // PANGGIL FUNGSI WARNA SETELAH JADWAL UMUM MUNCUL
+  // ========================================================
   applySubjectColors();
 }
 
