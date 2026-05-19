@@ -339,22 +339,24 @@ body {
   }
 }
 
+/* Sembunyikan elemen header cetak di layar browser biasa (Desktop/HP) */
+#printHeader {
+  display: none;
+}
+
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF (MEMAKSA TAMPILAN DESKTOP DI HP & 1 HALAMAN)
+   CSS KHUSUS CETAK PDF (DENGAN HEADER DAN PENYETELAN KOPI DESKTOP)
    ========================================================================== */
 @media print {
-  /* 1. Atur orientasi dan margin kertas standar */
   @page { 
     size: A4 landscape; 
-    margin: 5mm; 
+    margin: 4mm 5mm; 
   }
   
-  /* 2. KUNCI RAHASIA HP: Paksa lebar body menjadi ukuran Desktop (285mm)
-     Ini akan mencegah HP melipat/mematahkan teks ke bawah yang bikin tabel jadi 4 halaman */
   html, body { 
     width: 285mm !important;
     min-width: 285mm !important;
-    background: #f8fafc !important; /* Warna latar tabel */
+    background: #ffffff !important;
     -webkit-print-color-adjust: exact !important; 
     print-color-adjust: exact !important; 
     padding: 0 !important; 
@@ -362,13 +364,12 @@ body {
     overflow: visible !important;
   }
   
-  /* 3. Sembunyikan SEMUA elemen kecuali tabel (agar tidak ada header nyangkut) */
-  body > *:not(.flex-schedule-container),
+  /* Sembunyikan semua elemen bawaan web kecuali kontainer jadwal & header cetak baru */
+  body > *:not(.flex-schedule-container):not(#printHeader),
   .header-section, 
   .mobile-day-tabs, 
   #initialState, 
   #initialStateTematik,
-  #printHeader,
   footer { 
     display: none !important; 
     visibility: hidden !important;
@@ -377,25 +378,71 @@ body {
     margin: 0 !important;
     padding: 0 !important;
   }
-  
-  /* 4. Konfigurasi Kontainer Utama */
+
+  /* ========================================================================
+     DESAIN HEADER CETAK (TIRUAN PERSIS SCREENSHOT AL-WILDAN)
+     ======================================================================== */
+  #printHeader {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    margin-bottom: 12px !important;
+  }
+  .print-logo {
+    height: 50px !important;
+    width: auto !important;
+    margin-bottom: 4px !important;
+  }
+  .print-title {
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: 0.3px !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+  }
+  .print-subtitle {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    color: #1155cc !important;
+    letter-spacing: 0.3px !important;
+    margin: 2px 0 6px 0 !important;
+  }
+  .print-badge-box {
+    background: #1155cc !important;
+    color: #ffffff !important;
+    padding: 5px 24px !important;
+    border-radius: 6px !important;
+    display: inline-block !important;
+    min-width: 320px !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1) !important;
+  }
+  #printDynamicTitle {
+    font-size: 11.5px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: block !important;
+  }
+
+  /* ========================================================================
+     KONTROL STRUKTUR TABEL & KOMPRESI AGAR PAS 1 HALAMAN
+     ======================================================================== */
   .flex-schedule-container { 
     display: block !important;
     width: 100% !important; 
     padding: 0 !important; 
     margin: 0 !important; 
   }
-  
-  /* Memaksa baris kolom berjejer ke samping persis di web Desktop */
   .days-wrapper, .days-wrapper.show-all-mobile { 
     display: flex !important; 
     flex-direction: row !important; 
     flex-wrap: nowrap !important; 
     width: 100% !important; 
-    gap: 8px !important; /* Jarak antar kolom */
+    gap: 6px !important;
   }
-  
-  /* Bentuk kotak Hari persis gaya Desktop */
   .day-column, .days-wrapper.show-all-mobile .day-column { 
     display: block !important; 
     flex: 1 1 0% !important; 
@@ -403,72 +450,47 @@ body {
     min-width: 0 !important; 
     background: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
-    border-radius: 8px !important;
-    padding: 6px !important;
+    border-radius: 6px !important;
+    padding: 5px !important;
     page-break-inside: avoid !important; 
   }
-
-  /* Desain Judul Hari (Warna dan background ikut terbawa) */
   .day-title { 
-    font-size: 11px !important; 
-    padding: 6px 0 !important; 
-    margin-bottom: 8px !important; 
+    font-size: 10.5px !important; 
+    padding: 5px 0 !important; 
+    margin-bottom: 6px !important; 
     background: #0f172a !important; 
     color: #ffffff !important; 
-    border-radius: 6px !important;
-    text-align: center !important;
-    text-transform: uppercase !important;
+    border-radius: 4px !important;
     font-weight: 800 !important;
   }
   .day-column.today-active .day-title::after { display: none !important; }
 
-  /* 5. Kartu Jadwal (Dibuat ukurannya paten agar tidak bengkak) */
+  /* Kartu dipersempit sedikit demi space header atas */
   .card { 
     display: flex !important; 
-    flex-direction: row !important; 
-    padding: 6px !important; 
-    margin-bottom: 6px !important; 
+    padding: 4px 5px !important; 
+    margin-bottom: 4px !important; 
     border: 1px solid #cbd5e1 !important;
-    border-radius: 6px !important;
-    background: #ffffff !important;
-    height: max-content !important; /* Mencegah kartu memanjang ke bawah tanpa batas */
-    min-height: 45px !important;
+    border-radius: 5px !important;
+    min-height: 40px !important;
     page-break-inside: avoid !important; 
     transform: none !important; 
     transition: none !important;
   }
-  
   .card-left { 
-    flex: 0 0 35px !important; 
+    flex: 0 0 30px !important; 
     border-right: 1px dashed #cbd5e1 !important; 
-    padding-right: 4px !important; 
-    margin-right: 4px !important; 
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
+    padding-right: 3px !important; 
+    margin-right: 3px !important; 
   }
+  .jp { font-size: 13px !important; font-weight: 800 !important; color: #1155cc !important;}
+  .waktu { font-size: 6.5px !important; color: #64748b !important;}
+  .card-right { gap: 1px !important; }
+  .kelas-info { font-size: 7.5px !important; font-weight: 800 !important; color: #1155cc !important; }
+  .mapel { font-size: 9px !important; font-weight: 800 !important; color: #0f172a !important; }
+  .guru-nama { font-size: 7.5px !important; font-weight: 600 !important; color: #475569 !important; }
   
-  /* Ukuran font disesuaikan rasio Desktop */
-  .jp { font-size: 14px !important; font-weight: 800 !important; line-height: 1 !important; color: #1155cc !important;}
-  .waktu { font-size: 7px !important; line-height: 1.2 !important; margin-top: 2px !important; color: #64748b !important; text-align: center !important;}
-  
-  .card-right { 
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    gap: 2px !important; 
-  }
-  
-  .kelas-info { font-size: 8px !important; font-weight: 800 !important; color: #1155cc !important; line-height: 1.1 !important; }
-  .mapel { font-size: 9.5px !important; font-weight: 800 !important; line-height: 1.2 !important; color: #0f172a !important; }
-  .guru-nama { font-size: 8px !important; font-weight: 600 !important; color: #475569 !important; line-height: 1.1 !important; }
-  
-  /* Tabel Tematik */
-  .tematik-flex-row { display: flex !important; flex-direction: row !important; width: 100% !important; }
-  .tematik-inner-col { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; gap: 2px !important; }
-  .tematik-inner-col-border { border-left: 1px solid #cbd5e1 !important; padding-left: 4px !important; margin-left: 2px !important; }
-
+  .tematik-inner-col { gap: 1px !important; }
+  .tematik-inner-col-border { border-left: 1px solid #cbd5e1 !important; padding-left: 3px !important; }
   mark.search-highlight, .search-highlight { background-color: transparent !important; color: inherit !important; }
 }
