@@ -391,15 +391,15 @@ body {
   }
 
 /* ========================================================================
-     DESAIN HEADER CETAK (ANTI-TABRAKAN: KUNCI KOORDINAT MASING-MASING)
+     DESAIN HEADER CETAK (UKURAN LOGO JAUH LEBIH BESAR & PROPORSIONAL)
      ======================================================================== */
   #printHeader {
     display: block !important; 
     position: relative !important;
     width: 100% !important;
-    height: 60px !important; /* Mengunci tinggi ruang header agar pas */
+    height: 80px !important; /* DITINGKATKAN: Dari 60px ke 80px agar muat logo besar */
     margin-top: 0 !important;
-    margin-bottom: 20px !important; /* Jarak aman sebelum garis ke tabel bawah */
+    margin-bottom: 20px !important; 
     padding-bottom: 12px !important;
     box-sizing: border-box !important;
     
@@ -407,24 +407,24 @@ body {
     border-bottom: 3.5px solid #000000 !important; 
   }
   
-  /* 1. Kunci Logo di pojok kiri paling awal */
+  /* 1. Logo dibesarkan */
   .print-logo {
     position: absolute !important;
     left: 0 !important;
-    top: 4px !important;
-    height: 50px !important; 
+    top: 2px !important;
+    height: 75px !important; /* DITINGKATKAN: Dari 50px ke 75px (Bisa Anda ubah angkanya jika mau lebih besar/kecil) */
     width: auto !important;
     margin: 0 !important;
     padding: 0 !important;
   }
   
-  /* 2. Kunci JADWAL PELAJARAN di baris ATAS (75px dari kiri, 2px dari atas) */
+  /* 2. JADWAL PELAJARAN (Digeser ke kanan menjadi 100px agar tidak tertutup logo yang melebar) */
   .print-title {
     position: absolute !important;
-    left: 75px !important; 
-    top: 2px !important; /* <--- Koordinat Atas */
+    left: 100px !important; /* DIGESER: Memberi ruang bagi logo yang melebar */
+    top: 10px !important;  /* DISESUAIKAN: Turun sedikit agar seimbang dengan logo besar */
     display: block !important;
-    font-size: 24px !important; 
+    font-size: 26px !important; /* DIUTAK-ATIK: Ukuran font judul dinaikkan sedikit agar seimbang */
     font-weight: 800 !important;
     color: #0f172a !important;
     line-height: 1 !important;
@@ -432,19 +432,17 @@ body {
     padding: 0 !important;
     text-transform: uppercase !important;
     letter-spacing: -0.5px !important;
-    
-    /* Reset gaya lama agar tidak merusak posisi */
     grid-column: auto !important;
     grid-row: auto !important;
   }
   
-  /* 3. Kunci AL-WILDAN di baris BAWAH (75px dari kiri, 32px dari atas) */
+  /* 3. AL-WILDAN ISLAMIC SCHOOL (Digeser ke kanan 100px dan diturunkan ke koordinat 45px) */
   .print-subtitle {
     position: absolute !important;
-    left: 75px !important; 
-    top: 32px !important; /* <--- Koordinat Bawah (Diturunkan agar tidak tabrakan) */
+    left: 100px !important; /* DIGESER: Sama dengan judul di atas */
+    top: 45px !important;  /* KORIDINAT BARU: Diturunkan agar pas berada di bawah Jadwal Pelajaran */
     display: block !important;
-    font-size: 13.5px !important;
+    font-size: 14px !important;
     font-weight: 700 !important;
     color: #1155cc !important; 
     line-height: 1 !important;
@@ -452,33 +450,29 @@ body {
     padding: 0 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
-    
-    /* Reset gaya lama agar tidak merusak posisi */
     grid-column: auto !important;
     grid-row: auto !important;
   }
   
-  /* 4. Kunci Nama Guru di pojok KANAN ATAS */
+  /* 4. Nama Guru di pojok KANAN (Diturunkan koordinat top-nya agar pas di tengah secara vertikal) */
   .print-badge-box {
     position: absolute !important;
     right: 0 !important;
-    top: 8px !important; /* Sejajar manis secara horizontal */
+    top: 18px !important; /* DISESUAIKAN: Berada di tengah-tengah tinggi header baru */
     background: #1155cc !important; 
     color: #ffffff !important;
-    padding: 6px 20px !important;
+    padding: 7px 22px !important;
     border-radius: 6px !important;
     margin: 0 !important;
     display: inline-block !important;
     text-align: center !important;
     box-shadow: none !important;
-    
-    /* Reset gaya lama agar tidak merusak posisi */
     grid-column: auto !important;
     grid-row: auto !important;
   }
   
   #printDynamicTitle {
-    font-size: 11.5px !important;
+    font-size: 12px !important;
     font-weight: 800 !important;
     color: #ffffff !important;
     text-transform: uppercase !important;
