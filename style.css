@@ -290,7 +290,7 @@ body {
 }
 
 /* ==========================================================================
-   UKURAN HP (RESPONSIVE) - MODIFIKASI KHUSUS HEADER HP ANTI-DOUBLE
+   UKURAN HP (RESPONSIVE) - KHUSUS HEADER HP (TEKS BIRU SAMA BESAR)
    ========================================================================== */
 @media screen and (max-width: 768px) {
   body { padding: 14px; }
@@ -299,7 +299,7 @@ body {
   .header-top-content { gap: 14px; display: flex !important; align-items: center !important; }
   .header-logo { height: 55px; }
   
-  /* 1. Munculkan Judul Utama */
+  /* 1. Judul Utama "JADWAL PELAJARAN" (Hitam, 19px) */
   .header-section h1 { 
     display: block !important; 
     font-size: 19px !important;
@@ -307,21 +307,21 @@ body {
     line-height: 1.2 !important;
   }
   
-  /* 2. MATIKAN teks bawaan desktop agar tidak double */
+  /* 2. Sembunyikan teks bawaan desktop agar tidak menumpuk */
   .header-section p, 
   .desktop-subtext { 
     display: none !important; 
   }
   
-  /* 3. HIDUPKAN teks versi mobile (2 Baris) secara rapi */
+  /* 3. Teks Khusus HP (Biru, Dua Baris, Ukuran SAMA BESAR 19px) */
   .mobile-subtext { 
     display: block !important; 
-    color: var(--logo-blue-accent) !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.3px !important;
-    margin-top: 2px !important;
-    line-height: 1.3 !important;
+    color: #1155cc !important; /* Warna Biru Al-Wildan */
+    font-size: 19px !important; /* Ukuran sama persis dengan H1 di atas */
+    font-weight: 800 !important; /* Ketebalan sama ekstra bold */
+    letter-spacing: -0.5px !important;
+    margin-top: 4px !important;
+    line-height: 1.2 !important;
     text-transform: uppercase !important;
   }
   
