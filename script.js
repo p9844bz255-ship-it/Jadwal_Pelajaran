@@ -194,6 +194,27 @@ function syncCardHeights(containerId) {
 }
 
 // ==========================================================================
+// FUNGSIONALITAS UTAMA: SINKRONISASI BADGE BIRU DINAMIS
+// ==========================================================================
+function syncPrintBadge() {
+  let dynamicLabel = document.getElementById('printDynamicLabel');
+  if (!dynamicLabel) {
+    dynamicLabel = document.createElement('div');
+    dynamicLabel.id = 'printDynamicLabel';
+    const headerMain = document.querySelector('.header-main-wrapper');
+    const headerBottom = document.querySelector('.header-bottom-row');
+    if(headerMain && headerBottom) {
+      headerMain.insertBefore(dynamicLabel, headerBottom);
+    } else {
+      const firstChild = document.body.firstChild;
+      if (firstChild) document.body.insertBefore(dynamicLabel, firstChild);
+      else document.body.appendChild(dynamicLabel);
+    }
+  }
+  dynamicLabel.innerText = currentExactMatch;
+}
+
+// ==========================================================================
 // PROSES DATA & LOGIK FILTER JADWAL TEMATIK
 // ==========================================================================
 function handleTematikGridFilter() {
@@ -205,6 +226,41 @@ function handleTematikGridFilter() {
   const clearTematikBtn = document.getElementById('clearTematikBtn');
 
   if(clearTematikBtn) clearTematikBtn.style.display = query.length > 0 ? "flex" : "none";
+
+  // --- PENYESUAIAN BADGE BIRU UNTUK TEMATIK ---
+  if (query === "") {
+    currentExactMatch = "";
+  } else {
+    currentExactMatch = query.toUpperCase();
+    let foundClass = false;
+    // Cari kecocokan nama kelas terakurat di Tematik
+    for (let row of TEMATIK_DATA.rows) {
+      if (row.kelas && row.kelas.toLowerCase().includes(query)) {
+        currentExactMatch = row.kelas.replace(/kelas\s+/i, '').trim().toUpperCase();
+        foundClass = true;
+        break;
+      }
+    }
+    // Jika bukan kelas, cari kecocokan nama guru terakurat di Tematik
+    if (!foundClass) {
+      for (let row of TEMATIK_DATA.rows) {
+        if (row.jadwalPekan && row.jadwalPekan[selectedPekan]) {
+          let cell = row.jadwalPekan[selectedPekan];
+          if (cell.guru && cell.guru.toLowerCase().includes(query)) {
+            let gurus = cell.guru.split('/').map(g => g.trim());
+            let found = gurus.find(g => g.toLowerCase().includes(query));
+            if (found) {
+              currentExactMatch = found.toUpperCase();
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+  // Perbarui elemen kotak badge biru
+  syncPrintBadge();
+  // ---------------------------------------------
 
   let isTematikKelasSearch = false;
   if (query !== "") {
@@ -435,6 +491,7 @@ function handleSearch() {
     if(jpCounter) jpCounter.style.display = "none";
     currentExactMatch = ""; 
     isKelasSearch = false;
+    syncPrintBadge(); // Reset badge jika kosong
     return;
   }
 
@@ -478,6 +535,9 @@ function handleSearch() {
       }
     }
   }
+
+  // Perbarui elemen kotak badge biru
+  syncPrintBadge();
 
   let totalJP = 0;
   let isGuruSearch = false;
@@ -755,14 +815,18 @@ function applySubjectColors() {
 // CETAK PDF (1 HALAMAN PENUH 100VH DENGAN FLEX STRETCH RAPI)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
-    if (tipeJadwal !== 'umum') return; 
-
-    const container = document.getElementById('resultsGrid');
+    // Menyesuaikan target kontainer grid berdasarkan jenis jadwal yang dipilih (umum / tematik)
+    const gridId = tipeJadwal === 'tematik' ? 'resultsTematikGrid' : 'resultsGrid';
+    const container = document.getElementById(gridId);
     
     if (!container || container.style.display === "none" || container.innerHTML === "") {
         alert("Tidak ada jadwal yang bisa dicetak. Silakan lakukan pencarian terlebih dahulu.");
         return;
     }
+
+    // Mengatur class filter cetak pada bodi agar menyembunyikan jadwal yang tidak dipilih
+    document.body.classList.remove('print-umum', 'print-tematik');
+    document.body.classList.add(`print-${tipeJadwal}`);
 
     const tabs = container.querySelectorAll('.mobile-day-tabs .tab-btn');
     tabs.forEach(btn => {
@@ -770,19 +834,8 @@ function cetakPDF(tipeJadwal) {
     });
 
     setTimeout(() => {
-        let dynamicLabel = document.getElementById('printDynamicLabel');
-        if (!dynamicLabel) {
-            dynamicLabel = document.createElement('div');
-            dynamicLabel.id = 'printDynamicLabel';
-            const headerMain = document.querySelector('.header-main-wrapper');
-            const headerBottom = document.querySelector('.header-bottom-row');
-            if(headerMain && headerBottom) {
-                headerMain.insertBefore(dynamicLabel, headerBottom);
-            } else {
-                document.body.insertBefore(dynamicLabel, document.body.firstChild);
-            }
-        }
-        dynamicLabel.innerText = currentExactMatch;
+        // Pastikan badge biru terisi data paling mutakhir
+        syncPrintBadge();
 
         let customFooterLeft = document.getElementById('customPrintFooterLeft');
         if (!customFooterLeft) {
