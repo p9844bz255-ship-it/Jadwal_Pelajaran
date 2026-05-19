@@ -1,7 +1,7 @@
 /* ==========================================================================
    THEME CONFIGURATION: GLASSMORPHISM WITH POPPINS & ADAPTIVE HP VIEW
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   /* PENYESUAIAN: Menggunakan fallback gradient estetik sebelum gambar bg termuat */
@@ -32,7 +32,7 @@
 body { 
   font-family: 'Poppins', sans-serif !important; 
   /* PENYESUAIAN: Memasang gambar aura/gradient sebagai background utama aplikasi */
-  background: url('background.jpeg') no-repeat center center fixed !important; 
+  background: url('background.jpeg') no-repeat center center fixed !important; /* SILAKAN UBAH 'background.jpeg' SESUAI NAMA FILE GAMBAR ANDA */
   background-size: cover !important;
   color: var(--text-main) !important; 
   overflow-x: hidden;
@@ -122,7 +122,7 @@ body {
 .btn-pdf:hover { 
   background: #0d42a3; 
   transform: translateY(-1px);
-  box-shadow: 0 6px 166px rgba(17, 85, 204, 0.35); 
+  box-shadow: 0 6px 16px rgba(17, 85, 204, 0.35); 
 }
 .btn-pdf svg { width: 18px; height: 18px; fill: currentColor; }
 
@@ -192,8 +192,8 @@ body {
   position: relative; 
   background: var(--card-glass-bg) !important; 
   border-radius: 12px !important; 
-  padding: 9px 8px; 
-  margin-bottom: 9px; 
+  padding: 9px 8px; /* TINGGI DIKURANGI 1px: Sebelumnya 10px 8px */
+  margin-bottom: 9px; /* JARAK DIKURANGI 1px: Sebelumnya 10px */
   display: flex; 
   gap: 6px; 
   min-height: 95px; 
@@ -205,6 +205,7 @@ body {
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
 }
 
+/* PENYESUAIAN: Efek interaktif hover mikro pada kartu desktop agar lebih premium */
 @media screen and (min-width: 769px) {
   .card:hover {
     background: rgba(255, 255, 255, 0.9) !important;
@@ -217,13 +218,14 @@ body {
 .card-left { flex: 0 0 48px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; border-right: 1px dashed rgba(0, 0, 0, 0.08); padding-right: 4px; }
 .jp { font-size: 18px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; line-height: 1; margin-bottom: 4px;}
 .waktu { font-size: 9.5px !important; color: var(--text-muted) !important; font-weight: 600; text-align: left !important; line-height: 1.3 !important; white-space: pre-line; display: block; width: 100%; }
-.card-right { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 2px; }
+.card-right { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 2px; /* DIKURANGI 1px: Sebelumnya 3px */ }
 .tematik-card-combined { padding-right: 4px !important; }
 
 .tematik-flex-row { display: flex !important; flex-direction: row !important; justify-content: flex-start; align-items: stretch; width: 100%; }
-.tematik-inner-col { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 50px; gap: 2px; }
+.tematik-inner-col { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 50px; gap: 2px; /* DIKURANGI 1px: Sebelumnya 3px */ }
 .tematik-inner-col-border { border-left: 1px solid rgba(0, 0, 0, 0.08); }
 
+/* FONT DESKTOP DIJADIKAN 11.5px SEMUA (MENGKUTI FONT TERBESAR) */
 .kelas-info { font-size: 11.5px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; text-transform: uppercase; }
 .mapel { font-size: 11.5px !important; font-weight: 700 !important; color: var(--text-main) !important; line-height: 1.3; transition: color 0.2s; }
 .guru-nama { font-size: 11.5px !important; color: var(--text-main); font-weight: 500; line-height: 1.3; }
@@ -243,11 +245,13 @@ body {
   .day-column { padding: 6px; }
   .day-title { font-size: 11.5px; padding: 8px 0; margin-bottom: 8px; }
   
+  /* PENYESUAIAN LAPTOP: Padding vertikal dikurangi 1px (7px) & margin bawah dikurangi 1px (7px) */
   .card { padding: 7px 4px; gap: 3px; min-height: 85px; margin-bottom: 7px; }
   .card-left { flex: 0 0 42px; }
   .jp { font-size: 16px !important; }
   .waktu { font-size: 8.5px !important; }
   
+  /* FONT LAPTOP DIJADIKAN 10.5px SEMUA (MENGKUTI FONT TERBESAR) */
   .kelas-info { font-size: 10.5px !important; }
   .mapel { font-size: 10.5px !important; }
   .guru-nama { font-size: 10.5px !important; }
@@ -290,39 +294,21 @@ body {
 }
 
 /* ==========================================================================
-   UKURAN HP (RESPONSIVE) - KHUSUS HEADER HP (TEKS BIRU SAMA BESAR)
+   UKURAN HP (RESPONSIVE) - VERTIKAL UNTUK 1 HARI, HORIZONTAL UNTUK "SEMUA"
    ========================================================================== */
 @media screen and (max-width: 768px) {
   body { padding: 14px; }
   .header-section { padding: 16px; margin-top: 0; }
   .header-main-wrapper { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .header-top-content { gap: 14px; display: flex !important; align-items: center !important; }
-  .header-logo { height: 55px; }
+  .header-top-content { gap: 12px; }
+  .header-logo { height: 50px; }
   
-  /* 1. Judul Utama "JADWAL PELAJARAN" (Hitam, 19px) */
-  .header-section h1 { 
-    display: block !important; 
-    font-size: 19px !important;
-    font-weight: 800 !important;
-    line-height: 1.2 !important;
-  }
-  
-  /* 2. Sembunyikan teks bawaan desktop agar tidak menumpuk */
+  /* PERBAIKAN: Menyembunyikan judul (Jadwal Pelajaran) dan nama sekolah di versi HP */
+  .header-section h1, 
   .header-section p, 
-  .desktop-subtext { 
-    display: none !important; 
-  }
-  
-  /* 3. Teks Khusus HP (Biru, Dua Baris, Ukuran SAMA BESAR 19px) */
+  .desktop-subtext, 
   .mobile-subtext { 
-    display: block !important; 
-    color: #1155cc !important; /* Warna Biru Al-Wildan */
-    font-size: 19px !important; /* Ukuran sama persis dengan H1 di atas */
-    font-weight: 800 !important; /* Ketebalan sama ekstra bold */
-    letter-spacing: -0.5px !important;
-    margin-top: 4px !important;
-    line-height: 1.2 !important;
-    text-transform: uppercase !important;
+    display: none !important; 
   }
   
   .header-bottom-row { flex-direction: column; align-items: stretch; gap: 10px; }
@@ -358,6 +344,7 @@ body {
     scroll-snap-align: center; 
   }
 
+  /* FONT HP DIJADIKAN 11.5px SEMUA (MENGKUTI FONT TERBESAR) */
   .kelas-info { font-size: 11.5px !important; }
   .mapel { font-size: 11.5px !important; }
   .guru-nama { font-size: 11.5px !important; }
@@ -369,7 +356,7 @@ body {
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF (ANTI-TABRAKAN & HORIZONTAL PRO)
+   CSS KHUSUS CETAK PDF (DENGAN HEADER DAN PENYETELAN KOPI DESKTOP)
    ========================================================================== */
 @media print {
   @page { 
@@ -388,6 +375,7 @@ body {
     overflow: visible !important;
   }
   
+  /* Sembunyikan semua elemen bawaan web kecuali kontainer jadwal & header cetak baru */
   body > *:not(.flex-schedule-container):not(#printHeader),
   .header-section, 
   .mobile-day-tabs, 
@@ -402,68 +390,91 @@ body {
     padding: 0 !important;
   }
 
+/* ========================================================================
+     DESAIN HEADER CETAK (ANTI-TABRAKAN: KUNCI KOORDINAT MASING-MASING)
+     ======================================================================== */
   #printHeader {
-    display: flex !important; 
-    justify-content: space-between !important; 
-    align-items: center !important; 
+    display: block !important; 
+    position: relative !important;
     width: 100% !important;
-    height: 70px !important; 
+    height: 60px !important; /* Mengunci tinggi ruang header agar pas */
     margin-top: 0 !important;
-    margin-bottom: 15px !important; 
-    padding: 0 !important;
+    margin-bottom: 20px !important; /* Jarak aman sebelum garis ke tabel bawah */
+    padding-bottom: 12px !important;
     box-sizing: border-box !important;
+    
+    /* FITUR: Garis hitam tebal pemisah header dan jadwal */
     border-bottom: 3.5px solid #000000 !important; 
   }
   
-  .header-left-wrapper {
-    display: flex !important;
-    align-items: center !important; 
-    gap: 15px !important; 
-  }
-  
+  /* 1. Kunci Logo di pojok kiri paling awal */
   .print-logo {
-    height: 60px !important; 
+    position: absolute !important;
+    left: 0 !important;
+    top: 4px !important;
+    height: 50px !important; 
     width: auto !important;
     margin: 0 !important;
+    padding: 0 !important;
   }
   
-  .title-school-wrapper {
-    display: flex !important;
-    flex-direction: column !important; 
-    gap: 1px !important; 
-  }
-  
+  /* 2. Kunci JADWAL PELAJARAN di baris ATAS (75px dari kiri, 2px dari atas) */
   .print-title {
-    font-size: 25px !important; 
+    position: absolute !important;
+    left: 75px !important; 
+    top: 2px !important; /* <--- Koordinat Atas */
+    display: block !important;
+    font-size: 24px !important; 
     font-weight: 800 !important;
     color: #0f172a !important;
-    line-height: 1.1 !important;
+    line-height: 1 !important;
     margin: 0 !important;
+    padding: 0 !important;
     text-transform: uppercase !important;
     letter-spacing: -0.5px !important;
+    
+    /* Reset gaya lama agar tidak merusak posisi */
+    grid-column: auto !important;
+    grid-row: auto !important;
   }
   
+  /* 3. Kunci AL-WILDAN di baris BAWAH (75px dari kiri, 32px dari atas) */
   .print-subtitle {
+    position: absolute !important;
+    left: 75px !important; 
+    top: 32px !important; /* <--- Koordinat Bawah (Diturunkan agar tidak tabrakan) */
+    display: block !important;
     font-size: 13.5px !important;
     font-weight: 700 !important;
     color: #1155cc !important; 
-    line-height: 1.1 !important;
+    line-height: 1 !important;
     margin: 0 !important;
+    padding: 0 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
+    
+    /* Reset gaya lama agar tidak merusak posisi */
+    grid-column: auto !important;
+    grid-row: auto !important;
   }
   
+  /* 4. Kunci Nama Guru di pojok KANAN ATAS */
   .print-badge-box {
+    position: absolute !important;
+    right: 0 !important;
+    top: 8px !important; /* Sejajar manis secara horizontal */
     background: #1155cc !important; 
     color: #ffffff !important;
     padding: 6px 20px !important;
     border-radius: 6px !important;
     margin: 0 !important;
-    display: flex !important;
-    align-items: center !important;
+    display: inline-block !important;
     text-align: center !important;
     box-shadow: none !important;
-    height: 38px !important; 
+    
+    /* Reset gaya lama agar tidak merusak posisi */
+    grid-column: auto !important;
+    grid-row: auto !important;
   }
   
   #printDynamicTitle {
@@ -472,9 +483,11 @@ body {
     color: #ffffff !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
-    white-space: nowrap !important; 
+    white-space: nowrap !important;
   }
-
+  /* ========================================================================
+     KONTROL STRUKTUR TABEL & KOMPRESI AGAR PAS 1 HALAMAN
+     ======================================================================== */
   .flex-schedule-container { 
     display: block !important;
     width: 100% !important; 
@@ -510,10 +523,11 @@ body {
   }
   .day-column.today-active .day-title::after { display: none !important; }
 
+  /* PENYESUAIAN VERSI CETAK PDF: Padding dikurangi 1px (3px) & margin dikurangi 1px (3px) */
   .card { 
     display: flex !important; 
-    padding: 3px 5px !important; 
-    margin-bottom: 3px !important; 
+    padding: 3px 5px !important; /* TINGGI DIKURANGI 1px: Sebelumnya 4px 5px */
+    margin-bottom: 3px !important; /* JARAK DIKURANGI 1px: Sebelumnya 4px */
     border: 1px solid #cbd5e1 !important;
     border-radius: 5px !important;
     min-height: 40px !important;
