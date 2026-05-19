@@ -339,21 +339,29 @@ body {
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF (ADAPTIF HP & DESKTOP)
+   CSS KHUSUS CETAK PDF (PAKSA 1 HALAMAN PENUH / LANDSCAPE)
    ========================================================================== */
 @media print {
+  /* Memaksa kertas A4 posisi memanjang dengan margin sangat tipis */
+  @page { 
+    size: A4 landscape; 
+    margin: 5mm; 
+  }
+  
   body { 
     background: white !important; 
     color: black !important; 
     padding: 0 !important; 
     margin: 0 !important; 
-    overflow: visible !important; 
     -webkit-print-color-adjust: exact !important; 
     print-color-adjust: exact !important; 
   }
   
-  /* PERBAIKAN: Sembunyikan header bawaan web secara total agar tidak menabrak tabel */
-  .header-section, .mobile-day-tabs, #initialState, #initialStateTematik { 
+  /* Sembunyikan header UI bawaan web (agar tidak bocor menabrak tabel) */
+  .header-section, 
+  .mobile-day-tabs, 
+  #initialState, 
+  #initialStateTematik { 
     display: none !important; 
   }
   
@@ -361,100 +369,118 @@ body {
     display: none !important; 
   }
   
+  /* Header khusus cetak (Logo & Nama Guru) dibuat lebih padat */
   body.print-mode-active #printHeader {
     display: flex !important;
-    width: 100%; margin-bottom: 12px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; align-items: center;
+    width: 100%; 
+    margin-bottom: 6px; 
+    border-bottom: 1.5px solid #0f172a; 
+    padding-bottom: 4px; 
+    align-items: center;
   }
-
-  .print-logo-cell { width: 45px; padding-right: 12px; }
-  .print-logo { height: 32px; width: auto; display: block; }
+  .print-logo-cell { width: 40px; padding-right: 8px; }
+  .print-logo { height: 28px; width: auto; display: block; }
   .print-text-cell { flex: 1; text-align: left; }
-  #printHeader h2 { font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin: 0; }
-  #printHeader h3 { font-size: 10px; color: #475569; font-weight: 600; margin: 2px 0 0 0; }
+  #printHeader h2 { font-size: 12px; font-weight: 800; color: #0f172a; margin: 0; }
+  #printHeader h3 { font-size: 9px; color: #475569; font-weight: 600; margin: 1px 0 0 0; }
 
-  .flex-schedule-container { padding: 0 !important; margin: 0 !important; overflow: visible !important; page-break-inside: avoid !important; }
-  
-  /* ------------------------------------------------------------------------
-     KONDISI A: JIKA DICETAK TEGAK / PORTRAIT (DEFAULT HP)
-     Masing-masing hari akan disusun vertikal ke bawah agar tulisan muat luas
-     ------------------------------------------------------------------------ */
-  @media (orientation: portrait) {
-    @page { size: portrait; margin: 6mm; }
-    
-    .days-wrapper, .days-wrapper.show-all-mobile { 
-      display: flex !important;
-      flex-direction: column !important; 
-      gap: 14px !important; 
-      overflow-x: visible !important;
-    }
-    
-    .day-column, .days-wrapper.show-all-mobile .day-column { 
-      display: block !important;
-      width: 100% !important; 
-      min-width: 100% !important; 
-      max-width: 100% !important;
-      page-break-inside: avoid !important;
-      background: #ffffff !important;
-      border: 1px solid #cbd5e1 !important;
-      border-radius: 8px !important;
-      padding: 6px !important;
-    }
-
-    .card { 
-      min-height: 45px !important; 
-      padding: 6px 8px !important; 
-      margin-bottom: 6px !important;
-    }
-    .jp { font-size: 13px !important; }
-    .waktu { font-size: 9px !important; text-align: left !important; }
-    .kelas-info, .mapel, .guru-nama { font-size: 11px !important; }
+  /* WADAH UTAMA: Memaksa berjejer ke samping dan dilarang putus */
+  .flex-schedule-container { 
+    padding: 0 !important; 
+    margin: 0 !important; 
+    width: 100% !important; 
+    page-break-inside: avoid !important; 
   }
   
-  /* ------------------------------------------------------------------------
-     KONDISI B: JIKA DICETAK MEMANJANG / LANDSCAPE (DEFAULT LAPTOP)
-     Masing-masing hari berjejer horizontal ke samping dalam 1 halaman A4
-     ------------------------------------------------------------------------ */
-  @media (orientation: landscape) {
-    @page { size: A4 landscape; margin: 8mm 10mm; }
-    
-    .days-wrapper, .days-wrapper.show-all-mobile { 
-      display: flex !important; 
-      flex-direction: row !important; 
-      flex-wrap: nowrap !important; 
-      justify-content: flex-start !important; 
-      align-items: flex-start !important; 
-      gap: 4px !important; 
-      width: 100% !important; 
-      overflow-x: visible !important;
-    }
-    
-    .day-column, .days-wrapper.show-all-mobile .day-column { 
-      display: block !important; 
-      background: #ffffff !important; 
-      border: 1px solid #e2e8f0 !important; 
-      border-radius: 4px !important; 
-      padding: 2px 3px !important; 
-      flex: 1 1 0% !important; 
-      min-width: 0 !important; 
-      max-width: none !important; 
-      box-shadow: none !important; 
-      page-break-inside: avoid !important; 
-    }
-
-    .card { height: auto !important; background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; display: flex !important; flex-direction: row !important; min-height: 32px !important; padding: 2px !important; border-radius: 4px !important; margin-bottom: 2px !important; page-break-inside: avoid !important; gap: 2px !important; backdrop-filter: none !important; transform: none !important; }
-    .card-left { border-right: 1px dashed #e2e8f0 !important; padding-right: 2px !important; margin-right: 2px !important; flex: 0 0 28px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
-    .jp { color: #0f172a !important; font-size: 10px !important; font-weight: 800 !important; line-height: 1 !important; margin-bottom: 1px !important;}
-    .waktu { color: #64748b !important; font-size: 5.5px !important; margin-top: 1px !important; text-align: center !important; line-height: 1.1 !important; }
-    .card-right { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; text-align: left !important; gap: 1px !important; }
+  /* Memaksa kolom berjejer ke samping, bukan ke bawah */
+  .days-wrapper, .days-wrapper.show-all-mobile { 
+    display: flex !important; 
+    flex-direction: row !important; 
+    flex-wrap: nowrap !important; 
+    width: 100% !important; 
+    gap: 4px !important; 
+    overflow: hidden !important;
+  }
+  
+  /* Kolom Hari: Dibagi rata dan dilarang pindah halaman */
+  .day-column, .days-wrapper.show-all-mobile .day-column { 
+    display: block !important; 
+    flex: 1 1 0% !important; 
+    width: auto !important;
+    min-width: 0 !important; 
+    background: #ffffff !important; 
+    border: 1px solid #cbd5e1 !important; 
+    border-radius: 4px !important; 
+    padding: 3px !important; 
+    page-break-inside: avoid !important; 
+    box-shadow: none !important; 
   }
 
-  /* Pengaturan Text Umum Print */
-  .day-title { background: #0f172a !important; color: #ffffff !important; border-radius: 4px !important; font-size: 9px !important; font-weight: 700 !important; padding: 4px 0 !important; margin-bottom: 4px !important; text-align: center !important; text-transform: uppercase !important; }
+  /* Judul Hari (Senin, Selasa, dst) */
+  .day-title { 
+    background: #e2e8f0 !important; 
+    color: #0f172a !important; 
+    border-radius: 3px !important; 
+    font-size: 8px !important; 
+    font-weight: 800 !important; 
+    padding: 3px 0 !important; 
+    margin-bottom: 3px !important; 
+    text-align: center !important; 
+    text-transform: uppercase !important; 
+  }
+  .day-column.today-active .day-title::after { display: none !important; } 
+  
+  /* KARTU JADWAL: Dibuat sangat mini agar muat dari jam ke-1 sampai ke-n */
+  .card { 
+    display: flex !important; 
+    flex-direction: row !important; 
+    align-items: center !important;
+    min-height: 28px !important; 
+    height: auto !important;
+    padding: 2px !important; 
+    margin-bottom: 2px !important; 
+    border: 1px solid #e2e8f0 !important; 
+    border-radius: 3px !important; 
+    background: #ffffff !important; 
+    color: #000000 !important; 
+    gap: 2px !important; 
+    page-break-inside: avoid !important; 
+    box-shadow: none !important; 
+  }
+  
+  /* Bagian Kiri (Nomor Jam & Waktu) */
+  .card-left { 
+    flex: 0 0 22px !important; 
+    border-right: 1px dashed #cbd5e1 !important; 
+    padding-right: 2px !important; 
+    margin-right: 2px !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    justify-content: center !important; 
+    align-items: center !important; 
+  }
+  .jp { color: #0f172a !important; font-size: 9px !important; font-weight: 800 !important; margin: 0 !important; line-height: 1 !important;}
+  .waktu { color: #475569 !important; font-size: 5px !important; text-align: center !important; line-height: 1.1 !important; margin-top: 1px !important; }
+  
+  /* Bagian Kanan (Info Pelajaran) */
+  .card-right { 
+    flex: 1 !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    justify-content: center !important; 
+    text-align: left !important; 
+    gap: 1px !important; 
+  }
+  
+  .kelas-info { font-size: 6px !important; font-weight: 800 !important; margin: 0 !important; line-height: 1 !important; }
+  .mapel { font-size: 7px !important; font-weight: 800 !important; line-height: 1 !important; margin: 0 !important; }
+  .guru-nama { color: #475569 !important; font-size: 6px !important; font-weight: 600 !important; line-height: 1 !important; margin: 0 !important; }
+  
+  /* Penyesuaian Tematik */
   .tematik-flex-row { display: flex !important; flex-direction: row !important; width: 100% !important; }
   .tematik-inner-col { flex: 1 !important; padding: 0 2px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; gap: 1px !important; }
-  .tematik-inner-col-border { border-left: 1px solid #e2e8f0 !important; }
-  .kelas-info { font-size: 6.5px !important; font-weight: 700 !important; margin-bottom: 0 !important; line-height: 1.1 !important; }
-  .mapel { font-size: 7.5px !important; font-weight: 800 !important; line-height: 1.1 !important; margin-bottom: 0 !important; }
-  .guru-nama { color: #475569 !important; font-size: 6.5px !important; font-weight: 600 !important; margin-top: 0 !important; line-height: 1.1 !important; }
+  .tematik-inner-col-border { border-left: 1px solid #cbd5e1 !important; }
+
+  /* Menghapus gaya highlight pada print */
   mark.search-highlight, .search-highlight { background-color: transparent !important; color: inherit !important; font-weight: bold !important; padding: 0 !important; }
 }
