@@ -802,7 +802,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (1 HALAMAN PENUH DENGAN FONT & UKURAN TABEL MINI/COMPACT)
+// CETAK PDF (FONT NAIK +1 & MARGIN KIRI KANAN SIMETRIS)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     const gridId = tipeJadwal === 'tematik' ? 'resultsTematikGrid' : 'resultsGrid';
@@ -859,8 +859,8 @@ function cetakPDF(tipeJadwal) {
                 }
 
                 body {
-                    /* Margin kiri-kanan diperbesar (20mm) agar tabel tertekan/mengecil */
-                    padding: 8mm 20mm 15mm 20mm !important;
+                    /* Margin Kiri & Kanan disetel presisi agar SAMA (15mm) */
+                    padding: 8mm 15mm 15mm 15mm !important;
                     background: #ffffff !important;
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
@@ -893,7 +893,6 @@ function cetakPDF(tipeJadwal) {
                     max-width: 100% !important;
                 }
 
-                /* Jarak antar kolom hari dirapatkan (dari 6px jadi 4px) */
                 .days-wrapper {
                     display: flex !important;
                     flex-direction: row !important;
@@ -904,7 +903,6 @@ function cetakPDF(tipeJadwal) {
                     min-height: 0 !important;
                 }
 
-                /* Jarak bingkai dalam (padding) kolom dirapatkan */
                 .day-column {
                     display: flex !important;
                     flex-direction: column !important;
@@ -913,81 +911,81 @@ function cetakPDF(tipeJadwal) {
                     background: #ffffff !important;
                     border: 1px solid #e2e8f0 !important;
                     border-radius: 4px !important;
-                    padding: 2px !important; /* Dikecilkan */
+                    padding: 2.5px !important; 
                     box-shadow: none !important;
                 }
                 .day-column.today-active { border: 1px solid #e2e8f0 !important; }
                 .day-column.today-active .day-title::after { display: none !important; }
 
+                /* SEMUA FONT DINAIKKAN +1 */
                 .day-title {
                     flex-shrink: 0 !important;
-                    font-size: 7.5px !important; 
-                    padding: 2px 0 !important;
+                    font-size: 8.5px !important; /* Naik 1 */
+                    padding: 3px 0 !important;
                     margin-bottom: 2px !important;
                     border-radius: 3px !important;
                 }
 
-                /* Ukuran kotak jadwal dibuat sekecil dan serapat mungkin */
                 .card {
                     display: flex !important;
                     flex-direction: row !important;
                     flex: 1 !important; 
                     min-height: 0 !important; 
-                    margin-bottom: 2px !important; /* Dikecilkan */
-                    padding: 1.5px 3px !important; /* Dikecilkan */
+                    margin-bottom: 2px !important; 
+                    padding: 1.5px 3px !important; 
                     border: 1px solid #cbd5e1 !important;
                     border-radius: 3px !important;
                     box-shadow: none !important;
                 }
                 .card:last-child { margin-bottom: 0 !important; }
 
-                /* Lebar area jam pelajaran dipersempit */
+                /* Disesuaikan agak lebar dikit karena font angka jam ikut membesar */
                 .card-left {
-                    flex: 0 0 28px !important; /* Dikecilkan dari 35px */
+                    flex: 0 0 30px !important; 
                     justify-content: center !important;
                     padding-right: 2px !important;
                     margin-right: 2px !important;
                 }
                 
-                .jp { font-size: 10px !important; margin-bottom: 1px !important; } 
-                .waktu { font-size: 5.5px !important; } 
+                .jp { font-size: 11px !important; margin-bottom: 1px !important; } /* Naik 1 */
+                .waktu { font-size: 6.5px !important; } /* Naik 1 */
 
                 .card-right {
                     flex: 1 !important;
                     justify-content: center !important;
-                    gap: 0px !important; /* Jarak antar baris teks dihilangkan agar padat */
+                    gap: 0px !important; 
                 }
-                .kelas-info { font-size: 6.5px !important; line-height: 1.5 !important; }
-                .mapel { font-size: 7px !important; line-height: 1.5 !important; }
-                .guru-nama { font-size: 6px !important; line-height: 1.5 !important; }
+                .kelas-info { font-size: 7.5px !important; line-height: 1.5 !important; } /* Naik 1 */
+                .mapel { font-size: 8px !important; line-height: 1.5 !important; } /* Naik 1 */
+                .guru-nama { font-size: 7px !important; line-height: 1.5 !important; } /* Naik 1 */
 
-                /* Footer */
+                /* Footer Kiri Kanan Menyesuaikan Margin 15mm */
                 #customPrintFooterLeft, #customPrintFooterRight {
                     display: block !important;
                     position: fixed;
                     bottom: 6mm;
-                    font-size: 6.5px !important; 
+                    font-size: 7.5px !important; /* Naik 1 */
                     font-weight: bold;
                     color: #475569 !important;
                     font-family: Arial, sans-serif;
                     z-index: 9999;
                 }
-                #customPrintFooterLeft { left: 15mm; }
-                #customPrintFooterRight { right: 15mm; }
+                #customPrintFooterLeft { left: 15mm; } /* Presisi Margin Kiri */
+                #customPrintFooterRight { right: 15mm; } /* Presisi Margin Kanan */
 
-                /* CETAK DARI HP: Margin lebih tebal agar tabel mengecil proporsional */
+                /* CETAK DARI HP: Margin Kiri-Kanan juga disamakan 15mm */
                 body.cetak-hp {
                     padding: 6mm 15mm 10mm 15mm !important;
                 }
-                body.cetak-hp .card-right .mapel { font-size: 6.5px !important; } 
-                body.cetak-hp .card-right .guru-nama { font-size: 5.5px !important; } 
+                body.cetak-hp .card-right .mapel { font-size: 7.5px !important; } /* Naik 1 */
+                body.cetak-hp .card-right .guru-nama { font-size: 6.5px !important; } /* Naik 1 */
                 
-                /* HEADER IKUT DIPERKECIL AGAR SEIMBANG */
-                .print-logo { height: 35px !important; margin-bottom: 2px !important; } 
-                .print-title { font-size: 12px !important; line-height: 1.1 !important; }
-                .print-subtitle { font-size: 7.5px !important; margin: 1px 0 3px 0 !important; }
-                .print-badge-box { padding: 3px 15px !important; min-width: 220px !important; border-radius: 4px !important; }
-                #printDynamicTitle { font-size: 9px !important; }
+                /* HEADER */
+                .print-logo { height: 38px !important; margin-bottom: 2px !important; } 
+                .print-title { font-size: 13px !important; line-height: 1.1 !important; } /* Naik 1 */
+                .print-subtitle { font-size: 8.5px !important; margin: 1px 0 3px 0 !important; } /* Naik 1 */
+                .print-badge-box { padding: 4px 15px !important; min-width: 240px !important; border-radius: 4px !important; }
+                #printDynamicTitle { font-size: 10px !important; } /* Naik 1 */
             }
         `;
 
