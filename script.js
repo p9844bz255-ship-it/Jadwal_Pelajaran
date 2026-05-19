@@ -197,21 +197,11 @@ function syncCardHeights(containerId) {
 // FUNGSIONALITAS UTAMA: SINKRONISASI BADGE BIRU DINAMIS
 // ==========================================================================
 function syncPrintBadge() {
-  let dynamicLabel = document.getElementById('printDynamicLabel');
-  if (!dynamicLabel) {
-    dynamicLabel = document.createElement('div');
-    dynamicLabel.id = 'printDynamicLabel';
-    const headerMain = document.querySelector('.header-main-wrapper');
-    const headerBottom = document.querySelector('.header-bottom-row');
-    if(headerMain && headerBottom) {
-      headerMain.insertBefore(dynamicLabel, headerBottom);
-    } else {
-      const firstChild = document.body.firstChild;
-      if (firstChild) document.body.insertBefore(dynamicLabel, firstChild);
-      else document.body.appendChild(dynamicLabel);
-    }
+  // Hanya mencari kotak teks biru yang sudah ada di HTML, lalu mengganti isinya
+  const printTitle = document.getElementById('printDynamicTitle');
+  if (printTitle) {
+    printTitle.innerText = currentExactMatch ? currentExactMatch : "SEMUA JADWAL PELAJARAN";
   }
-  dynamicLabel.innerText = currentExactMatch;
 }
 
 // ==========================================================================
@@ -815,7 +805,6 @@ function applySubjectColors() {
 // CETAK PDF (1 HALAMAN PENUH 100VH DENGAN FLEX STRETCH RAPI)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
-    // Menyesuaikan target kontainer grid berdasarkan jenis jadwal yang dipilih (umum / tematik)
     const gridId = tipeJadwal === 'tematik' ? 'resultsTematikGrid' : 'resultsGrid';
     const container = document.getElementById(gridId);
     
@@ -824,7 +813,6 @@ function cetakPDF(tipeJadwal) {
         return;
     }
 
-    // Mengatur class filter cetak pada bodi agar menyembunyikan jadwal yang tidak dipilih
     document.body.classList.remove('print-umum', 'print-tematik');
     document.body.classList.add(`print-${tipeJadwal}`);
 
@@ -834,8 +822,7 @@ function cetakPDF(tipeJadwal) {
     });
 
     setTimeout(() => {
-        // Pastikan badge biru terisi data paling mutakhir
-        syncPrintBadge();
+        syncPrintBadge(); // Sinkronisasi badge biru sebelum mencetak
 
         let customFooterLeft = document.getElementById('customPrintFooterLeft');
         if (!customFooterLeft) {
@@ -862,7 +849,7 @@ function cetakPDF(tipeJadwal) {
         
         printFixStyle.innerHTML = `
             @media screen {
-                #printDynamicLabel, #customPrintFooterLeft, #customPrintFooterRight { display: none !important; }
+                #customPrintFooterLeft, #customPrintFooterRight { display: none !important; }
             }
 
             @media print {
@@ -887,73 +874,13 @@ function cetakPDF(tipeJadwal) {
 
                 .header-bottom-row, .tab-container, #controlsUmum, #controlsTematik { display: none !important; }
                 #initialState, #initialStateTematik { display: none !important; }
-                #printHeader { display: none !important; }
+                
+                /* PERBAIKAN: Memastikan Header Khusus Cetak Ditampilkan */
+                #printHeader { display: flex !important; }
+                .header-section { display: none !important; } /* Matikan header web asli */
                 
                 body.print-umum #resultsTematikGrid { display: none !important; }
                 body.print-tematik #resultsGrid { display: none !important; }
-
-                .header-section {
-                    flex-shrink: 0 !important;
-                    background: transparent !important;
-                    border: none !important;
-                    box-shadow: none !important;
-                    padding: 0 !important;
-                    margin: 0 !important;
-                    max-width: 100% !important;
-                }
-                .header-main-wrapper {
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: center !important;
-                    width: 100% !important;
-                    gap: 0 !important;
-                }
-                .header-top-content {
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    width: 100% !important;
-                    gap: 5px !important;
-                }
-                .header-logo {
-                    height: 45px !important;
-                    margin: 0 auto !important;
-                }
-                .header-top-content div {
-                    text-align: center !important;
-                }
-                .header-top-content h1 {
-                    font-size: 16px !important;
-                    margin: 0 !important;
-                    color: #0f172a !important;
-                }
-                .desktop-subtext {
-                    font-size: 10px !important;
-                    margin: 2px 0 0 0 !important;
-                    display: block !important;
-                    color: #1155cc !important;
-                }
-                .mobile-subtext { display: none !important; }
-
-                #printDynamicLabel {
-                    display: block !important;
-                    flex-shrink: 0 !important;
-                    text-align: center !important;
-                    font-size: 14px !important; 
-                    font-weight: 700 !important;
-                    color: #ffffff !important; 
-                    background-color: #1e40af !important; 
-                    padding: 6px 0 !important;
-                    margin: 8px 0 10px 0 !important;
-                    text-transform: uppercase;
-                    letter-spacing: 1.5px;
-                    width: 100% !important;
-                    box-sizing: border-box !important;
-                    border-radius: 4px !important;
-                    -webkit-print-color-adjust: exact !important;
-                    print-color-adjust: exact !important;
-                }
 
                 .flex-schedule-container {
                     display: flex !important;
@@ -1059,16 +986,11 @@ function cetakPDF(tipeJadwal) {
                     z-index: 9999;
                 }
 
-                /* PENYESUAIAN TAMBAHAN KHUSUS PENGGUNA HP */
                 body.cetak-hp {
                     padding: 4mm 6mm 10mm 6mm !important;
                 }
-                body.cetak-hp .card-right .mapel {
-                    font-size: 8px !important;
-                }
-                body.cetak-hp .card-right .guru-nama {
-                    font-size: 7px !important;
-                }
+                body.cetak-hp .card-right .mapel { font-size: 8px !important; }
+                body.cetak-hp .card-right .guru-nama { font-size: 7px !important; }
             }
         `;
 
