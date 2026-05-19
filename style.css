@@ -390,24 +390,30 @@ body {
     padding: 0 !important;
   }
 
-  /* ========================================================================
-     DESAIN HEADER CETAK (TIRUAN HORIZONTAL AGAR TABEL LEBIH NAIK)
+ /* ========================================================================
+     DESAIN HEADER CETAK (PERBAIKAN TOTAL: POSISI PERSIS WEB + BADGE KANAN)
      ======================================================================== */
   #printHeader {
     display: grid !important;
-    grid-template-columns: auto 1fr !important; /* Logo di kiri, teks di kanan */
+    /* Kolom 1: Logo, Kolom 2: Teks Judul (Sisa Ruang), Kolom 3: Nama Guru (Kanan) */
+    grid-template-columns: auto 1fr auto !important; 
+    grid-template-rows: auto auto !important;
     align-items: center !important;
-    column-gap: 15px !important;
-    row-gap: 4px !important;
+    column-gap: 18px !important; /* Jarak antara logo dan teks judul */
+    row-gap: 2px !important;
     width: 100% !important;
-    margin-bottom: 8px !important; /* Margin diperkecil agar tabel naik maksimal */
+    margin-bottom: 15px !important;
+    padding-bottom: 12px !important;
     text-align: left !important;
+    
+    /* TAMBAHAN: Garis hitam panjang dan tebal sebagai pemisah ke jadwal */
+    border-bottom: 3.5px solid #000000 !important; 
   }
   
   .print-logo {
     grid-column: 1 !important;
-    grid-row: 1 / span 3 !important; /* Logo membentang setinggi 3 baris teks */
-    height: 55px !important; /* Ukuran disesuaikan screenshot */
+    grid-row: 1 / span 2 !important; /* Logo memakan 2 baris agar sejajar teks */
+    height: 55px !important; 
     width: auto !important;
     margin: 0 !important;
   }
@@ -415,11 +421,11 @@ body {
   .print-title {
     grid-column: 2 !important;
     grid-row: 1 !important;
-    font-size: 24px !important; /* Dibuat besar dan tebal */
-    font-weight: 900 !important;
-    color: #111827 !important;
-    letter-spacing: 0.5px !important;
-    line-height: 1 !important;
+    font-size: 24px !important; /* Ukuran besar tebal sesuai screenshot pertama */
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: -0.5px !important;
+    line-height: 1.2 !important;
     margin: 0 !important;
     align-self: end !important;
   }
@@ -427,36 +433,37 @@ body {
   .print-subtitle {
     grid-column: 2 !important;
     grid-row: 2 !important;
-    font-size: 14px !important;
-    font-weight: 800 !important;
-    color: #2563eb !important; /* Warna biru sesuai screenshot */
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: #1155cc !important; /* Warna biru khas Al-Wildan */
     letter-spacing: 0.5px !important;
-    line-height: 1 !important;
+    line-height: 1.2 !important;
     margin: 0 !important;
     align-self: start !important;
   }
   
-  /* Kotak dinamis (Info Pekan & Kelas) dibuat menyatu tanpa background agar hemat ruang */
+  /* PERBAIKAN: Kotak Nama Guru tetap Biru dan digeser mutlak ke Kanan */
   .print-badge-box {
-    grid-column: 2 !important;
-    grid-row: 3 !important;
-    background: transparent !important; 
-    padding: 0 !important; 
+    grid-column: 3 !important;
+    grid-row: 1 / span 2 !important; /* Berada di kanan tengah antara baris 1 & 2 */
+    justify-self: end !important; /* Memaksa posisi ke ujung paling kanan halaman */
+    background: #1155cc !important; /* Kembalikan highlight biru */
+    color: #ffffff !important;
+    padding: 6px 18px !important;
+    border-radius: 6px !important;
     box-shadow: none !important;
-    min-width: auto !important;
-    text-align: left !important;
-    margin-top: 2px !important;
+    text-align: center !important;
+    margin: 0 !important;
+    display: inline-block !important;
   }
   
   #printDynamicTitle {
     font-size: 11px !important;
-    font-weight: 700 !important;
-    color: #64748b !important; /* Warna abu-abu elegan */
-    display: inline-block !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
   }
-
   /* ========================================================================
      KONTROL STRUKTUR TABEL & KOMPRESI AGAR PAS 1 HALAMAN
      ======================================================================== */
