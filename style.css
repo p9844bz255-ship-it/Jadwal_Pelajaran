@@ -288,8 +288,9 @@ body {
 
 /* ==========================================================================
    UKURAN HP (RESPONSIVE) - VERTIKAL UNTUK 1 HARI, HORIZONTAL UNTUK "SEMUA"
+   (SUDAH DITAMBAHKAN 'screen and')
    ========================================================================== */
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   body { padding: 14px; }
   .header-section { padding: 16px; margin-top: 0; }
   .header-main-wrapper { flex-direction: column; align-items: flex-start; gap: 16px; }
