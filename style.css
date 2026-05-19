@@ -224,9 +224,12 @@ body {
 .tematik-flex-row { display: flex !important; flex-direction: row !important; justify-content: flex-start; align-items: stretch; width: 100%; }
 .tematik-inner-col { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 50px; gap: 3px; }
 .tematik-inner-col-border { border-left: 1px solid rgba(0, 0, 0, 0.08); }
-.kelas-info { font-size: 11px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; text-transform: uppercase; }
+
+/* FONT DESKTOP DIJADIKAN 11.5px SEMUA (MENGKUTI FONT TERBESAR) */
+.kelas-info { font-size: 11.5px !important; font-weight: 800 !important; color: var(--logo-blue-accent) !important; text-transform: uppercase; }
 .mapel { font-size: 11.5px !important; font-weight: 700 !important; color: var(--text-main) !important; line-height: 1.3; transition: color 0.2s; }
-.guru-nama { font-size: 11px !important; color: var(--text-main); font-weight: 500; line-height: 1.3; }
+.guru-nama { font-size: 11.5px !important; color: var(--text-main); font-weight: 500; line-height: 1.3; }
+
 .search-highlight { background: transparent !important; color: var(--guru-match-blue) !important; font-weight: 800 !important; padding: 0; }
 
 /* ==========================================================================
@@ -245,9 +248,11 @@ body {
   .card-left { flex: 0 0 42px; }
   .jp { font-size: 16px !important; }
   .waktu { font-size: 8.5px !important; }
-  .kelas-info { font-size: 10px !important; }
+  
+  /* FONT LAPTOP DIJADIKAN 10.5px SEMUA (MENGKUTI FONT TERBESAR) */
+  .kelas-info { font-size: 10.5px !important; }
   .mapel { font-size: 10.5px !important; }
-  .guru-nama { font-size: 10px !important; }
+  .guru-nama { font-size: 10.5px !important; }
 }
 
 /* ==========================================================================
@@ -337,6 +342,11 @@ body {
     width: 85vw !important; min-width: 85vw !important;
     scroll-snap-align: center; 
   }
+
+  /* FONT HP DIJADIKAN 11.5px SEMUA (MENGKUTI FONT TERBESAR) */
+  .kelas-info { font-size: 11.5px !important; }
+  .mapel { font-size: 11.5px !important; }
+  .guru-nama { font-size: 11.5px !important; }
 }
 
 /* Sembunyikan elemen header cetak di layar browser biasa (Desktop/HP) */
