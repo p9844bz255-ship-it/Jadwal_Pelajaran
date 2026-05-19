@@ -339,83 +339,150 @@ body {
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF (PERSIS SEPERTI WEB, HANYA TABEL)
+   CSS KHUSUS CETAK PDF (PERSIS SEPERTI WEB & PAKSA ALL-IN-ONE HALAMAN)
    ========================================================================== */
 @media print {
-  /* Memaksa kertas A4 posisi memanjang (Landscape) agar semua hari sejajar */
+  /* Mengatur orientasi kertas ke memanjang (Landscape) dengan batas aman */
   @page { 
     size: A4 landscape; 
-    margin: 5mm; 
+    margin: 6mm 6mm; 
   }
   
-  /* KUNCI PENTING: Memaksa browser mencetak warna latar, bayangan, dan efek persis seperti web */
+  /* Mempertahankan warna background, efek kaca (glassmorphism), dan bayangan asli dari web */
   body { 
+    background: none !important;
+    background-color: #f8fafc !important; /* Warna dasar terang agar tabel terlihat kontras */
     -webkit-print-color-adjust: exact !important; 
     print-color-adjust: exact !important; 
     padding: 0 !important; 
     margin: 0 !important;
+    overflow: visible !important;
   }
   
-  /* ========================================================================
-     1. SEMBUNYIKAN SEMUA HEADER & ELEMEN NON-TABEL
-     ======================================================================== */
+  /* 1. ELIMINASI MUTLAK: Sembunyikan semua elemen di luar tabel utama agar tidak bocor ke bawah */
+  body > *:not(.flex-schedule-container),
   .header-section, 
   .mobile-day-tabs, 
   #initialState, 
   #initialStateTematik,
-  #printHeader { /* Menyembunyikan header print khusus yang sebelumnya ada */
+  #printHeader,
+  footer { 
     display: none !important; 
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
-  /* Sembunyikan elemen lain yang bukan bagian dari jadwal utama */
-  body.print-mode-active > div:not(.flex-schedule-container) { 
-    display: none !important; 
-  }
-  
-  /* ========================================================================
-     2. TATA LETAK TABEL (MEMAKSA BERJEJER KE SAMPING)
-     ======================================================================== */
+  /* 2. TATA LETAK UTAMA TABEL */
   .flex-schedule-container { 
+    display: block !important;
     padding: 0 !important; 
     margin: 0 !important; 
     width: 100% !important; 
+    max-width: 100% !important;
+    overflow: visible !important;
   }
   
+  /* Memaksa 5 Hari (Senin - Jumat) berjejer ke samping secara proporsional baik di HP/Desktop */
   .days-wrapper, .days-wrapper.show-all-mobile { 
     display: flex !important; 
     flex-direction: row !important; 
     flex-wrap: nowrap !important; 
     width: 100% !important; 
-    gap: 8px !important; /* Jarak antar kolom hari */
+    gap: 6px !important; /* Jarak antar kolom hari */
+    overflow: visible !important;
   }
   
+  /* Mengatur tiap kolom hari agar membagi rata lebar kertas */
   .day-column, .days-wrapper.show-all-mobile .day-column { 
     display: block !important; 
     flex: 1 1 0% !important; 
     width: auto !important;
     min-width: 0 !important; 
+    max-width: none !important;
+    padding: 6px !important; /* Mengecilkan padding kolom agar hemat ruang */
     page-break-inside: avoid !important; 
-    /* Tidak ada override warna/background di sini, biarkan warna dari web masuk */
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05) !important;
+  }
+
+  /* Judul Hari (Senin - Jumat) */
+  .day-title { 
+    font-size: 11px !important; 
+    padding: 5px 0 !important; 
+    margin-bottom: 6px !important; 
+    text-transform: uppercase !important;
+  }
+  
+  /* Hilangkan indikator hari aktif (jika ada) saat dicetak */
+  .day-column.today-active .day-title::after { 
+    display: none !important; 
   }
 
   /* ========================================================================
-     3. PENYESUAIAN UKURAN KARTU (AGAR MUAT 1 HALAMAN)
+     3. KOMPRESI VERTIKAL (Mencegah Jadwal Terpotong di Batas Bawah Kertas)
+     Mempertahankan keindahan warna asli web, hanya memadatkan ukurannya
      ======================================================================== */
   .card { 
+    display: flex !important; 
+    flex-direction: row !important; 
+    padding: 4px 5px !important; /* Memadatkan padding atas-bawah agar kartu lebih ramping */
+    margin-bottom: 5px !important; /* Mengurangi jarak antar kartu */
+    min-height: auto !important; /* Menghapus batas tinggi minimum agar fleksibel */
+    height: auto !important;
     page-break-inside: avoid !important; 
-    margin-bottom: 4px !important;
-    /* Warna latar, border, dan radius tidak diubah, otomatis mengikuti desain web */
+    transform: none !important; /* Matikan efek animasi hover saat dicetak */
+    transition: none !important;
   }
   
-  /* Mengecilkan ukuran huruf sedikit saja agar tidak terpotong di kertas A4 */
-  .jp { font-size: 11px !important; }
-  .waktu { font-size: 7px !important; }
-  .kelas-info { font-size: 9px !important; }
-  .mapel { font-size: 10px !important; line-height: 1.1 !important; }
-  .guru-nama { font-size: 8px !important; }
-  .day-title { font-size: 10px !important; padding: 4px 0 !important; margin-bottom: 6px !important; }
+  /* Sisi Kiri Kartu (Nomor Jam & Waktu) */
+  .card-left { 
+    flex: 0 0 26px !important; /* Lebar kolom jam disesuaikan */
+    padding-right: 4px !important; 
+    margin-right: 4px !important; 
+  }
   
-  /* Menghapus gaya highlight pencarian saat dicetak */
+  /* Skala Huruf Jam Pelajaran */
+  .jp { 
+    font-size: 11px !important; 
+    font-weight: 800 !important; 
+    line-height: 1.1 !important;
+  }
+  .waktu { 
+    font-size: 6.5px !important; 
+    line-height: 1.2 !important;
+    margin-top: 2px !important;
+  }
+  
+  /* Sisi Kanan Kartu (Detail Pelajaran & Nama Guru) */
+  .card-right { 
+    gap: 2px !important; /* Jarak antar baris teks dalam kartu */
+  }
+  
+  .kelas-info { 
+    font-size: 7.5px !important; 
+    line-height: 1.1 !important;
+  }
+  .mapel { 
+    font-size: 8.5px !important; 
+    line-height: 1.2 !important;
+  }
+  .guru-nama { 
+    font-size: 7.5px !important; 
+    line-height: 1.1 !important;
+  }
+  
+  /* Penyesuaian Kolom Tematik */
+  .tematik-flex-row { 
+    display: flex !important; 
+    flex-direction: row !important; 
+  }
+  .tematik-inner-col { 
+    gap: 1.5px !important; 
+  }
+
+  /* Menghapus background penanda pencarian/highlight saat dicetak */
   mark.search-highlight, .search-highlight { 
     background-color: transparent !important; 
     color: inherit !important; 
