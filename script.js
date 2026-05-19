@@ -802,7 +802,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (1 HALAMAN PENUH 100VH DENGAN FLEX STRETCH RAPI)
+// CETAK PDF (1 HALAMAN PENUH 100VH DENGAN FLEX STRETCH RAPI - FONT LEBIH KECIL)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     const gridId = tipeJadwal === 'tematik' ? 'resultsTematikGrid' : 'resultsGrid';
@@ -875,9 +875,8 @@ function cetakPDF(tipeJadwal) {
                 .header-bottom-row, .tab-container, #controlsUmum, #controlsTematik { display: none !important; }
                 #initialState, #initialStateTematik { display: none !important; }
                 
-                /* PERBAIKAN: Memastikan Header Khusus Cetak Ditampilkan */
                 #printHeader { display: flex !important; }
-                .header-section { display: none !important; } /* Matikan header web asli */
+                .header-section { display: none !important; } 
                 
                 body.print-umum #resultsTematikGrid { display: none !important; }
                 body.print-tematik #resultsGrid { display: none !important; }
@@ -917,9 +916,10 @@ function cetakPDF(tipeJadwal) {
                 .day-column.today-active { border: 1px solid #e2e8f0 !important; }
                 .day-column.today-active .day-title::after { display: none !important; }
 
+                /* FONT SIZE DIPERKECIL DI BAWAH INI */
                 .day-title {
                     flex-shrink: 0 !important;
-                    font-size: 9px !important;
+                    font-size: 7.5px !important; /* Asalnya 9px */
                     padding: 3px 0 !important;
                     margin-bottom: 3px !important;
                 }
@@ -938,11 +938,12 @@ function cetakPDF(tipeJadwal) {
                 .card:last-child { margin-bottom: 0 !important; }
 
                 .card-left {
-                    flex: 0 0 35px !important;
+                    flex: 0 0 32px !important; /* Sedikit dipersempit */
                     justify-content: center !important;
                 }
-                .jp { font-size: 12px !important; margin-bottom: 2px !important; }
-                .waktu { font-size: 6.5px !important; }
+                
+                .jp { font-size: 10px !important; margin-bottom: 2px !important; } /* Asalnya 12px */
+                .waktu { font-size: 5.5px !important; } /* Asalnya 6.5px */
 
                 .card-right {
                     flex: 1 !important;
@@ -950,47 +951,43 @@ function cetakPDF(tipeJadwal) {
                     gap: 1px !important;
                 }
                 .kelas-info { 
-                    font-size: 8px !important; 
+                    font-size: 6.5px !important; /* Asalnya 8px */
                     line-height: 2.0 !important; 
                 }
                 .mapel { 
-                    font-size: 8.5px !important; 
+                    font-size: 7px !important; /* Asalnya 8.5px */
                     line-height: 2.0 !important; 
                 }
                 .guru-nama { 
-                    font-size: 7.5px !important; 
+                    font-size: 6px !important; /* Asalnya 7.5px */
                     line-height: 2.0 !important; 
                 }
 
-                #customPrintFooterLeft {
+                #customPrintFooterLeft, #customPrintFooterRight {
                     display: block !important;
                     position: fixed;
                     bottom: 6mm;
-                    left: 10mm;
-                    font-size: 8px;
+                    font-size: 6.5px !important; /* Asalnya 8px */
                     font-weight: bold;
                     color: #475569 !important;
                     font-family: Arial, sans-serif;
                     z-index: 9999;
                 }
-
-                #customPrintFooterRight {
-                    display: block !important;
-                    position: fixed;
-                    bottom: 6mm;
-                    right: 10mm;
-                    font-size: 8px;
-                    font-weight: bold;
-                    color: #475569 !important;
-                    font-family: Arial, sans-serif;
-                    z-index: 9999;
-                }
+                #customPrintFooterLeft { left: 10mm; }
+                #customPrintFooterRight { right: 10mm; }
 
                 body.cetak-hp {
                     padding: 4mm 6mm 10mm 6mm !important;
                 }
-                body.cetak-hp .card-right .mapel { font-size: 8px !important; }
-                body.cetak-hp .card-right .guru-nama { font-size: 7px !important; }
+                body.cetak-hp .card-right .mapel { font-size: 6.5px !important; } /* Asalnya 8px */
+                body.cetak-hp .card-right .guru-nama { font-size: 5.5px !important; } /* Asalnya 7px */
+                
+                /* PENYESUAIAN UKURAN HEADER CETAK AGAR LEBIH KECIL */
+                .print-logo { height: 40px !important; } /* Asalnya 45-50px */
+                .print-title { font-size: 13px !important; }
+                .print-subtitle { font-size: 8.5px !important; margin: 2px 0 4px 0 !important; }
+                .print-badge-box { padding: 4px 20px !important; min-width: 280px !important; }
+                #printDynamicTitle { font-size: 10px !important; }
             }
         `;
 
