@@ -802,7 +802,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (1 HALAMAN PENUH 100VH DENGAN FLEX STRETCH RAPI - FONT LEBIH KECIL)
+// CETAK PDF (1 HALAMAN PENUH DENGAN FONT & UKURAN TABEL MINI/COMPACT)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     const gridId = tipeJadwal === 'tematik' ? 'resultsTematikGrid' : 'resultsGrid';
@@ -859,7 +859,8 @@ function cetakPDF(tipeJadwal) {
                 }
 
                 body {
-                    padding: 8mm 12mm 15mm 12mm !important;
+                    /* Margin kiri-kanan diperbesar (20mm) agar tabel tertekan/mengecil */
+                    padding: 8mm 20mm 15mm 20mm !important;
                     background: #ffffff !important;
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
@@ -875,7 +876,7 @@ function cetakPDF(tipeJadwal) {
                 .header-bottom-row, .tab-container, #controlsUmum, #controlsTematik { display: none !important; }
                 #initialState, #initialStateTematik { display: none !important; }
                 
-                #printHeader { display: flex !important; }
+                #printHeader { display: flex !important; margin-bottom: 8px !important; }
                 .header-section { display: none !important; } 
                 
                 body.print-umum #resultsTematikGrid { display: none !important; }
@@ -887,21 +888,23 @@ function cetakPDF(tipeJadwal) {
                     flex: 1 !important; 
                     min-height: 0 !important; 
                     padding: 0 !important;
-                    margin: 0 !important;
+                    margin: 0 auto !important;
                     width: 100% !important;
                     max-width: 100% !important;
                 }
 
+                /* Jarak antar kolom hari dirapatkan (dari 6px jadi 4px) */
                 .days-wrapper {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: stretch !important; 
                     flex: 1 !important; 
                     width: 100% !important;
-                    gap: 6px !important;
+                    gap: 4px !important; 
                     min-height: 0 !important;
                 }
 
+                /* Jarak bingkai dalam (padding) kolom dirapatkan */
                 .day-column {
                     display: flex !important;
                     flex-direction: column !important;
@@ -909,85 +912,82 @@ function cetakPDF(tipeJadwal) {
                     min-width: 0 !important;
                     background: #ffffff !important;
                     border: 1px solid #e2e8f0 !important;
-                    border-radius: 6px !important;
-                    padding: 3px !important;
+                    border-radius: 4px !important;
+                    padding: 2px !important; /* Dikecilkan */
                     box-shadow: none !important;
                 }
                 .day-column.today-active { border: 1px solid #e2e8f0 !important; }
                 .day-column.today-active .day-title::after { display: none !important; }
 
-                /* FONT SIZE DIPERKECIL DI BAWAH INI */
                 .day-title {
                     flex-shrink: 0 !important;
-                    font-size: 7.5px !important; /* Asalnya 9px */
-                    padding: 3px 0 !important;
-                    margin-bottom: 3px !important;
+                    font-size: 7.5px !important; 
+                    padding: 2px 0 !important;
+                    margin-bottom: 2px !important;
+                    border-radius: 3px !important;
                 }
 
+                /* Ukuran kotak jadwal dibuat sekecil dan serapat mungkin */
                 .card {
                     display: flex !important;
                     flex-direction: row !important;
                     flex: 1 !important; 
                     min-height: 0 !important; 
-                    margin-bottom: 3px !important;
-                    padding: 2px 4px !important;
+                    margin-bottom: 2px !important; /* Dikecilkan */
+                    padding: 1.5px 3px !important; /* Dikecilkan */
                     border: 1px solid #cbd5e1 !important;
-                    border-radius: 4px !important;
+                    border-radius: 3px !important;
                     box-shadow: none !important;
                 }
                 .card:last-child { margin-bottom: 0 !important; }
 
+                /* Lebar area jam pelajaran dipersempit */
                 .card-left {
-                    flex: 0 0 32px !important; /* Sedikit dipersempit */
+                    flex: 0 0 28px !important; /* Dikecilkan dari 35px */
                     justify-content: center !important;
+                    padding-right: 2px !important;
+                    margin-right: 2px !important;
                 }
                 
-                .jp { font-size: 10px !important; margin-bottom: 2px !important; } /* Asalnya 12px */
-                .waktu { font-size: 5.5px !important; } /* Asalnya 6.5px */
+                .jp { font-size: 10px !important; margin-bottom: 1px !important; } 
+                .waktu { font-size: 5.5px !important; } 
 
                 .card-right {
                     flex: 1 !important;
                     justify-content: center !important;
-                    gap: 1px !important;
+                    gap: 0px !important; /* Jarak antar baris teks dihilangkan agar padat */
                 }
-                .kelas-info { 
-                    font-size: 6.5px !important; /* Asalnya 8px */
-                    line-height: 2.0 !important; 
-                }
-                .mapel { 
-                    font-size: 7px !important; /* Asalnya 8.5px */
-                    line-height: 2.0 !important; 
-                }
-                .guru-nama { 
-                    font-size: 6px !important; /* Asalnya 7.5px */
-                    line-height: 2.0 !important; 
-                }
+                .kelas-info { font-size: 6.5px !important; line-height: 1.5 !important; }
+                .mapel { font-size: 7px !important; line-height: 1.5 !important; }
+                .guru-nama { font-size: 6px !important; line-height: 1.5 !important; }
 
+                /* Footer */
                 #customPrintFooterLeft, #customPrintFooterRight {
                     display: block !important;
                     position: fixed;
                     bottom: 6mm;
-                    font-size: 6.5px !important; /* Asalnya 8px */
+                    font-size: 6.5px !important; 
                     font-weight: bold;
                     color: #475569 !important;
                     font-family: Arial, sans-serif;
                     z-index: 9999;
                 }
-                #customPrintFooterLeft { left: 10mm; }
-                #customPrintFooterRight { right: 10mm; }
+                #customPrintFooterLeft { left: 15mm; }
+                #customPrintFooterRight { right: 15mm; }
 
+                /* CETAK DARI HP: Margin lebih tebal agar tabel mengecil proporsional */
                 body.cetak-hp {
-                    padding: 4mm 6mm 10mm 6mm !important;
+                    padding: 6mm 15mm 10mm 15mm !important;
                 }
-                body.cetak-hp .card-right .mapel { font-size: 6.5px !important; } /* Asalnya 8px */
-                body.cetak-hp .card-right .guru-nama { font-size: 5.5px !important; } /* Asalnya 7px */
+                body.cetak-hp .card-right .mapel { font-size: 6.5px !important; } 
+                body.cetak-hp .card-right .guru-nama { font-size: 5.5px !important; } 
                 
-                /* PENYESUAIAN UKURAN HEADER CETAK AGAR LEBIH KECIL */
-                .print-logo { height: 40px !important; } /* Asalnya 45-50px */
-                .print-title { font-size: 13px !important; }
-                .print-subtitle { font-size: 8.5px !important; margin: 2px 0 4px 0 !important; }
-                .print-badge-box { padding: 4px 20px !important; min-width: 280px !important; }
-                #printDynamicTitle { font-size: 10px !important; }
+                /* HEADER IKUT DIPERKECIL AGAR SEIMBANG */
+                .print-logo { height: 35px !important; margin-bottom: 2px !important; } 
+                .print-title { font-size: 12px !important; line-height: 1.1 !important; }
+                .print-subtitle { font-size: 7.5px !important; margin: 1px 0 3px 0 !important; }
+                .print-badge-box { padding: 3px 15px !important; min-width: 220px !important; border-radius: 4px !important; }
+                #printDynamicTitle { font-size: 9px !important; }
             }
         `;
 
