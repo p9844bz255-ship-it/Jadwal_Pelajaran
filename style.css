@@ -391,73 +391,79 @@ body {
   }
 
 /* ========================================================================
-     DESAIN HEADER CETAK (FOOLPROOF: ABSOLUTE POSITIONING BYPASS GRID BUG)
+     DESAIN HEADER CETAK (ANTI-TABRAKAN: KUNCI KOORDINAT MASING-MASING)
      ======================================================================== */
   #printHeader {
-    display: block !important; /* Mengubah grid menjadi block agar posisi absolute bekerja */
+    display: block !important; 
     position: relative !important;
     width: 100% !important;
-    min-height: 56px !important; /* Memberi ruang vertikal yang pas untuk logo */
-    
-    /* Jarak aman: Kiri disisakan 75px untuk logo, Kanan disisakan 260px untuk nama guru */
-    padding-left: 75px !important; 
-    padding-right: 260px !important; 
-    
+    height: 60px !important; /* Mengunci tinggi ruang header agar pas */
     margin-top: 0 !important;
-    margin-bottom: 15px !important; /* Jarak ke tabel di bawahnya */
-    padding-top: 2px !important;
+    margin-bottom: 20px !important; /* Jarak aman sebelum garis ke tabel bawah */
     padding-bottom: 12px !important;
     box-sizing: border-box !important;
-    text-align: left !important;
     
-    /* FITUR: Garis hitam panjang dan tebal pemisah header & jadwal */
+    /* FITUR: Garis hitam tebal pemisah header dan jadwal */
     border-bottom: 3.5px solid #000000 !important; 
   }
   
-  /* Logo dikunci mati di pojok kiri */
+  /* 1. Kunci Logo di pojok kiri paling awal */
   .print-logo {
     position: absolute !important;
     left: 0 !important;
-    top: 2px !important;
+    top: 4px !important;
     height: 50px !important; 
     width: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    display: block !important;
   }
   
-  /* Baris Pertama: JADWAL PELAJARAN (Tepat di samping logo) */
+  /* 2. Kunci JADWAL PELAJARAN di baris ATAS (75px dari kiri, 2px dari atas) */
   .print-title {
+    position: absolute !important;
+    left: 75px !important; 
+    top: 2px !important; /* <--- Koordinat Atas */
     display: block !important;
     font-size: 24px !important; 
     font-weight: 800 !important;
     color: #0f172a !important;
-    line-height: 1.1 !important;
-    margin: 0 0 4px 0 !important; /* Jarak tipis ke tulisan Al-Wildan di bawahnya */
+    line-height: 1 !important;
+    margin: 0 !important;
     padding: 0 !important;
     text-transform: uppercase !important;
     letter-spacing: -0.5px !important;
+    
+    /* Reset gaya lama agar tidak merusak posisi */
+    grid-column: auto !important;
+    grid-row: auto !important;
   }
   
-  /* Baris Kedua: AL-WILDAN ISLAMIC SCHOOL (Tepat di bawah Jadwal Pelajaran) */
+  /* 3. Kunci AL-WILDAN di baris BAWAH (75px dari kiri, 32px dari atas) */
   .print-subtitle {
+    position: absolute !important;
+    left: 75px !important; 
+    top: 32px !important; /* <--- Koordinat Bawah (Diturunkan agar tidak tabrakan) */
     display: block !important;
     font-size: 13.5px !important;
     font-weight: 700 !important;
-    color: #1155cc !important; /* Biru khas Al-Wildan sesuai screenshot */
-    line-height: 1.1 !important;
+    color: #1155cc !important; 
+    line-height: 1 !important;
     margin: 0 !important;
     padding: 0 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
+    
+    /* Reset gaya lama agar tidak merusak posisi */
+    grid-column: auto !important;
+    grid-row: auto !important;
   }
   
-  /* FITUR: Kotak Nama Guru dikunci mati di pojok kanan atas (Anti-Tabrakan) */
+  /* 4. Kunci Nama Guru di pojok KANAN ATAS */
   .print-badge-box {
     position: absolute !important;
     right: 0 !important;
-    top: 4px !important; /* Sejajar secara estetik dengan baris pertama */
-    background: #1155cc !important; /* Highlight biru solid dikembalikan */
+    top: 8px !important; /* Sejajar manis secara horizontal */
+    background: #1155cc !important; 
     color: #ffffff !important;
     padding: 6px 20px !important;
     border-radius: 6px !important;
@@ -465,6 +471,10 @@ body {
     display: inline-block !important;
     text-align: center !important;
     box-shadow: none !important;
+    
+    /* Reset gaya lama agar tidak merusak posisi */
+    grid-column: auto !important;
+    grid-row: auto !important;
   }
   
   #printDynamicTitle {
@@ -473,7 +483,7 @@ body {
     color: #ffffff !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
-    white-space: nowrap !important; /* Mencegah nama guru terpotong menjadi 2 baris */
+    white-space: nowrap !important;
   }
   /* ========================================================================
      KONTROL STRUKTUR TABEL & KOMPRESI AGAR PAS 1 HALAMAN
