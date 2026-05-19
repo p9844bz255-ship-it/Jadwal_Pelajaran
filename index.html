@@ -72,12 +72,11 @@
   </div> 
   
   <div id="printHeader" style="display: none;">
-    <div class="print-logo-cell">
-      <img src="https://www.image2url.com/r2/default/images/1778032976429-fb84224a-3e08-4092-b38f-529e608a47d2.png" alt="Logo AL-WILDAN" class="print-logo">
-    </div>
-    <div class="print-text-cell">
-      <h2 id="printTitleText">Jadwal Pelajaran Umum</h2>
-      <h3 id="printSubTitleText">AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY</h3>
+    <img src="https://www.image2url.com/r2/default/images/1778032976429-fb84224a-3e08-4092-b38f-529e608a47d2.png" class="print-logo" alt="Logo Al-Wildan">
+    <h2 class="print-title">JADWAL PELAJARAN</h2>
+    <h3 class="print-subtitle">AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY</h3>
+    <div class="print-badge-box">
+      <span id="printDynamicTitle">SEMUA JADWAL PELAJARAN</span>
     </div>
   </div>
 
@@ -88,19 +87,22 @@
   <div id="resultsTematikGrid" class="flex-schedule-container" style="display: none;"></div>
 
   <script>
+    // FUNGSI BARU: Memperbarui teks di dalam kotak badge biru cetakan
     function updatePrintOwner(tabType) {
-      const prntTitle = document.getElementById('printTitleText');
-      if (!prntTitle) return;
+      const printTitle = document.getElementById('printDynamicTitle');
+      if (!printTitle) return;
       
+      let val = "";
       if (tabType === 'umum') {
         const inputUmum = document.getElementById('searchInput');
-        const val = inputUmum ? inputUmum.value.trim().toUpperCase() : "";
-        prntTitle.innerText = val ? `Jadwal Pelajaran Umum - ${val}` : "Jadwal Pelajaran Umum";
+        val = inputUmum ? inputUmum.value.trim().toUpperCase() : "";
       } else {
         const inputTematik = document.getElementById('searchTematikInput');
-        const val = inputTematik ? inputTematik.value.trim().toUpperCase() : "";
-        prntTitle.innerText = val ? `Jadwal Pelajaran Tematik - ${val}` : "Jadwal Pelajaran Tematik";
+        val = inputTematik ? inputTematik.value.trim().toUpperCase() : "";
       }
+      
+      // Jika kolom pencarian tidak kosong, tampilkan namanya. Jika kosong, tampilkan default "SEMUA JADWAL PELAJARAN"
+      printTitle.innerText = val ? val : "SEMUA JADWAL PELAJARAN";
     }
 
     function switchTab(type) {
@@ -112,7 +114,6 @@
       const gridTematik = document.getElementById('resultsTematikGrid');
       const initUmum = document.getElementById('initialState');
       const initTematik = document.getElementById('initialStateTematik');
-      const prntSub = document.getElementById('printSubTitleText');
 
       if (type === 'umum') {
         if (btnUmum) btnUmum.classList.add('active');
@@ -122,7 +123,6 @@
         if (gridTematik) gridTematik.style.display = "none";
         if (initTematik) initTematik.style.display = "none";
         if (gridUmum) gridUmum.style.display = "flex"; 
-        if (prntSub) prntSub.innerText = "AL-WILDAN ISLAMIC SCHOOL 3 BSD CITY";
         
         updatePrintOwner('umum');
         
