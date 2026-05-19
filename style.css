@@ -303,12 +303,23 @@ body {
   .header-top-content { gap: 12px; }
   .header-logo { height: 50px; }
   
-  /* PERBAIKAN: Menyembunyikan judul (Jadwal Pelajaran) dan nama sekolah di versi HP */
-  .header-section h1, 
-  .header-section p, 
-  .desktop-subtext, 
-  .mobile-subtext { 
-    display: none !important; 
+ /* PERBAIKAN: Memunculkan kembali judul (Jadwal Pelajaran) dan nama sekolah di versi HP dengan ukuran proporsional */
+  .header-section h1 {
+    display: block !important;
+    font-size: 18px !important; /* Ukuran font disesuaikan agar muat di HP */
+    line-height: 1.1 !important;
+  }
+  
+  .header-section p {
+    display: block !important;
+    font-size: 10.5px !important; /* Ukuran font disesuaikan agar muat di HP */
+    margin-top: 2px !important;
+  }
+
+  /* Biarkan subtext ini tetap tersembunyi */
+  .desktop-subtext,
+  .mobile-subtext {
+    display: none !important;
   }
   
   .header-bottom-row { flex-direction: column; align-items: stretch; gap: 10px; }
