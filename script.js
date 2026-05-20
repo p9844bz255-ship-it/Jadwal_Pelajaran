@@ -820,7 +820,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================================================
-// CETAK PDF (TEMPLATE BACKGROUND INJECTION & FIX NIGHT MODE)
+// CETAK PDF (FIX NIGHT MODE & CSS PRINT)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     const gridId = tipeJadwal === 'tematik' ? 'resultsTematikGrid' : 'resultsGrid';
@@ -840,14 +840,8 @@ function cetakPDF(tipeJadwal) {
     });
 
     setTimeout(() => {
-        syncPrintBadge(); // Sinkronisasi badge
-
-        // MENGAMBIL NAMA GURU/KELAS DARI PENCARIAN
-        const searchInputVal = document.getElementById('searchInput') ? document.getElementById('searchInput').value : '';
-        const cetakNamaEl = document.getElementById('cetakNamaDynamic');
-        if (cetakNamaEl) {
-            cetakNamaEl.innerText = (typeof currentExactMatch !== 'undefined' && currentExactMatch) ? currentExactMatch : searchInputVal.toUpperCase();
-        }
+        // Hapus pemanggilan syncPrintBadge() jika fungsi itu sudah tidak ada
+        // Hapus blok 'MENGAMBIL NAMA GURU/KELAS DARI PENCARIAN' (sudah ditangani di updatePrintOwner)
 
         let printFixStyle = document.getElementById('printFixStyle');
         if (!printFixStyle) {
@@ -856,12 +850,8 @@ function cetakPDF(tipeJadwal) {
             document.head.appendChild(printFixStyle);
         }
         
-        // CSS INJEKSI 
+        // CSS INJEKSI (Telah dibersihkan dari template lama)
         printFixStyle.innerHTML = `
-            @media screen {
-                #printHeaderTemplate { display: none !important; }
-            }
-
             @media print {
                 @page {
                     size: A4 landscape !important;
@@ -881,55 +871,40 @@ function cetakPDF(tipeJadwal) {
                 }
 
                 /* Sembunyikan elemen web yang tidak perlu */
-                body > *:not(.flex-schedule-container):not(#printHeaderTemplate) {
+                body > *:not(.flex-schedule-container):not(.header-section) {
                     display: none !important;
                 }
-                .header-bottom-row, .tab-container, #controlsUmum, #controlsTematik { display: none !important; }
+                
+                /* Tampilkan Header Section tetapi sembunyikan isinya KECUALI badge cetak */
+                .header-section {
+                    display: block !important;
+                    height: auto !important; /* Biarkan CSS eksternal mengatur tingginya */
+                }
+                
+                .header-top-content, 
+                .theme-toggle-btn,
+                .tab-container, 
+                #controlsUmum, 
+                #controlsTematik { 
+                    display: none !important; 
+                }
+                
+                /* Pastikan badge cetak muncul */
+                .print-search-badge {
+                    display: block !important;
+                }
+
                 #initialState, #initialStateTematik { display: none !important; }
                 body.print-umum #resultsTematikGrid { display: none !important; }
                 body.print-tematik #resultsGrid { display: none !important; }
 
-                /* 1. ATUR GAMBAR TEMPLATE FULL SATU KERTAS */
-                #printHeaderTemplate {
-                    display: block !important;
-                    position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 297mm !important;
-                    height: 210mm !important;
-                    z-index: -1 !important; 
-                }
-
-                #bgTemplateImg {
-                    width: 100% !important;
-                    height: 100% !important;
-                    object-fit: cover !important;
-                    object-position: top center !important;
-                }
-
-                /* 2. ATUR TEKS DI ATAS KOTAK BIRU */
-                #cetakNamaDynamic {
-                    position: absolute !important;
-                    top: 42px !important;    /* <-- JIKA TEKS KURANG NAIK/TURUN, UBAH ANGKA INI */
-                    right: 48px !important;  /* <-- JIKA TEKS KURANG KANAN/KIRI, UBAH ANGKA INI */
-                    width: 350px !important; 
-                    text-align: center !important;
-                    color: #ffffff !important;
-                    font-size: 16px !important;
-                    font-weight: 800 !important;
-                    text-transform: uppercase !important;
-                    letter-spacing: 1px !important;
-                    z-index: 10 !important;
-                    font-family: Arial, sans-serif !important;
-                }
-
-                /* 3. ATUR POSISI JADWAL AGAR TIDAK MENIMPA HEADER */
+                /* ATUR POSISI JADWAL (Sesuaikan top margin ini jika jadwal menabrak header) */
                 .flex-schedule-container {
                     display: flex !important;
                     flex-direction: column !important;
                     position: absolute !important;
-                    top: 175px !important;   /* <-- SAYA TAMBAHKAN MENJADI 175px AGAR TURUN MELEWATI GARIS HITAM */
-                    bottom: 20px !important; /* Batas jarak dari bawah kertas */
+                    top: 150px !important;   /* <--- SESUAIKAN ANGKA INI DENGAN TINGGI HEADER/TEMPLATE BARU ANDA */
+                    bottom: 20px !important; 
                     left: 20px !important;
                     right: 20px !important;
                     width: auto !important;
@@ -954,7 +929,7 @@ function cetakPDF(tipeJadwal) {
                     flex-direction: column !important;
                     flex: 1 !important; 
                     min-width: 0 !important;
-                    background: #ffffff !important; /* Paksa Putih */
+                    background: #ffffff !important; 
                     border: 1px solid #e2e8f0 !important;
                     border-radius: 6px !important;
                     padding: 4px !important; 
@@ -969,8 +944,8 @@ function cetakPDF(tipeJadwal) {
                     padding: 4px 0 !important;
                     margin-bottom: 4px !important;
                     border-radius: 4px !important;
-                    background: #0f172a !important; /* Paksa Biru Gelap/Hitam */
-                    color: #ffffff !important;      /* Teks Putih */
+                    background: #0f172a !important; 
+                    color: #ffffff !important;      
                     font-weight: 800 !important; 
                     text-align: center !important;
                 }
@@ -982,8 +957,8 @@ function cetakPDF(tipeJadwal) {
                     min-height: 0 !important; 
                     margin-bottom: 3px !important; 
                     padding: 2.5px 4px !important; 
-                    background: #ffffff !important; /* Paksa Putih */
-                    border: 1px solid #cbd5e1 !important; /* Paksa Garis Abu-abu */
+                    background: #ffffff !important; 
+                    border: 1px solid #cbd5e1 !important; 
                     border-radius: 4px !important;
                     box-shadow: none !important;
                     page-break-inside: avoid !important;
@@ -1015,39 +990,39 @@ function cetakPDF(tipeJadwal) {
         `;
 
        // =========================================================
-        // TAMBAHAN ANTI NIGHT MODE SUPER AMAN (JEDA 2.5 DETIK + MATIKAN TRANSISI)
+        // TAMBAHAN ANTI NIGHT MODE SUPER AMAN
         // =========================================================
         const htmlEl = document.documentElement;
-        const bodyEl = document.body;
+        // Karena anda menggunakan atribut 'data-theme="dark"' bukan class 'dark' (merujuk pada script localStorage di HTML)
+        const currentTheme = htmlEl.getAttribute('data-theme');
         
-        const isHtmlDark = htmlEl.classList.contains('dark'); 
-        const isBodyDark = bodyEl.classList.contains('dark'); 
-
         // 1. Matikan efek animasi/transisi sementara agar warna langsung seketika berubah
         const noTransitionStyle = document.createElement("style");
         noTransitionStyle.innerText = "* { transition: none !important; }";
         document.head.appendChild(noTransitionStyle);
 
-        // 2. Copot class dark dari HTML dan Body
-        if (isHtmlDark) htmlEl.classList.remove('dark');
-        if (isBodyDark) bodyEl.classList.remove('dark');
+        // 2. Copot atribut dark theme dari HTML (Berdasarkan script toggle Anda di HTML, bukan class list)
+        if (currentTheme === 'dark') {
+            htmlEl.removeAttribute('data-theme');
+        }
 
-        // 3. Beri jeda 2.5 detik (2500ms) agar browser benar-benar siap dan bersih
+        // 3. Beri jeda 2.5 detik
         setTimeout(() => {
             window.print();
         }, 2500); 
 
-        // 4. Gunakan event onafterprint: kembalikan ke kondisi semula saat dialog cetak ditutup
+        // 4. Gunakan event onafterprint: kembalikan ke kondisi semula
         window.onafterprint = () => {
-            if (isHtmlDark) htmlEl.classList.add('dark');
-            if (isBodyDark) bodyEl.classList.add('dark');
+            if (currentTheme === 'dark') {
+                 htmlEl.setAttribute('data-theme', 'dark');
+            }
             
-            // Hapus kembali style pemati transisi agar web kembali normal
+            // Hapus kembali style pemati transisi
             if (document.head.contains(noTransitionStyle)) {
                 document.head.removeChild(noTransitionStyle);
             }
             
-            // Bersihkan event listener agar tidak menumpuk
+            // Bersihkan event listener
             window.onafterprint = null;
         };
         // =========================================================
