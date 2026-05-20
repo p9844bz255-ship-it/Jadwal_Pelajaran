@@ -997,7 +997,23 @@ function cetakPDF(tipeJadwal) {
             }
         `;
 
+        // --- TAMBAHAN ANTI NIGHT MODE ---
+        // 1. Cek apakah web sedang dalam mode malam (SESUAIKAN 'dark-mode' DENGAN NAMA CLASS MILIKMU)
+        const isNightMode = document.body.classList.contains('dark'); 
+
+        // 2. Jika mode malam aktif, copot dulu class-nya agar web jadi terang
+        if (isNightMode) {
+            document.body.classList.remove('dark');
+        }
+
+        // 3. Panggil perintah cetak
         window.print();
-        
+
+        // 4. Kembalikan lagi ke mode malam setelah print dipanggil/selesai
+        if (isNightMode) {
+            document.body.classList.add('dark');
+        }
+        // ---------------------------------
+
     }, 300);
 }
