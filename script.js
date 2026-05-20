@@ -998,8 +998,8 @@ function cetakPDF(tipeJadwal) {
             }
         `;
 
-        // =========================================================
-        // TAMBAHAN ANTI NIGHT MODE (DENGAN JEDA WAKTU YANG AMAN)
+       // =========================================================
+        // TAMBAHAN ANTI NIGHT MODE SUPER AMAN (JEDA 2.5 DETIK + MATIKAN TRANSISI)
         // =========================================================
         const htmlEl = document.documentElement;
         const bodyEl = document.body;
@@ -1007,23 +1007,34 @@ function cetakPDF(tipeJadwal) {
         const isHtmlDark = htmlEl.classList.contains('dark'); 
         const isBodyDark = bodyEl.classList.contains('dark'); 
 
-        // 1. Copot class dark
+        // 1. Matikan efek animasi/transisi sementara agar warna langsung seketika berubah
+        const noTransitionStyle = document.createElement("style");
+        noTransitionStyle.innerText = "* { transition: none !important; }";
+        document.head.appendChild(noTransitionStyle);
+
+        // 2. Copot class dark dari HTML dan Body
         if (isHtmlDark) htmlEl.classList.remove('dark');
         if (isBodyDark) bodyEl.classList.remove('dark');
 
-        // 2. Beri jeda 500ms agar browser BENAR-BENAR selesai mengecat warna putih ke layar
+        // 3. Beri jeda 2.5 detik (2500ms) agar browser benar-benar siap dan bersih
         setTimeout(() => {
             window.print();
-        }, 500);
+        }, 2500); 
 
-        // 3. Gunakan event bawaan browser: kembalikan mode malam SAAT dialog print DITUTUP
+        // 4. Gunakan event onafterprint: kembalikan ke kondisi semula saat dialog cetak ditutup
         window.onafterprint = () => {
             if (isHtmlDark) htmlEl.classList.add('dark');
             if (isBodyDark) bodyEl.classList.add('dark');
+            
+            // Hapus kembali style pemati transisi agar web kembali normal
+            if (document.head.contains(noTransitionStyle)) {
+                document.head.removeChild(noTransitionStyle);
+            }
+            
             // Bersihkan event listener agar tidak menumpuk
             window.onafterprint = null;
         };
         // =========================================================
 
-    }, 300); // Penutup setTimeout penyiapan data
+    }, 300); // Penutup setTimeout penyiapan data awal
 }
