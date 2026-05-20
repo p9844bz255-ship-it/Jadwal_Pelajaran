@@ -997,23 +997,28 @@ function cetakPDF(tipeJadwal) {
             }
         `;
 
-        // --- TAMBAHAN ANTI NIGHT MODE ---
-        // 1. Cek apakah web sedang dalam mode malam (SESUAIKAN 'dark-mode' DENGAN NAMA CLASS MILIKMU)
-        const isNightMode = document.body.classList.contains('dark'); 
+       // --- TAMBAHAN ANTI NIGHT MODE ---
+        // 1. Cek tag <html> dan <body> karena class 'dark' biasanya ada di <html>
+        const htmlEl = document.documentElement;
+        const bodyEl = document.body;
+        
+        const isHtmlDark = htmlEl.classList.contains('dark'); 
+        const isBodyDark = bodyEl.classList.contains('dark'); 
 
         // 2. Jika mode malam aktif, copot dulu class-nya agar web jadi terang
-        if (isNightMode) {
-            document.body.classList.remove('dark');
-        }
+        if (isHtmlDark) htmlEl.classList.remove('dark');
+        if (isBodyDark) bodyEl.classList.remove('dark');
 
-        // 3. Panggil perintah cetak
-        window.print();
+        // Beri jeda 50ms agar browser sempat merender warna putih sebelum print muncul
+        setTimeout(() => {
+            // 3. Panggil perintah cetak
+            window.print();
 
-        // 4. Kembalikan lagi ke mode malam setelah print dipanggil/selesai
-        if (isNightMode) {
-            document.body.classList.add('dark');
-        }
+            // 4. Kembalikan lagi ke mode malam setelah print dipanggil/selesai
+            if (isHtmlDark) htmlEl.classList.add('dark');
+            if (isBodyDark) bodyEl.classList.add('dark');
+        }, 50);
         // ---------------------------------
 
-    }, 300);
+    }, 300); // Penutup setTimeout utama
 }
