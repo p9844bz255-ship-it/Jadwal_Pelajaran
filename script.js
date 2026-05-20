@@ -820,7 +820,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================================================
-// CETAK PDF (FIX NIGHT MODE & CSS PRINT)
+// CETAK PDF (FIX HEADER & KECILKAN UKURAN TABEL)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     const gridId = tipeJadwal === 'tematik' ? 'resultsTematikGrid' : 'resultsGrid';
@@ -840,9 +840,6 @@ function cetakPDF(tipeJadwal) {
     });
 
     setTimeout(() => {
-        // Hapus pemanggilan syncPrintBadge() jika fungsi itu sudah tidak ada
-        // Hapus blok 'MENGAMBIL NAMA GURU/KELAS DARI PENCARIAN' (sudah ditangani di updatePrintOwner)
-
         let printFixStyle = document.getElementById('printFixStyle');
         if (!printFixStyle) {
             printFixStyle = document.createElement('style');
@@ -850,8 +847,13 @@ function cetakPDF(tipeJadwal) {
             document.head.appendChild(printFixStyle);
         }
         
-        // CSS INJEKSI (Telah dibersihkan dari template lama)
+        // CSS INJEKSI (MEMBUAT HEADER DAN MENGECILKAN TABEL)
         printFixStyle.innerHTML = `
+            /* Sembunyikan badge biru saat tidak dicetak */
+            @media screen {
+                #printSearchLabel { display: none !important; }
+            }
+
             @media print {
                 @page {
                     size: A4 landscape !important;
@@ -870,162 +872,172 @@ function cetakPDF(tipeJadwal) {
                     box-sizing: border-box !important;
                 }
 
-                /* Sembunyikan elemen web yang tidak perlu */
+                /* Sembunyikan semua kecuali kontainer jadwal dan header */
                 body > *:not(.flex-schedule-container):not(.header-section) {
                     display: none !important;
                 }
                 
-                /* Tampilkan Header Section tetapi sembunyikan isinya KECUALI badge cetak */
+                /* ========================================================
+                   1. DESAIN ULANG HEADER (PERSIS SEPERTI GAMBAR TEMPLATE)
+                   ======================================================== */
                 .header-section {
                     display: block !important;
-                    height: auto !important; /* Biarkan CSS eksternal mengatur tingginya */
+                    position: absolute !important;
+                    top: 0 !important; left: 0 !important; right: 0 !important;
+                    height: 75px !important;
+                    background: #ffffff !important;
+                    border-bottom: 4px solid #000000 !important; /* Garis bawah hitam */
+                    padding: 10px 40px !important;
+                    z-index: 100 !important;
                 }
                 
-                .header-top-content, 
-                .theme-toggle-btn,
-                .tab-container, 
-                #controlsUmum, 
-                #controlsTematik { 
-                    display: none !important; 
+                .header-main-wrapper { 
+                    display: flex !important; 
+                    flex-direction: row !important;
+                    justify-content: space-between !important; 
+                    align-items: center !important; 
+                    height: 100% !important; 
                 }
                 
-                /* Pastikan badge cetak muncul */
-                .print-search-badge {
-                    display: block !important;
+                .header-top-content { 
+                    display: flex !important; 
+                    align-items: center !important; 
+                    gap: 15px !important; 
+                }
+                .header-logo { width: 55px !important; height: 55px !important; }
+                .header-top-content h1 { 
+                    font-size: 20px !important; font-family: Arial, sans-serif !important; 
+                    font-weight: 900 !important; color: #000 !important; 
+                    margin: 0 0 2px 0 !important; line-height: 1 !important; letter-spacing: 1px !important; 
+                }
+                .desktop-subtext { 
+                    font-size: 13.5px !important; font-family: Arial, sans-serif !important; 
+                    font-weight: 900 !important; color: #000 !important; 
+                    margin: 0 !important; line-height: 1 !important; letter-spacing: 0.5px !important; 
+                }
+
+                .header-bottom-row { 
+                    display: block !important; margin: 0 !important; padding: 0 !important; 
+                    background: transparent !important; box-shadow: none !important; border: none !important; 
+                }
+                
+                /* Sembunyikan elemen pencarian, tombol dark mode, dll */
+                .theme-toggle-btn, .tab-container, #controlsUmum, #controlsTematik, .mobile-subtext { display: none !important; }
+                
+                /* Kotak Biru di sebelah Kanan */
+                #printSearchLabel {
+                    display: inline-flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    background: #0000a0 !important; /* Warna Biru Tua */
+                    color: #ffffff !important;
+                    font-family: Arial, sans-serif !important;
+                    font-size: 14px !important;
+                    font-weight: bold !important;
+                    padding: 8px 30px !important;
+                    border-radius: 12px !important;
+                    min-width: 250px !important;
+                    text-transform: uppercase !important;
                 }
 
                 #initialState, #initialStateTematik { display: none !important; }
                 body.print-umum #resultsTematikGrid { display: none !important; }
                 body.print-tematik #resultsGrid { display: none !important; }
 
-                /* ATUR POSISI JADWAL (Sesuaikan top margin ini jika jadwal menabrak header) */
+                /* ========================================================
+                   2. KECILKAN UKURAN TABEL & NAIKKAN POSISINYA
+                   ======================================================== */
                 .flex-schedule-container {
                     display: flex !important;
                     flex-direction: column !important;
                     position: absolute !important;
-                    top: 150px !important;   /* <--- SESUAIKAN ANGKA INI DENGAN TINGGI HEADER/TEMPLATE BARU ANDA */
-                    bottom: 20px !important; 
+                    top: 85px !important; /* Tarik tabel lebih dekat ke garis header */
+                    bottom: 10px !important; 
                     left: 20px !important;
                     right: 20px !important;
                     width: auto !important;
                     margin: 0 !important;
-                    z-index: 5 !important;
                     padding: 0 !important;
+                    z-index: 5 !important;
+                    transform: scale(0.92); /* SKALA DIKECILKAN OTOMATIS AGAR PAS */
+                    transform-origin: top center;
                 }
 
-                /* --- GAYA INTERNAL JADWAL (PAKSA WARNA TERANG / ANTI DARK MODE) --- */
+                /* --- GAYA INTERNAL JADWAL (UKURAN DIKECILKAN) --- */
                 .days-wrapper {
-                    display: flex !important;
-                    flex-direction: row !important;
-                    align-items: stretch !important; 
-                    flex: 1 !important; 
-                    width: 100% !important;
-                    gap: 6px !important; 
-                    min-height: 0 !important;
+                    display: flex !important; flex-direction: row !important;
+                    align-items: stretch !important; flex: 1 !important; width: 100% !important;
+                    gap: 5px !important; min-height: 0 !important;
                 }
 
                 .day-column {
-                    display: flex !important;
-                    flex-direction: column !important;
-                    flex: 1 !important; 
-                    min-width: 0 !important;
-                    background: #ffffff !important; 
-                    border: 1px solid #e2e8f0 !important;
-                    border-radius: 6px !important;
-                    padding: 4px !important; 
-                    box-shadow: none !important;
-                    page-break-inside: avoid !important;
+                    display: flex !important; flex-direction: column !important; flex: 1 !important; min-width: 0 !important;
+                    background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 4px !important;
+                    padding: 3px !important; /* Padding diperkecil */
+                    box-shadow: none !important; page-break-inside: avoid !important;
                 }
                 .day-column.today-active .day-title::after { display: none !important; }
 
                 .day-title {
-                    flex-shrink: 0 !important;
-                    font-size: 9.5px !important; 
-                    padding: 4px 0 !important;
-                    margin-bottom: 4px !important;
-                    border-radius: 4px !important;
-                    background: #0f172a !important; 
-                    color: #ffffff !important;      
-                    font-weight: 800 !important; 
-                    text-align: center !important;
+                    flex-shrink: 0 !important; font-size: 9px !important; padding: 3px 0 !important; margin-bottom: 3px !important;
+                    border-radius: 3px !important; background: #0f172a !important; color: #ffffff !important;      
+                    font-weight: 800 !important; text-align: center !important;
                 }
 
                 .card {
-                    display: flex !important;
-                    flex-direction: row !important;
-                    flex: 1 !important; 
-                    min-height: 0 !important; 
-                    margin-bottom: 3px !important; 
-                    padding: 2.5px 4px !important; 
-                    background: #ffffff !important; 
-                    border: 1px solid #cbd5e1 !important; 
-                    border-radius: 4px !important;
-                    box-shadow: none !important;
-                    page-break-inside: avoid !important;
+                    display: flex !important; flex-direction: row !important; flex: 1 !important; min-height: 0 !important; 
+                    margin-bottom: 2px !important; /* Jarak antar kotak diperkecil */
+                    padding: 2px 3px !important; /* Ruang dalam kotak diperkecil */
+                    background: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 3px !important;
+                    box-shadow: none !important; page-break-inside: avoid !important;
                 }
                 .card:last-child { margin-bottom: 0 !important; }
 
                 .card-left {
-                    flex: 0 0 32px !important; 
-                    justify-content: center !important;
-                    border-right: 1px dashed #cbd5e1 !important; 
-                    padding-right: 3px !important;
-                    margin-right: 3px !important;
+                    flex: 0 0 28px !important; justify-content: center !important;
+                    border-right: 1px dashed #cbd5e1 !important; padding-right: 2px !important; margin-right: 2px !important;
                 }
                 
-                .jp { font-size: 12px !important; font-weight: 800 !important; color: #1155cc !important; margin-bottom: 1px !important; }
-                .waktu { font-size: 7px !important; color: #64748b !important; }
+                .jp { font-size: 10px !important; font-weight: 900 !important; color: #1155cc !important; margin-bottom: 1px !important; }
+                .waktu { font-size: 6px !important; color: #64748b !important; line-height: 1 !important; }
 
                 .card-right {
-                    flex: 1 !important;
-                    display: flex !important; 
-                    flex-direction: column !important; 
-                    justify-content: center !important;
-                    gap: 1px !important; 
+                    flex: 1 !important; display: flex !important; flex-direction: column !important; 
+                    justify-content: center !important; gap: 1px !important; 
                 }
-                .kelas-info { font-size: 8px !important; font-weight: 800 !important; color: #1155cc !important; line-height: 1.3 !important; } 
-                .mapel { font-size: 9px !important; font-weight: 800 !important; color: #0f172a !important; line-height: 1.3 !important; } 
-                .guru-nama { font-size: 8px !important; font-weight: 600 !important; color: #475569 !important; line-height: 1.3 !important; } 
+                .kelas-info { font-size: 7.5px !important; font-weight: 900 !important; color: #1155cc !important; line-height: 1.1 !important; } 
+                .mapel { font-size: 8px !important; font-weight: 900 !important; color: #0f172a !important; line-height: 1.1 !important; } 
+                .guru-nama { font-size: 7px !important; font-weight: 700 !important; color: #475569 !important; line-height: 1.1 !important; } 
             }
         `;
 
-       // =========================================================
+        // =========================================================
         // TAMBAHAN ANTI NIGHT MODE SUPER AMAN
         // =========================================================
         const htmlEl = document.documentElement;
-        // Karena anda menggunakan atribut 'data-theme="dark"' bukan class 'dark' (merujuk pada script localStorage di HTML)
         const currentTheme = htmlEl.getAttribute('data-theme');
         
-        // 1. Matikan efek animasi/transisi sementara agar warna langsung seketika berubah
         const noTransitionStyle = document.createElement("style");
         noTransitionStyle.innerText = "* { transition: none !important; }";
         document.head.appendChild(noTransitionStyle);
 
-        // 2. Copot atribut dark theme dari HTML (Berdasarkan script toggle Anda di HTML, bukan class list)
         if (currentTheme === 'dark') {
             htmlEl.removeAttribute('data-theme');
         }
 
-        // 3. Beri jeda 2.5 detik
+        // Jeda 2.5 detik
         setTimeout(() => {
             window.print();
         }, 2500); 
 
-        // 4. Gunakan event onafterprint: kembalikan ke kondisi semula
         window.onafterprint = () => {
             if (currentTheme === 'dark') {
                  htmlEl.setAttribute('data-theme', 'dark');
             }
-            
-            // Hapus kembali style pemati transisi
             if (document.head.contains(noTransitionStyle)) {
                 document.head.removeChild(noTransitionStyle);
             }
-            
-            // Bersihkan event listener
             window.onafterprint = null;
         };
-        // =========================================================
-
-    }, 300); // Penutup setTimeout penyiapan data awal
+    }, 300);
 }
