@@ -802,6 +802,22 @@ function applySubjectColors() {
         }
     });
 }
+// Script untuk sinkronisasi teks pencarian ke tampilan cetak PDF
+document.addEventListener("DOMContentLoaded", function () {
+  const searchInput = document.querySelector('.search-wrapper input');
+  const printSearchLabel = document.getElementById('printSearchLabel');
+
+  if (searchInput && printSearchLabel) {
+    searchInput.addEventListener('input', function () {
+      const query = this.value.trim();
+      if (query) {
+        printSearchLabel.textContent = `PENCARIAN: ${query.toUpperCase()}`;
+      } else {
+        printSearchLabel.textContent = "SEMUA JADWAL";
+      }
+    });
+  }
+});
 
 // ==========================================================================
 // CETAK PDF (TEMPLATE BACKGROUND INJECTION & FIX NIGHT MODE)
