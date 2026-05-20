@@ -568,18 +568,23 @@ body {
 }
 
 /* ==========================================================================
-   CSS KHUSUS CETAK PDF DENGAN TEMPLATE GAMBAR
+   CSS KHUSUS CETAK PDF DENGAN TEMPLATE GAMBAR (ANTI DARK-MODE LEAK & FIX POSITION)
    ========================================================================== */
 @media print {
   /* Hilangkan margin kertas bawaan browser agar gambar bisa full menyentuh tepi */
   @page { size: A4 landscape; margin: 0; }
   
-  html, body {
+  /* 1. PAKSA SEJAK AWAL HTML & BODY BERWARNA PUTIH MURNI (BAIK BIASA MAUPUN ATRIBUT DARK) */
+  html, body,
+  [data-theme="dark"] html,
+  [data-theme="dark"] body {
     width: 297mm !important;
     height: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
+    background-image: none !important; /* Menghapus radial-gradient neon dari mode malam */
+    color: #0f172a !important;
     -webkit-print-color-adjust: exact !important; 
     print-color-adjust: exact !important;
     overflow: hidden !important; /* Mencegah munculnya halaman kosong ke-2 */
@@ -590,7 +595,7 @@ body {
     display: none !important;
   }
 
-  /* 1. ATUR GAMBAR TEMPLATE FULL SATU KERTAS */
+  /* ATUR GAMBAR TEMPLATE FULL SATU KERTAS */
   #printHeaderTemplate {
     display: block !important;
     position: fixed !important;
@@ -608,10 +613,9 @@ body {
     object-position: top center !important;
   }
 
-  /* 2. ATUR TEKS DI ATAS KOTAK BIRU */
+  /* ATUR TEKS DI ATAS KOTAK BIRU */
   #cetakNamaDynamic {
     position: absolute !important;
-    /* SILAKAN UBAH ANGKA INI JIKA POSISI TEKS KURANG PAS DI KOTAK BIRU */
     top: 38px !important;    /* Jarak dari atas kertas */
     right: 40px !important;  /* Jarak dari tepi kanan kertas */
     width: 350px !important; /* Perkiraan lebar kotak biru */
@@ -624,12 +628,11 @@ body {
     z-index: 10 !important;
   }
 
-  /* 3. ATUR POSISI JADWAL DI BAWAH GARIS HITAM */
+  /* 2. FIX POSISI JADWAL DI BAWAH GARIS HITAM (DIUBAH DARI 130px KE 200px) */
   .flex-schedule-container {
     display: block !important;
     position: absolute !important;
-    /* SILAKAN UBAH ANGKA INI AGAR JADWAL PAS DI BAWAH GARIS HITAM */
-    top: 130px !important;   
+    top: 200px !important;   /* <--- DIUBAH KE 200px AGAR JADWAL TURUN DAN TIDAK MENIMPA HEADER */
     left: 15px !important;
     right: 15px !important;
     width: calc(297mm - 30px) !important;
@@ -637,21 +640,71 @@ body {
     z-index: 5 !important;
   }
   
-  /* --- Gaya Internal Jadwal (Tetap sama agar rapi) --- */
+  /* --- Gaya Internal Jadwal --- */
   .days-wrapper, .days-wrapper.show-all-mobile { 
     display: flex !important; flex-direction: row !important; gap: 8px !important; width: 100% !important; 
   }
-  .day-column, .days-wrapper.show-all-mobile .day-column { 
-    flex: 1 1 0% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 6px !important; padding: 5px !important; page-break-inside: avoid !important;
+
+  /* PAKSA KOLOM HARI BERWARNA PUTIH */
+  .day-column, 
+  .days-wrapper.show-all-mobile .day-column,
+  [data-theme="dark"] .day-column { 
+    flex: 1 1 0% !important; 
+    background: #ffffff !important; /* Paksa Putih */
+    border: 1px solid #cbd5e1 !important; 
+    border-radius: 6px !important; 
+    padding: 5px !important; 
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
   }
-  .day-title { font-size: 11px !important; padding: 5px 0 !important; margin-bottom: 6px !important; background: #0f172a !important; color: #ffffff !important; border-radius: 4px !important; font-weight: 800 !important; text-align: center !important;}
-  .card { display: flex !important; padding: 3px 5px !important; margin-bottom: 3px !important; border: 1px solid #cbd5e1 !important; border-radius: 5px !important; min-height: 40px !important; page-break-inside: avoid !important;}
-  .card-left { flex: 0 0 30px !important; border-right: 1px dashed #cbd5e1 !important; padding-right: 3px !important; margin-right: 3px !important; }
+
+  /* PAKSA JUDUL HARI TETAP GELAP AGAR KONTRAS */
+  .day-title,
+  [data-theme="dark"] .day-title { 
+    font-size: 11px !important; 
+    padding: 5px 0 !important; 
+    margin-bottom: 6px !important; 
+    background: #0f172a !important; 
+    color: #ffffff !important; 
+    border-radius: 4px !important; 
+    font-weight: 800 !important; 
+    text-align: center !important;
+    border: none !important;
+  }
+
+  /* 3. PAKSA KARTU JADWAL BERWARNA PUTIH MURNI & MATIKAN EFEK HOVER/GLOW DARK MODE */
+  .card,
+  [data-theme="dark"] .card { 
+    display: flex !important; 
+    padding: 3px 5px !important; 
+    margin-bottom: 3px !important; 
+    background: #ffffff !important; /* <--- WAJIB DITAMBAHKAN AGAR TIDAK GELAP LAGI */
+    border: 1px solid #cbd5e1 !important; 
+    border-radius: 5px !important; 
+    min-height: 40px !important; 
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
+    transform: none !important; /* Matikan animasi pop-up mode malam saat dicetak */
+  }
+
+  /* SINKRONISASI WARNA ELEMEN DI DALAM KARTU JADWAL */
+  .card-left,
+  [data-theme="dark"] .card-left { 
+    flex: 0 0 30px !important; 
+    border-right: 1px dashed #cbd5e1 !important; 
+    padding-right: 3px !important; 
+    margin-right: 3px !important; 
+  }
+
   .jp { font-size: 13px !important; font-weight: 800 !important; color: #1155cc !important;}
-  .waktu { font-size: 6.5px !important; color: #64748b !important;}
+  .waktu, [data-theme="dark"] .waktu { font-size: 6.5px !important; color: #64748b !important;}
+  
   .card-right { gap: 1px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
   .kelas-info { font-size: 7.5px !important; font-weight: 800 !important; color: #1155cc !important; }
-  .mapel { font-size: 9px !important; font-weight: 800 !important; color: #0f172a !important; }
-  .guru-nama { font-size: 7.5px !important; font-weight: 600 !important; color: #475569 !important; }
+  
+  /* PAKSA WARNA TEKS MAPEL & GURU MENJADI GELAP/SIANG */
+  .mapel, [data-theme="dark"] .mapel { font-size: 9px !important; font-weight: 800 !important; color: #0f172a !important; }
+  .guru-nama, [data-theme="dark"] .guru-nama { font-size: 7.5px !important; font-weight: 600 !important; color: #475569 !important; }
+  
   mark.search-highlight, .search-highlight { background-color: transparent !important; color: inherit !important; }
 }
