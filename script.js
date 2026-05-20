@@ -1,7 +1,7 @@
 // ==========================================================================
-// TEMPELKAN URL DEPLOYMENT APPS SCRIPT ANDA DI BAWAH INI
+// URL FIREBASE REALTIME DATABASE ANDA
 // ==========================================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbxvVZ_0HN5y6p4t1Ga654-SSdXGgMH-MWUe5g2BpqVYRWpRX3qBP7y49axCL2OJwXU8TA/exec";
+const FIREBASE_URL = "https://jadwal-pelajaran-5d55e-default-rtdb.asia-southeast1.firebasedatabase.app";
 
 let RAW_DATA = [];
 let TEMATIK_DATA = null;
@@ -29,10 +29,11 @@ window.onload = function() {
   searchInput.placeholder = "⏳ Memuat database jadwal...";
   searchInput.disabled = true;
 
-  fetch(`${API_URL}?action=jadwalBiasa`)
+  // 1. Mengambil data Jadwal Biasa dari Firebase
+  fetch(`${FIREBASE_URL}/jadwalBiasa.json`)
     .then(response => response.json())
     .then(data => {
-      if (data.error) throw new Error(data.error);
+      if (!data) throw new Error("Data Jadwal Biasa kosong di Firebase");
       RAW_DATA = data;
       isDataLoaded = true;
       searchInput.placeholder = "Ketik nama atau kelas...";
@@ -43,13 +44,14 @@ window.onload = function() {
       searchInput.placeholder = "❌ Sistem gagal terkoneksi.";
     });
 
-  fetch(`${API_URL}?action=jadwalTematik`)
+  // 2. Mengambil data Jadwal Tematik dari Firebase
+  fetch(`${FIREBASE_URL}/jadwalTematik.json`)
     .then(response => response.json())
     .then(data => {
-      if (data.error) throw new Error(data.error);
+      if (!data) throw new Error("Data Jadwal Tematik kosong di Firebase");
       TEMATIK_DATA = data;
       isTematikLoaded = true;
-      buildPekanDropdownOptions();
+      buildPekanDropdownOptions(); // Memanggil fungsi bawaan Anda
     })
     .catch(error => console.error("Gagal sinkronisasi data tematik:", error));
 };
