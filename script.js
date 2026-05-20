@@ -804,7 +804,7 @@ function applySubjectColors() {
 }
 
 // ==========================================================================
-// CETAK PDF (TEMPLATE BACKGROUND INJECTION)
+// CETAK PDF (TEMPLATE BACKGROUND INJECTION & FIX NIGHT MODE)
 // ==========================================================================
 function cetakPDF(tipeJadwal) {
     const gridId = tipeJadwal === 'tematik' ? 'resultsTematikGrid' : 'resultsGrid';
@@ -826,11 +826,10 @@ function cetakPDF(tipeJadwal) {
     setTimeout(() => {
         syncPrintBadge(); // Sinkronisasi badge
 
-        // MENGAMBIL NAMA GURU/KELAS DARI PENCARIAN UNTUK DITEMPEL DI KOTAK BIRU
+        // MENGAMBIL NAMA GURU/KELAS DARI PENCARIAN
         const searchInputVal = document.getElementById('searchInput') ? document.getElementById('searchInput').value : '';
         const cetakNamaEl = document.getElementById('cetakNamaDynamic');
         if (cetakNamaEl) {
-            // Jika ada variabel global 'currentExactMatch', gunakan itu, jika tidak gunakan input pencarian
             cetakNamaEl.innerText = (typeof currentExactMatch !== 'undefined' && currentExactMatch) ? currentExactMatch : searchInputVal.toUpperCase();
         }
 
@@ -841,7 +840,7 @@ function cetakPDF(tipeJadwal) {
             document.head.appendChild(printFixStyle);
         }
         
-        // CSS INJEKSI UNTUK TEMPLATE BACKGROUND
+        // CSS INJEKSI 
         printFixStyle.innerHTML = `
             @media screen {
                 #printHeaderTemplate { display: none !important; }
@@ -892,12 +891,12 @@ function cetakPDF(tipeJadwal) {
                     object-position: top center !important;
                 }
 
-                /* 2. ATUR TEKS DI ATAS KOTAK BIRU (SESUAIKAN ANGKA JIKA KURANG PAS) */
+                /* 2. ATUR TEKS DI ATAS KOTAK BIRU */
                 #cetakNamaDynamic {
                     position: absolute !important;
-                    top: 38px !important;    /* Atur jarak dari tepi atas kertas */
-                    right: 40px !important;  /* Atur jarak dari tepi kanan kertas */
-                    width: 350px !important; /* Lebar area kotak biru */
+                    top: 42px !important;    /* <-- JIKA TEKS KURANG NAIK/TURUN, UBAH ANGKA INI */
+                    right: 48px !important;  /* <-- JIKA TEKS KURANG KANAN/KIRI, UBAH ANGKA INI */
+                    width: 350px !important; 
                     text-align: center !important;
                     color: #ffffff !important;
                     font-size: 16px !important;
@@ -908,21 +907,22 @@ function cetakPDF(tipeJadwal) {
                     font-family: Arial, sans-serif !important;
                 }
 
-                /* 3. ATUR POSISI JADWAL DI BAWAH GARIS HITAM */
+                /* 3. ATUR POSISI JADWAL AGAR TIDAK MENIMPA HEADER */
                 .flex-schedule-container {
                     display: flex !important;
                     flex-direction: column !important;
                     position: absolute !important;
-                    top: 130px !important;   /* Jarak turun jadwal agar pas di bawah garis hitam */
-                    left: 15px !important;
-                    right: 15px !important;
-                    width: calc(297mm - 30px) !important;
-                    margin: 0 auto !important;
+                    top: 175px !important;   /* <-- SAYA TAMBAHKAN MENJADI 175px AGAR TURUN MELEWATI GARIS HITAM */
+                    bottom: 20px !important; /* Batas jarak dari bawah kertas */
+                    left: 20px !important;
+                    right: 20px !important;
+                    width: auto !important;
+                    margin: 0 !important;
                     z-index: 5 !important;
                     padding: 0 !important;
                 }
 
-                /* --- GAYA INTERNAL JADWAL (Menyesuaikan Font +1) --- */
+                /* --- GAYA INTERNAL JADWAL (PAKSA WARNA TERANG / ANTI DARK MODE) --- */
                 .days-wrapper {
                     display: flex !important;
                     flex-direction: row !important;
@@ -938,7 +938,7 @@ function cetakPDF(tipeJadwal) {
                     flex-direction: column !important;
                     flex: 1 !important; 
                     min-width: 0 !important;
-                    background: #ffffff !important;
+                    background: #ffffff !important; /* Paksa Putih */
                     border: 1px solid #e2e8f0 !important;
                     border-radius: 6px !important;
                     padding: 4px !important; 
@@ -953,8 +953,8 @@ function cetakPDF(tipeJadwal) {
                     padding: 4px 0 !important;
                     margin-bottom: 4px !important;
                     border-radius: 4px !important;
-                    background: #0f172a !important; 
-                    color: #ffffff !important; 
+                    background: #0f172a !important; /* Paksa Biru Gelap/Hitam */
+                    color: #ffffff !important;      /* Teks Putih */
                     font-weight: 800 !important; 
                     text-align: center !important;
                 }
@@ -966,7 +966,8 @@ function cetakPDF(tipeJadwal) {
                     min-height: 0 !important; 
                     margin-bottom: 3px !important; 
                     padding: 2.5px 4px !important; 
-                    border: 1px solid #cbd5e1 !important;
+                    background: #ffffff !important; /* Paksa Putih */
+                    border: 1px solid #cbd5e1 !important; /* Paksa Garis Abu-abu */
                     border-radius: 4px !important;
                     box-shadow: none !important;
                     page-break-inside: avoid !important;
@@ -997,28 +998,32 @@ function cetakPDF(tipeJadwal) {
             }
         `;
 
-       // --- TAMBAHAN ANTI NIGHT MODE ---
-        // 1. Cek tag <html> dan <body> karena class 'dark' biasanya ada di <html>
+        // =========================================================
+        // TAMBAHAN ANTI NIGHT MODE (DENGAN JEDA WAKTU YANG AMAN)
+        // =========================================================
         const htmlEl = document.documentElement;
         const bodyEl = document.body;
         
         const isHtmlDark = htmlEl.classList.contains('dark'); 
         const isBodyDark = bodyEl.classList.contains('dark'); 
 
-        // 2. Jika mode malam aktif, copot dulu class-nya agar web jadi terang
+        // 1. Copot class dark
         if (isHtmlDark) htmlEl.classList.remove('dark');
         if (isBodyDark) bodyEl.classList.remove('dark');
 
-        // Beri jeda 50ms agar browser sempat merender warna putih sebelum print muncul
+        // 2. Beri jeda 500ms agar browser BENAR-BENAR selesai mengecat warna putih ke layar
         setTimeout(() => {
-            // 3. Panggil perintah cetak
             window.print();
+        }, 500);
 
-            // 4. Kembalikan lagi ke mode malam setelah print dipanggil/selesai
+        // 3. Gunakan event bawaan browser: kembalikan mode malam SAAT dialog print DITUTUP
+        window.onafterprint = () => {
             if (isHtmlDark) htmlEl.classList.add('dark');
             if (isBodyDark) bodyEl.classList.add('dark');
-        }, 50);
-        // ---------------------------------
+            // Bersihkan event listener agar tidak menumpuk
+            window.onafterprint = null;
+        };
+        // =========================================================
 
-    }, 300); // Penutup setTimeout utama
+    }, 300); // Penutup setTimeout penyiapan data
 }
