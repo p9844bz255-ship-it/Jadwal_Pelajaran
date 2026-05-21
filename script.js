@@ -185,7 +185,7 @@ function syncCardHeights(containerId) {
       if (cardsInRow.length === 0) continue;
 
       let maxHeight = 0;
-      cardsInRow.forEach(c => {
+      cardsInRow.forEach(c => { 
           if (c.offsetHeight > maxHeight) maxHeight = c.offsetHeight;
       });
 
